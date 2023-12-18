@@ -1,0 +1,1614 @@
+﻿@{
+    ViewBag.Title = "StereoPhoto";
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+<style>
+    .swal2-container {
+        z-index: 200000;
+    }
+</style>
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">立體像片對資料管理</div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <table id="ta_ipcc">
+            <tr>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td><div id="ddl_ipcc"></div></td>
+                <td><div id="ddl_ipccsub"></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_new">新增</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_import">匯入資料</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_importPho">匯入相片</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" style="width:100px" id="btn_export">匯出像對資料</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" style="width:150px" id="btn_AllSte">預產紅藍立體(全數)</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" style="width:150px" id="btn_EmptySte">預產紅藍立體(新增)</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div id="grid_ipcc"></div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+
+<div id="jqxwin_species">
+    <div>
+        地物種類編輯
+    </div>
+    <div>
+        <div class="clear"></div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">地物種類</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 地物種類編號編號</div>
+                    <div id="spe_ID"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 地物種類中文名稱</div>
+                    <input type="text" class="text" id="spe_CName" /><input class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" style="float:none" id="btn_FuzzySearch" type="button" value="地物比對" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 判釋難易程度</div>
+                    <div id="spe_Level"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 資源調查</div>
+                    <div id="spe_IPCC"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 資源調查分類</div>
+                    <div id="spe_IPCCsub"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 科名</div>
+                    <input type="text" class="text" id="spe_Family" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 學名</div>
+                    <input type="text" class="text" id="spe_SciName" />
+                    變種名(選填)
+                    <input type="text" class="text" id="spe_SciSubName" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 基本型態、分布及特性說明</div>
+                    <textarea id="spe_BasDes"></textarea>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 地物種類介紹</div>
+                    <textarea id="spe_SpeDes"></textarea>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 分布海拔範圍(m)</div>
+                    <input type="text" class="text" id="spe_AltRange" />
+                </div>
+                @*<div class="clear"></div>
+                    <div class="search_content_info_SeparateLine"></div>
+                    <div class="search_content_info_text">
+                        <div>11.現場照片</div>
+                        <input type="file" id="spe_ScePic" />
+                    </div>*@
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 易混淆地物種類編號<p style="color:red;">(*多選時請用,(逗號)分隔)</p> </div>
+                    <input type="text" class="text" id="spe_IDCompare" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SpeSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SpeDel">刪除</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SpeCancel">取消</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="jqxwin_speciessub">
+    <div>
+        地物種類子項
+    </div>
+    <div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">地物種類子項</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>1.地物種類編號</div>
+                    <div id="spesub_SID"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>2.樹高</div>
+                    <input type="text" class="text" id="spesub_THeight" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>3.樹形</div>
+                    <input type="text" class="text" id="spesub_TShape" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>4.冠幅寬度</div>
+                    <input type="text" class="text" id="spesub_CroWidth" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>5.頂視單株立體冠幅描繪</div>
+                    <input type="file" id="spesub_MonoCro" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>6.頂視林型立體冠幅描繪</div>
+                    <input type="file" id="spesub_GrouCro" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>7.側視樹型描繪</div>
+                    <input type="file" id="spesub_SideShape" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SpeSubSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SpeSubCancel">取消</div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="jqxwin_features">
+    <div>
+        判釋特徵編輯
+    </div>
+    <div>
+        <div class="clear"></div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">判釋特徵</div>
+            <div>
+                @*<table style="width:100%">
+                        <tr>
+                            <td></td>
+                            <td valign="top">
+                                <table id="grid_feature"></table>
+                            </td>
+                        </tr>
+                    </table>*@
+                @{
+                    Html.RenderPartial("StereoPhoto_Edit_Feature");
+                }
+
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_FeaSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_FeaCancel">取消</div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="jqxwin_steimages">
+    <div>
+        立體像對編輯
+    </div>
+    <div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">立體像對</div>
+            <div>
+                <table>
+                    <tr>
+                        <td>
+                            @{
+                                Html.RenderPartial("StereoPhoto_Edit_Stero");
+                            }
+                        </td>
+                        <td valign="top">
+                            <input id="hd_Stero" type="hidden" value="0" />
+                            <table id="grid_stero"></table>
+                        </td>
+                    </tr>
+                </table>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_StePhotoPreview">預覽像對</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteSave">儲存</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteCancel">取消</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteEditSub">編輯子項</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteDel">刪除像對</div>
+                    <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" style="width:150px" id="btn_SteUpdate">預產紅藍立體相對</div>
+
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="jqxwin_steimagessub">
+    <div>
+        立體像對子項編輯
+    </div>
+    <div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">立體像對子項</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>1.立體像對編號</div>
+                    <div id="stesub_SIID"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>2.林分密度</div>
+                    <input type="text" class="text" id="stesub_StDen" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>3.樹冠覆蓋度</div>
+                    <input type="text" class="text" id="stesub_CroCov" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>4.樹冠密度</div>
+                    <input type="text" class="text" id="stesub_CroDen" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>5.林齡</div>
+                    <input type="text" class="text" id="stesub_StAge" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteSubSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_SteSubCancel">取消</div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="jqxwin_QueryList" style="display:none">
+    <div>地物比對列表</div>
+    <div id="List"></div>
+
+</div>
+<div id="jqxwin_solid">
+    <div>
+        滑鼠左鍵點擊像片可另開視窗檢視
+    </div>
+    <div style="background:#000;overflow:hidden;">
+        @{ Html.RenderAction("SolidPhoto", "Search");}
+    </div>
+</div>
+<div id="jqxwin_import">
+    <div>
+        立體像片對匯入
+    </div>
+    <div>
+        <div class="clear"></div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">立體像片對匯入</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text" style="color:red">* 請上傳Excel格式檔案</div>
+                <div class="search_content_info_text" style="color:blue">
+                    <a href="~/ImportExample/匯入範例.xlsx">匯入範例</a>
+                </div>
+                <div class="search_content_info_text">
+                    <input id="file" type="file" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_impSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_impCancel">取消</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="jqxwin_importPho">
+    <div>
+        立體像片對匯入
+    </div>
+    <div>
+        <div class="clear"></div>
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">立體像片對匯入</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text" style="color:red">* 請上傳ZIP格式檔案</div>
+                <div class="search_content_info_text" style="color:blue">
+                    <a href="~/ImportExample/Pictures.zip">匯入範例</a>
+                </div>
+                <div class="search_content_info_text">
+                    <input id="fileP" type="file" />
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_impPSave">儲存</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_impPCancel">取消</div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #ta_ipcc {
+        width: 100%;
+    }
+
+    #grid_ipcc {
+        margin-top: 10px;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var data = @Html.Raw(Json.Encode(Model));
+    var gridSource, actiontype = 0;
+    var level = ['簡單', '中等', '困難'];
+    var texture = ['光滑', '細緻', '粗糙', '極粗糙'];
+    var crown1 = ['圓形','不規則型','大型葉片'];
+    var crown2 = ['全緣', '裂緣', '鈍鋸齒', '纖毛狀', '星芒狀'];
+    var crown3 = ['連續', '非連續'];
+    var crown4 = ['單冠', '多冠', '單桿', '叢生'];
+    var crown5 = ['尺寸相近', '尺寸不一', '單冠無尺寸差異'];
+    var crown6 = ['平展', '圓角', '圓錐', '細銳', '尖塔'];
+    var crown7 = ['連身', '頂葉'];
+    var crown8 = ['分層', '分段', '無'];
+    var crown9 = ['半透明', '不透明'];
+    var crown10 = ['粒狀', '條狀', '平滑', '粗糙'];
+    var solidinited = true;
+    var StePairL = "", StePairR = "";
+    //$(document).ajaxStart(function () {
+    //    $.blockUI({
+    //        message: '<h5><img src="~/Content/Images/loading.gif" /></h5>',
+    //        baseZ: 20000
+    //    });
+
+    //});
+    $(document).ajaxStop(function () {
+        $.unblockUI();
+    });
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_stereophoto']");
+        activeOption.addClass("system_contentLEFT_option_active");
+        solidInit();
+
+        $('#ddl_ipcc, #spe_IPCC').jqxDropDownList({ source: data, displayMember: 'IPCC', valueMember: 'IPCCID', width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#ddl_ipccsub, #spe_IPCCsub').jqxDropDownList({ source: null, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        gridSource = {
+            localdata: null,
+            datatype: "JSON",
+            datafields: [
+                { name: 'ID', type: 'number' },
+                { name: 'ComName', type: 'string' },
+                { name: 'SciName', type: 'string' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(gridSource);
+        var setting = {
+            source: dataAdapter,
+            height: 400,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            showfilterrow: true,
+            columns: [
+                {
+                    text: '地物種類', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "編輯";
+                    },
+                    buttonclick: function (row) {
+                        editSpecies(row);
+                    }
+                },
+                {
+                    text: '地物種類子項', width: 100, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "編輯";
+                    },
+                    buttonclick: function (row) {
+                        var tmp = gridSource.localdata[row];
+                        if (tmp.IPCCsubID < 20)
+                            editSpeciesSub(row);
+                        else
+                            alert('無資料可編輯');
+                    }
+                },
+                {
+                    text: '判釋特徵', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "編輯";
+                    },
+                    buttonclick: function (row) {
+                        var tmp = gridSource.localdata[row];
+                        if (tmp.IPCCsubID < 20) {
+                            editFeatures(row);
+                        }
+                        else {
+                            alert('無資料可編輯');
+                        }
+                    }
+                },
+                {
+                    text: '立體像對', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "編輯";
+                    },
+                    buttonclick: function (row) {
+                        editSteImages(row);
+                    }
+                },
+                { text: '編號', width: 50, datafield: 'ID', align: 'center', cellsalign: 'center' },
+                { text: '樹種', datafield: 'ComName', align: 'center', cellsalign: 'center' },
+                { text: '學名', datafield: 'SciName', align: 'center', cellsalign: 'center' }
+            ]
+        };
+        $("#grid_ipcc").jqxGrid(GetJqxGvSetting(setting));
+
+        var x1 = ($(window).width() - 1000) / 2 + $(window).scrollLeft();
+        var y1 = ($(window).height() - 600) / 2 + $(window).scrollTop();
+        $('[id^=jqxwin]').jqxWindow({
+            theme: 'energyblue',
+            position: { x: x1, y: y1 },
+            showCollapseButton: false,
+            showCloseButton: false,
+            height: 600,
+            width: 1000,
+            maxWidth: 1000,
+            isModal: true,
+            autoOpen: false
+        });
+
+        $('#jqxwin_solid').jqxWindow({
+            width: 700,
+            height: 350,
+            resizable: false,
+            showCloseButton: true,
+            isModal: true,
+            autoOpen: false,
+            draggable: false
+        });
+
+        $("[class=text]").jqxInput({ height: 25, width: 200, minLength: 1 });
+        $('#spe_BasDes, #spe_SpeDes').jqxTextArea({ height: 90, width: 300, minLength: 1 });
+        $('#spe_Level').jqxDropDownList({ source: level, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Texture').jqxDropDownList({ source: texture, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown1').jqxDropDownList({ source: crown1, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown2').jqxDropDownList({ source: crown2, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown3').jqxDropDownList({ source: crown3, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown4').jqxDropDownList({ source: crown4, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown5').jqxDropDownList({ source: crown5, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown6').jqxDropDownList({ source: crown6, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown7').jqxDropDownList({ source: crown7, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown8').jqxDropDownList({ source: crown8, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown9').jqxDropDownList({ source: crown9, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        $('#fea_Crown10').jqxDropDownList({ source: crown10, width: '200', height: '25', placeHolder: "請選擇", autoDropDownHeight: true });
+        objStereoPhotoAction();
+    });
+
+    function objStereoPhotoAction() {
+        $('#ddl_ipcc, #spe_IPCC').on('change', function (event) {
+            var index = event.args.index;
+            var targetID = event.target.id;
+            var target = targetID == 'ddl_ipcc' ? '#ddl_ipccsub' : '#spe_IPCCsub';
+            $(target).jqxDropDownList({ source: data[index].SubList, displayMember: 'IPCCsub', valueMember: 'IPCCsubID' });
+        });
+
+        $('#ddl_ipccsub').on('change', function (event) {
+            getGridData();
+        });
+
+        $('#btn_new').on('click', function () {
+            editSpecies(-1);
+        });
+        $('#btn_import').on('click', function () {
+            $('#jqxwin_import').jqxWindow('open');
+        });
+        $('#btn_importPho').on('click', function () {
+            $('#jqxwin_importPho').jqxWindow('open');
+        });
+        $('#btn_export').on('click', function () {
+            window.open('@Url.Action("ExportPhotoData", "WLSystem")', "_blank", null, null);
+        });
+        $('[id$=Save], [id$=Del]').on('click', function (event) {
+            switch (event.target.id) {
+                case 'btn_SpeSave':
+                    //saveSpecies(0);
+                    saveSpecies();
+                    break;
+                case 'btn_SpeDel':
+                    //saveSpecies(1);
+                    delSpecies();
+                    break;
+                case 'btn_FeaSave':
+                    saveFeatures();
+                    break;
+                case 'btn_SpeSubSave':
+                    saveSpeciesSub();
+                    break;
+                case 'btn_SteSave':
+                    saveSteImages();
+                    break;
+                case 'btn_SteDel':
+                    if (confirm('是否要刪除資料?')) {
+                        DelSteImages();
+                    }
+                    break;
+                case 'btn_SteSubSave':
+                    saveSteImagesSub();
+                    break;
+                case 'btn_impSave':
+                    importData();
+                    break;
+                case 'btn_impPSave':
+                    importPhoto();
+                    break;
+            }
+        });
+        $('#btn_SteUpdate').on('click', function () {
+            UpdateSteImages();
+        });
+        $('[id$=Cancel]').on('click', function (event) {
+            switch (event.target.id) {
+                case 'btn_SpeCancel':
+                    $('#jqxwin_species').jqxWindow('close');
+                    break;
+                case 'btn_FeaCancel':
+                    $('#jqxwin_features').jqxWindow('close');
+                    break;
+                case 'btn_SpeSubCancel':
+                    $('#jqxwin_speciessub').jqxWindow('close');
+                    break;
+                case 'btn_SteCancel':
+                    $('#jqxwin_steimages').jqxWindow('close');
+                    break;
+                case 'btn_SteSubCancel':
+                    $('#jqxwin_steimagessub').jqxWindow('close');
+                    break;
+                case 'btn_impCancel':
+                    $('#jqxwin_import').jqxWindow('close');
+                    break;
+                case 'btn_impPCancel':
+                    $('#jqxwin_importPho').jqxWindow('close');
+                    break;            }
+        });
+
+        $('#btn_SteEditSub').on('click', function (event) {
+            editSteImagesSub();
+        });
+
+        $('#btn_StePhotoPreview').on('click', function () {
+            //debugger;
+            var L = $('#ste_StePairL').val();
+            var R = $('#ste_StePairR').val();
+
+            if (L != "" && R != "") {
+                var file1 = $('#ste_StePairL')[0].files[0];
+                var file2 = $('#ste_StePairR')[0].files[0];
+                var reader1 = new FileReader();
+                var reader2 = new FileReader();
+                reader1.onloadend = function () {
+                    $('#img_l')[0].src = reader1.result;
+                }
+                reader1.readAsDataURL(file1);
+
+                reader2.onloadend = function () {
+                    $('#img_r')[0].src = reader2.result;
+                }
+                reader2.readAsDataURL(file2);
+                $('#jqxwin_solid').jqxWindow('open');
+            }
+            else if (StePairL != "" && StePairL != "") {
+
+                photoclick(StePairL, StePairR);
+                //var _noData = "../..";
+                //var _noData = "../..";
+
+                //if (StePairL == _noData || StePairL == _noData) {
+                //    alert("相片對不齊全，請新增/修改相片對。");
+                //} else {
+                //    photoclick(StePairL, StePairR);
+                //}
+            }
+            else
+                alert('無立體像對資料。');
+        });
+
+        $('#jqxwin_steimages').on('close', function () {
+            StePairL = "";
+            StePairR = "";
+            $('#ste_StePairL').val("");
+            $('#ste_StePairR').val("");
+        });
+    }
+    $('#btn_AllSte').on('click', function (event) {
+        if (confirm('此功能耗時偏長，是否執行?')) {
+        var url = '@Url.Action("UpdateAllSte", "WLSystem")';
+        var formData = new FormData();
+
+        formData.append('file', $('#file')[0].files[0]);
+
+            $.blockUI({
+                message: '<h5>預產中，請稍等。</h5>',
+                baseZ: 20000
+            });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            async: true,
+            data: formData,
+            success: function (result) {
+                if (result == "") {
+                    alert('預產完成');
+                    $('#jqxwin_import').jqxWindow('close');
+                }
+                else {
+                    Swal.fire({
+                        html: '預產完成，錯誤如下<br/>' + result,
+                        icon: 'error',
+                        confirmButtonText: '確定'
+                    })
+                }
+            },
+            error: function (e) {
+            }
+        });
+        }
+    });
+    $('#btn_EmptySte').on('click', function (event) {
+        if (confirm('此功能耗時偏長，是否執行?')) {
+            var url = '@Url.Action("UpdateEmptySte", "WLSystem")';
+            var formData = new FormData();
+
+            formData.append('file', $('#file')[0].files[0]);
+
+            $.blockUI({
+                message: '<h5>預產中，請稍等。</h5>',
+                baseZ: 20000
+            });
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                async: true,
+                data: formData,
+                success: function (result) {
+                    if (result == "") {
+                        alert('預產成功');
+                        $('#jqxwin_import').jqxWindow('close');
+                    }
+                    else {
+                        Swal.fire({
+                            html: '預產完成，錯誤如下<br/>' + result,
+                            icon: 'error',
+                            confirmButtonText: '確定'
+                        })
+                    }
+                },
+                error: function (e) {
+                }
+            });
+        }
+    });
+    function importData() {
+        var url = '@Url.Action("ImportSteImage", "WLSystem")';
+        var formData = new FormData();
+
+        formData.append('file', $('#file')[0].files[0]);
+
+        $.blockUI({
+            message: '<h5>上傳中，請稍等。</h5>',
+            baseZ: 20000
+        });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            async: true,
+            data: formData,
+            success: function (result) {
+                if (result == "OK") {
+                    alert('上傳成功');
+                    $('#jqxwin_import').jqxWindow('close');
+                }
+                else {
+                    alert('上傳失敗，請洽系統管理員');
+                }
+            },
+            error: function (e) {
+            }
+        });
+    }
+    function importPhoto() {
+        var url = '@Url.Action("ImportStePhoto", "WLSystem")';
+        var formData = new FormData();
+
+        formData.append('file', $('#fileP')[0].files[0]);
+
+        $.blockUI({
+            message: '<h5>上傳中，請稍等。</h5>',
+            baseZ: 20000
+        });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            async: true,
+            data: formData,
+            success: function (result) {
+                if (result == "OK") {
+                    alert('上傳成功');
+                    $('#jqxwin_importPho').jqxWindow('close');
+                }
+                else {
+                    alert('上傳失敗，請洽系統管理員');
+                }
+            },
+            error: function (e) {
+            }
+        });
+    }
+
+    function getGridData() {
+        var IPCCsubID = $('#ddl_ipccsub').jqxDropDownList('val');
+        $.ajax({
+            type: 'POST',
+            cache: false,
+            async: true,
+            url: '@Url.Content("~/WLSystem/GetFL")',
+            data: JSON.stringify({ IPCCsubID: IPCCsubID }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data.ReturnData != null) {
+                    gridSource.localdata = data.ReturnData;
+                    var dataAdapter = new $.jqx.dataAdapter(gridSource);
+                    $('#grid_ipcc').jqxGrid({ source: dataAdapter });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function editSpecies(index) {
+        $('#spe_ID').text('');
+        if (index == -1) {
+            $('[id^=spe_]:text').each(function (index, element) {
+                $('#' + element.id).jqxInput('val', '');
+            });
+            $('textarea').each(function (index, element) {
+                $('#' + element.id).jqxTextArea('val', '');
+            });
+        }
+        else {
+            var tmp = gridSource.localdata[index];
+            $('#spe_ID').text(tmp.ID);
+            $('#spe_CName').val(tmp.ComName);
+            $('#spe_Level').jqxDropDownList('selectIndex', tmp.Level);
+            $('#spe_IPCC').jqxDropDownList('selectIndex', $("#ddl_ipcc").jqxDropDownList('getSelectedIndex'));
+            $('#spe_IPCCsub').jqxDropDownList('selectIndex', $("#ddl_ipccsub").jqxDropDownList('getSelectedIndex'));
+            $('#spe_Family').val(tmp.Family);
+            $('#spe_SciName').val(tmp.SciName);
+            $('#spe_SciSubName').val(tmp.SciSubName);
+            $('#spe_BasDes').val(tmp.BasDes);
+            $('#spe_SpeDes').val(tmp.SpeDes);
+            $('#spe_AltRange').val(tmp.AltRange);
+            //$('#spe_ScePic').val(tmp.ScePic);
+            $('#spe_IDCompare').val(tmp.IDCompare);
+        }
+        $('#jqxwin_species').jqxWindow('open');
+    }
+
+    function saveSpecies() {
+        var speciesData = {
+            ID: $('#spe_ID').text() == "" ? 0 : $('#spe_ID').text(),
+            ComName: $('#spe_CName').val(),
+            Level: $('#spe_Level').jqxDropDownList('getSelectedIndex'),
+            IPCCsubID: $('#spe_IPCCsub').val(),
+            Family: $('#spe_Family').val(),
+            SciName: $('#spe_SciName').val(),
+            SciSubName: $('#spe_SciSubName').val(),
+            BasDes: $('#spe_BasDes').val(),
+            SpeDes: $('#spe_SpeDes').val(),
+            AltRange: $('#spe_AltRange').val(),
+            IDCompare: $('#spe_IDCompare').val()
+        };
+
+            var data = new FormData();
+            data.append("data", JSON.stringify(speciesData));
+            //var files = $("#spe_ScePic").get(0).files;
+            //if (files.length > 0) {
+            //    data.append("ScePic", files[0]);
+            //}
+
+            $.ajax({
+                url: '@Url.Content("~/WLSystem/SaveSpecies")',
+                type: 'POST',
+                ache: false,
+                async: true,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    if (result) {
+                        alert('新增/更新成功');
+                        getGridData();
+                        $('#jqxwin_species').jqxWindow('close');
+                    } else {
+                        alert('新增/更新失敗');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+            });
+    }
+
+
+    function delSpecies() {
+        var speciesData = {
+            ID: $('#spe_ID').text() == "" ? 0 : $('#spe_ID').text(),
+            ComName: $('#spe_CName').val(),
+            Level: $('#spe_Level').jqxDropDownList('getSelectedIndex'),
+            IPCCsubID: $('#spe_IPCCsub').val(),
+            Family: $('#spe_Family').val(),
+            SciName: $('#spe_SciName').val(),
+            SciSubName: $('#spe_SciSubName').val(),
+            BasDes: $('#spe_BasDes').val(),
+            SpeDes: $('#spe_SpeDes').val(),
+            AltRange: $('#spe_AltRange').val(),
+            IDCompare: $('#spe_IDCompare').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            ache: false,
+            async: true,
+            url: '@Url.Content("~/WLSystem/DelSpecies")',
+            data: JSON.stringify({ ID: speciesData.ID }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                if (result) {
+                    alert('刪除成功');
+                    getGridData();
+                    $('#jqxwin_species').jqxWindow('close');
+                } else {
+                    alert('刪除失敗');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function editSpeciesSub(index) {
+        var species = gridSource.localdata[index];
+        $('#spesub_SID').text(species.ID);
+        if (species.SpeciesFL == null) {
+            actiontype = 0;
+            $('[id^=spesub_]:text').each(function (index, element) {
+                $('#' + element.id).jqxInput('val', '');
+            });
+        }
+        else {
+            actiontype = 1;
+            var tmp = species.SpeciesFL;
+            $('#spesub_THeight').val(tmp.THeight);
+            $('#spesub_TShape').val(tmp.TShape);
+            $('#spesub_CroWidth').val(tmp.CroWidth);
+            //$('#spesub_MonoCro').val(tmp.MonoCro);
+            //$('#spesub_GrouCro').val(tmp.GrouCro);
+            //$('#spesub_SideShape').val(tmp.SideShape);
+        }
+        $('#jqxwin_speciessub').jqxWindow('open');
+    }
+
+    function saveSpeciesSub() {
+        var speciesflData = {
+            SID: $('#spesub_SID').text(),
+            THeight: $('#spesub_THeight').val(),
+            TShape: $('#spesub_TShape').val(),
+            CroWidth: $('#spesub_CroWidth').val()
+        }
+
+        var data = new FormData();
+        data.append("type", actiontype);
+        data.append("data", JSON.stringify(speciesflData));
+        var monoFile = $("#spesub_MonoCro").get(0).files;
+        if (monoFile.length > 0)
+            data.append("MonoCro", monoFile[0]);
+        var grouFile = $("#spesub_GrouCro").get(0).files;
+        if (grouFile.length > 0)
+            data.append("GrouCro", grouFile[0]);
+        var sideFile = $("#spesub_SideShape").get(0).files;
+        if (sideFile.length > 0)
+            data.append("SideShape", sideFile[0]);
+
+        $.ajax({
+            url: '@Url.Content("~/WLSystem/SaveSpeciesSub")',
+            type: 'POST',
+            ache: false,
+            async: true,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                if (data) {
+                    alert('新增/更新成功');
+                    getGridData();
+                    $('#jqxwin_speceissub').jqxWindow('close');
+                } else {
+                    alert('新增/更新失敗');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function editFeatures(index) {
+        var species = gridSource.localdata[index];
+        //getGrid_feature(species.ID);
+
+        $('#fea_SID').text(species.ID);
+        if (species.FeaturesFL == null) {
+            actiontype = 0;
+            $('[id^=fea_]:text').each(function (index, element) {
+                $('#' + element.id).jqxInput('val', '');
+            });
+        }
+        else {
+            actiontype = 1;
+            var tmp = species.FeaturesFL;
+            $('#fea_Shape').val(tmp.Shape);
+            $('#fea_Size').val(tmp.Size);
+            $('#fea_ToneColor').val(tmp.ToneColor);
+            $('#fea_Shadow').val(tmp.Shadow);
+            $('#fea_Pattern').val(tmp.Pattern);
+            $('#fea_Association').val(tmp.Association);
+            $('#fea_Texture').jqxDropDownList('selectIndex', tmp.Texture);
+            $('#fea_Crown1').jqxDropDownList('selectIndex', tmp.Crown1);
+            $('#fea_Crown2').jqxDropDownList('selectIndex', tmp.Crown2);
+            $('#fea_Crown3').jqxDropDownList('selectIndex', tmp.Crown3);
+            $('#fea_Crown4').jqxDropDownList('selectIndex', tmp.Crown4);
+            $('#fea_Crown5').jqxDropDownList('selectIndex', tmp.Crown5);
+            $('#fea_Crown6').jqxDropDownList('selectIndex', tmp.Crown6);
+            $('#fea_Crown7').jqxDropDownList('selectIndex', tmp.Crown7);
+            $('#fea_Crown8').jqxDropDownList('selectIndex', tmp.Crown8);
+            $('#fea_Crown9').jqxDropDownList('selectIndex', tmp.Crown9);
+            $('#fea_Crown10').jqxDropDownList('selectIndex', tmp.Crown10);
+        }
+        $('#jqxwin_features').jqxWindow('open');
+    }
+
+    function saveFeatures() {
+        var featuresData = {
+            SID: $('#fea_SID').text(),
+            Shape: $('#fea_Shape').val(),
+            Size: $('#fea_Size').val(),
+            ToneColor: $('#fea_ToneColor').val(),
+            Texture: $('#fea_Texture').jqxDropDownList('getSelectedIndex'),
+            Shadow: $('#fea_Shadow').val(),
+            Pattern: $('#fea_Patterm').val(),
+            Association: $('#fea_Association').val(),
+            Crown1: $('#fea_Crown1').jqxDropDownList('getSelectedIndex'),
+            Crown2: $('#fea_Crown2').jqxDropDownList('getSelectedIndex'),
+            Crown3: $('#fea_Crown3').jqxDropDownList('getSelectedIndex'),
+            Crown4: $('#fea_Crown4').jqxDropDownList('getSelectedIndex'),
+            Crown5: $('#fea_Crown5').jqxDropDownList('getSelectedIndex'),
+            Crown6: $('#fea_Crown6').jqxDropDownList('getSelectedIndex'),
+            Crown7: $('#fea_Crown7').jqxDropDownList('getSelectedIndex'),
+            Crown8: $('#fea_Crown8').jqxDropDownList('getSelectedIndex'),
+            Crown9: $('#fea_Crown9').jqxDropDownList('getSelectedIndex'),
+            Crown10: $('#fea_Crown10').jqxDropDownList('getSelectedIndex')
+        };
+        $.ajax({
+            type: 'POST',
+            ache: false,
+            async: true,
+            url: '@Url.Content("~/WLSystem/SaveFeaturesFL")',
+            data: JSON.stringify({ featuresFL: featuresData, type: actiontype }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data) {
+                    alert('新增/更新成功');
+                    getGridData();
+                    $('#jqxwin_features').jqxWindow('close');
+                } else {
+                    alert('新增/更新失敗');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function editSteImages(index) {
+        var species = gridSource.localdata[index];
+
+        getGrid_Stero(species.ID);
+        $('#ste_SID').text(species.ID);
+        $('#ste_ComName').text(species.ComName);
+        $('#ste_SelIndex').val(index);
+        if (species.StereoscopicImages == null) {
+            actiontype = 0;
+            $('[id^=ste_]:text').each(function (index, element) {
+                $('#' + element.id).jqxInput('val', '');
+            });
+        }
+        else {
+            actiontype = 1;
+            var tmp = species.StereoscopicImages[0];
+            $('#ste_SelIndex').val(index);
+            $('#ste_PhotoA').val(tmp.PhotoA);
+            $('#ste_PhotoB').val(tmp.PhotoB);
+            $('#ste_Locate').val(tmp.Locate);
+            $('#ste_SteSuo').val(tmp.SteSuo);
+            $('#ste_Ymax').val(tmp.Ymax);
+            $('#ste_Ymin').val(tmp.Ymin);
+            $('#ste_Xmax').val(tmp.Xmax);
+            $('#ste_Xmin').val(tmp.Xmin);
+            $('#ste_AltMin').val(tmp.AltMin);
+            $('#ste_AltMax').val(tmp.AltMax);
+            $('#ste_Aspect').val(tmp.Aspect);
+            $('#ste_Area').val(tmp.Area);
+            $('#ste_LineID').val(tmp.LineID);
+            $('#ste_FlyH').val(tmp.FlyH);
+            $('#ste_ShTime').val(tmp.ShTime);
+            $('#ste_ShDeg').val(tmp.ShDeg);
+            $('#ste_CamFoc').val(tmp.CamFoc);
+            $('#ste_CamMod').val(tmp.CamMod);
+            $('#ste_FWHM').val(tmp.FWHM);
+            $('#ste_LocX1').val(tmp.LocX1);
+            $('#ste_LocY1').val(tmp.LocY1);
+
+            var $PicNum = tmp.PicNumber == null ? "" : tmp.PicNumber;
+            var $FilmNum = tmp.FilmNumber == null ? "" : tmp.FilmNumber;
+            var $IPCCStatement = tmp.IPCCStatement == null ? "" : tmp.IPCCStatement;
+            $('#ste_PicNumber').val($PicNum);
+            $('#ste_FilmNumber').val($FilmNum);
+            $('#ste_IPCCStatement').val($IPCCStatement);
+            //$('#ste_LocX2').val(tmp.LocX2);
+            //$('#ste_LocY2').val(tmp.LocY2);
+            //$('#ste_LocX3').val(tmp.LocX3);
+            //$('#ste_LocY3').val(tmp.LocY3);
+
+            if (tmp.StePairL != "" && tmp.StePairR != "") {
+                StePairL = "../../Photos/" + tmp.StePairL.replace("\\", "/");
+                StePairR = "../../Photos/" + tmp.StePairR.replace("\\", "/");
+                //StePairL = "/Photos/" + tmp.StePairL.replace("\\", "/");
+                //StePairR = "/Photos/" + tmp.StePairR.replace("\\", "/");
+            }
+        }
+        $('#jqxwin_steimages').jqxWindow('open');
+    }
+    function DelSteImages() {
+        var steimagesData = {
+            SID: $('#ste_SID').text(),
+            SortID: $('#ste_CurrentSort').val(),
+        }
+        var data = new FormData();
+
+        data.append("data", JSON.stringify(steimagesData));
+
+        console.log(JSON.stringify(steimagesData));
+        $.ajax({
+            url: '@Url.Content("~/WLSystem/DelSteImage")',
+            type: 'POST',
+            ache: false,
+            async: true,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                _success = data;
+                if (data) {
+                    alert('刪除成功');
+                    $('#grid_stero').html('');
+                    $('#jqxwin_steimages').jqxWindow('close');
+                } else {
+                    alert('刪除失敗');
+                }
+            },
+        }
+            )
+        }
+
+    function saveSteImages() {
+
+        // 處理時間輸入問題 :
+        var ShTime = $('#ste_ShTime').val();
+        if (ShTime.length > 8 && ShTime.indexOf(':') < 0) {
+            var _yyyy = ShTime.substring(0, 4);
+            var _MM = ShTime.substring(4, 6);
+            var _dd = ShTime.substring(6, 8);
+            var _mm = ShTime.substring(8, 10);
+            var _ss = ShTime.substring(10, 12);
+            var ShTime = _yyyy + '/' + _MM + '/' + _dd + ' ' + _mm + ':' + _ss;
+            //console.log(ShTime);
+        }
+        var steimagesData = {
+            SID: $('#ste_SID').text(),
+            SortID: $('#ste_CurrentSort').val(),
+            IntroName: $('#ste_IntroName').val(),
+            PhotoA: $('#ste_PhotoA').val() == '' ? 0 : $('#ste_PhotoA').val(),
+            PhotoB: $('#ste_PhotoB').val() == '' ? 0 : $('#ste_PhotoB').val(),
+            Locate: $('#ste_Locate').val(),
+            SteSuo: $('#ste_SteSuo').val(),
+            Ymax: $('#ste_Ymax').val() == '' ? 0 : $('#ste_Ymax').val(),
+            Ymin: $('#ste_Ymin').val() == '' ? 0 : $('#ste_Ymin').val(),
+            Xmax: $('#ste_Xmax').val() == '' ? 0 : $('#ste_Xmax').val(),
+            Xmin: $('#ste_Xmin').val() == '' ? 0 : $('#ste_Xmin').val(),
+            AltMin: $('#ste_AltMin').val() == '' ? 0 : $('#ste_AltMin').val(),
+            AltMax: $('#ste_AltMax').val() == '' ? 0 : $('#ste_AltMax').val(),
+            Aspect: $('#ste_Aspect').val(),
+            Area: $('#ste_Area').val() == '' ? 0 : $('#ste_Area').val(),
+            LineID: $('#ste_LineID').val(),
+            FlyH: $('#ste_FlyH').val(),
+            //ShTime: $('#ste_ShTime').val(),
+            ShTime: ShTime,
+            ShDeg: $('#ste_ShDeg').val() == '' ? 0 : $('#ste_ShDeg').val(),
+            CamFoc: $('#ste_CamFoc').val() == '' ? 0 : $('#ste_CamFoc').val(),
+            CamMod: $('#ste_CamMod').val(),
+            FWHM: $('#ste_FWHM').val(),
+            LocX1: $('#ste_LocX1').val(),
+            LocY1: $('#ste_LocY1').val(),
+            PicNumber: $('#ste_PicNumber').val(),
+            FilmNumber: $('#ste_FilmNumber').val(),
+            IPCCStatement: $('#ste_IPCCStatement').val(),
+            //LocX2: $('#ste_LocX2').val(),
+            //LocY2: $('#ste_LocY2').val(),
+            //LocX3: $('#ste_LocX3').val(),
+            //LocY3: $('#ste_LocY3').val()
+        }
+
+        if (isNaN(parseInt(steimagesData.LocX1)) || isNaN(parseInt(steimagesData.LocY1)) ) {
+            alert('坐標一X或Y輸入格式錯誤');
+            return false;
+        }
+        //else if (isNaN(parseInt(steimagesData.LocX2)) || isNaN(parseInt(steimagesData.LocY2))) {
+        //    alert('坐標二X或Y輸入格式錯誤');
+        //    return false;
+        //}
+        //else if (isNaN(parseInt(steimagesData.LocX3)) || isNaN(parseInt(steimagesData.LocY3))) {
+        //    alert('坐標三X或Y輸入格式錯誤');
+        //    return false;
+        //}
+        else {
+            var data = new FormData();
+            data.append("type", actiontype);
+            data.append("data", JSON.stringify(steimagesData));
+
+            console.log(JSON.stringify(steimagesData));
+
+            var pairFile = $("#ste_StePair").get(0).files;
+            if (pairFile.length > 0) {
+                data.append("StePair", pairFile[0]);
+            }
+
+            var pairlFile = $("#ste_StePairL").get(0).files;
+            if (pairlFile.length > 0) {
+                data.append("StePairL", pairlFile[0]);
+            }
+
+            var pairrFile = $("#ste_StePairR").get(0).files;
+            if (pairrFile.length > 0) {
+                data.append("StePairR", pairrFile[0]);
+            }
+
+            var ScePicFile = $("#spe_ScePic").get(0).files;
+            if (ScePicFile.length > 0) {
+                data.append("ScePic", ScePicFile[0]);
+            }
+
+            var _success = false;
+            $.ajax({
+                url: '@Url.Content("~/WLSystem/SaveSteImage")',
+                type: 'POST',
+                ache: false,
+                async: true,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    _success = data;
+                    if (data) {
+                        alert('新增/更新成功');
+                        $('#grid_stero').html('');
+                        $('#jqxwin_steimages').jqxWindow('close');
+                    } else {
+                        alert('新增/更新失敗');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+            });
+
+            if (_success) {
+                getGridData();
+                getGrid_Stero($('#ste_SID').text());
+                $('#spe_ScePic').val('');
+            }
+        }
+    }
+    function UpdateSteImages() {
+        var formData = new FormData();
+
+        formData.append('SID', $('#ste_SID').text());
+        formData.append('SortID', $('#ste_CurrentSort').val());
+
+        $.blockUI({
+            message: '<h5>預產中，請稍等。</h5>',
+            baseZ: 20000
+        });
+            $.ajax({
+                url: '@Url.Content("~/WLSystem/UpdateSingleSte")',
+                type: 'POST',
+                ache: false,
+                async: true,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    if (result == "OK") {
+                        alert('預產成功');
+                    } else {
+                        alert('預產失敗');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+            });
+        }
+
+    function editSteImagesSub() {
+        var index = $('#ste_SelIndex').val();
+        var species = gridSource.localdata[index];
+        if (species.IPCCsubID > 20) {
+            alert('無資料可編輯');
+        }
+        else if (species.StereoscopicImages == null) {
+            alert('請先新增立體像對資料');
+        }
+        else {
+            var steimageData = species.StereoscopicImages[0];
+            $('#jqxwin_steimages').jqxWindow('close');
+            $('#stesub_SIID').text(steimageData.ID);
+            if (steimageData.StereoscopicImageFL == null) {
+                actiontype = 0;
+                $('[id^=stesub_]:text').each(function (index, element) {
+                    $('#' + element.id).jqxInput('val', '');
+                });
+            }
+            else {
+                actiontype = 1;
+                var tmp = steimageData.StereoscopicImageFL;
+                $('#stesub_StDen').val(tmp.StDen);
+                $('#stesub_CroCov').val(tmp.CroCov);
+                $('#stesub_CroDen').val(tmp.CroDen);
+                $('#stesub_StAge').val(tmp.StAge);
+            }
+            $('#jqxwin_steimagessub').jqxWindow('open');
+        }
+    }
+
+    function saveSteImagesSub() {
+        var steimagessubData = {
+            SIID: $('#stesub_SIID').text(),
+            StDen: $('#stesub_StDen').val(),
+            CroCov: $('#stesub_CroCov').val(),
+            CroDen: $('#stesub_CroDen').val(),
+            StAge: $('#stesub_StAge').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            ache: false,
+            async: true,
+            url: '@Url.Content("~/WLSystem/SaveSteImagesSub")',
+            data: JSON.stringify({ stereoscopicImageFL: steimagessubData, type: actiontype }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data) {
+                    alert('新增/更新成功');
+                    getGridData();
+                    $('#jqxwin_steimagessub').jqxWindow('close');
+                } else {
+                    alert('新增/更新失敗');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function getGrid_Stero(SID) {
+        $data = {
+            _SID: SID,
+        };
+        $.ajax({
+            url: "@Url.Action("QueryAllStereoscopicImage", "Search")",
+            type: "POST",
+            data: $data,
+            async: true,
+            success: function (data) {
+                var MaxS = 0;
+                var $html = "";
+                $.each(data, function (i, d) {
+                    i++;
+                    $html += '<tr><td><div style="width:200px;" id="SteroData_' + i + '" ';
+                    $html += ' class="SteroImage_Select" ';
+                    $html += ' data-SortID="' + d.SortID + '" ';
+                    $html += ' data-IntroName="' + d.IntroName + '" ';
+                    $html += ' data-PhotoA="' + d.PhotoA + '" ';
+                    $html += ' data-PhotoB="' + d.PhotoB + '" ';
+                    $html += ' data-Locate="' + d.Locate + '" ';
+                    $html += ' data-SteSuo="' + d.SteSuo + '" ';
+                    $html += ' data-Ymax="' + d.Ymax + '" ';
+                    $html += ' data-Ymin="' + d.Ymin + '" ';
+                    $html += ' data-Xmax="' + d.Xmax + '" ';
+                    $html += ' data-Xmin="' + d.Xmin + '" ';
+                    $html += ' data-AltMin="' + d.AltMin + '" ';
+                    $html += ' data-AltMax="' + d.AltMax + '" ';
+                    $html += ' data-Aspect="' + d.Aspect + '" ';
+                    $html += ' data-Area="' + d.Area + '" ';
+                    $html += ' data-LineID="' + d.LineID + '" ';
+                    $html += ' data-FlyH="' + d.FlyH + '" ';
+                    $html += ' data-ShTime="' + d.ShTime + '" ';
+                    $html += ' data-ShDeg="' + d.ShDeg + '" ';
+                    $html += ' data-CamFoc="' + d.CamFoc + '" ';
+                    $html += ' data-CamMod="' + d.CamMod + '" ';
+                    $html += ' data-FWHM="' + d.FWHM + '" ';
+                    $html += ' data-LocX1="' + d.LocX1 + '" ';
+                    $html += ' data-LocY1="' + d.LocY1 + '" ';
+                    $html += ' data-PicNumber="' + d.PicNumber + '" ';
+                    $html += ' data-FilmNumber="' + d.FilmNumber + '" ';
+                    $html += ' data-IPCCStatement="' + d.IPCCStatement + '" ';
+                    $html += ' data-StePairL="' + d.StePairL + '" ';
+                    $html += ' data-StePairR="' + d.StePairR + '" ';
+                    if (d.IntroName != "" && d.IntroName != null) {
+                        $html += '>' + d.IntroName + '</div ></td ></tr > ';
+                    } else {
+                        $html += '> '+d.ComName + i + '</div ></td ></tr > ';
+                    }
+
+                    MaxS = d.MaxSort;
+                });
+                $("#grid_stero").html($html);
+
+                //var hd_Stero = parseInt($("#hd_Stero").val());
+                //hd_Stero++;
+
+                var $addHtml = '<tr><td><div style="width:200px;" id="addDataStero" ';
+                $addHtml += ' class="SteroImage_Select" ';
+                //$addHtml += ' data-SortID="' + hd_Stero + '" ';
+                $addHtml += ' data-SortID="' + MaxS + '" ';
+                $addHtml += '>＋</div ></td ></tr > ';
+                $("#grid_stero").append($addHtml);
+                //$("#hd_Stero").val(hd_Stero);
+            }
+        });
+        $("[id^='SteroData_']").unbind();
+        $("#addDataStero").unbind();
+        $(document).on("click", "[id^='SteroData_']", function () {
+            actiontype = 1;
+            var $this = $(this);
+
+            var $SortID = $this.data("SortID".toLowerCase());
+            var $IntroName = $this.data("IntroName".toLowerCase());
+            var $PhotoA = $this.data("PhotoA".toLowerCase());
+            var $PhotoB = $this.data("PhotoB".toLowerCase());
+            var $Locate = $this.data("Locate".toLowerCase());
+            var $SteSuo = $this.data("SteSuo".toLowerCase());
+            var $Ymax = $this.data("Ymax".toLowerCase());
+            var $Ymin = $this.data("Ymin".toLowerCase());
+            var $Xmax = $this.data("Xmax".toLowerCase());
+            var $Xmin = $this.data("Xmin".toLowerCase());
+            var $AltMin = $this.data("AltMin".toLowerCase());
+            var $AltMax = $this.data("AltMax".toLowerCase());
+            var $Aspect = $this.data("Aspect".toLowerCase());
+            var $Area = $this.data("Area".toLowerCase());
+            var $LineID = $this.data("LineID".toLowerCase());
+            var $FlyH = $this.data("FlyH".toLowerCase());
+            var $ShTime = $this.data("ShTime".toLowerCase());
+            var $ShDeg = $this.data("ShDeg".toLowerCase());
+            var $CamFoc = $this.data("CamFoc".toLowerCase());
+            var $CamMod = $this.data("CamMod".toLowerCase());
+            var $FWHM = $this.data("FWHM".toLowerCase());
+            var $LocX1 = $this.data("LocX1".toLowerCase());
+            var $LocY1 = $this.data("LocY1".toLowerCase());
+            var $PicNumber = $this.data("PicNumber".toLowerCase());
+            var $FilmNumber = $this.data("FilmNumber".toLowerCase());
+            var $IPCCStatement = $this.data("IPCCStatement".toLowerCase());
+            var $StePairL = $this.data("StePairL".toLowerCase());
+            var $StePairR = $this.data("StePairR".toLowerCase());
+
+            $Area = $Area != null && $Area != "" && $Area != undefined ? $Area : "0";
+
+            if ($ShTime != null && $ShTime != undefined) {
+                var $ShTime = $ShTime.replace(new RegExp('/', 'g'), "").replace("Date(", "").replace(")", "");
+                $ShTime = new Date(parseInt($ShTime));
+
+                var _yyyy = $ShTime.getFullYear().toString();
+                var _MM = ($ShTime.getMonth() + 1).toString();
+                var _dd = $ShTime.getDate().toString();
+                var hh = $ShTime.getHours();
+                var mm = $ShTime.getMinutes();
+                $ShTime = _yyyy + "/" + _MM + "/" + _dd + " " + hh + ":" + mm;
+            }
+            else {
+                $ShTime = "";
+            }
+
+            $ShDeg = $ShDeg != null && $ShDeg != "" && $ShDeg != undefined ? $ShDeg : "0";
+            $CamFoc = $CamFoc != null && $CamFoc != "" && $CamFoc != undefined ? $CamFoc : "0";
+            $LocX1 = $LocX1 != null ? $LocX1 : "";
+            $LocY1 = $LocY1 != null ? $LocY1 : "";
+            $PicNumber = $PicNumber != null ? $PicNumber : "";
+            $FilmNumber = $FilmNumber != null ? $FilmNumber : "";
+            $IPCCStatement = $IPCCStatement != null ? $IPCCStatement : "";
+
+            $('#ste_CurrentSort').val($SortID);
+            $('#ste_IntroName').val($IntroName);
+            $('#ste_PhotoA').val($PhotoA);
+            $('#ste_PhotoB').val($PhotoB);
+            $('#ste_Locate').val($Locate);
+            $('#ste_SteSuo').val($SteSuo);
+            $('#ste_Ymax').val($Ymax);
+            $('#ste_Ymin').val($Ymin);
+            $('#ste_Xmax').val($Xmax);
+            $('#ste_Xmin').val($Xmin);
+            $('#ste_AltMin').val($AltMin);
+            $('#ste_AltMax').val($AltMax);
+            $('#ste_Aspect').val($Aspect);
+            $('#ste_Area').val($Area);
+            $('#ste_LineID').val($LineID);
+            $('#ste_FlyH').val($FlyH);
+            $('#ste_ShTime').val($ShTime);
+            $('#ste_ShDeg').val($ShDeg);
+            $('#ste_CamFoc').val($CamFoc);
+            $('#ste_CamMod').val($CamMod);
+            $('#ste_FWHM').val($FWHM);
+            $('#ste_LocX1').val($LocX1);
+            $('#ste_LocY1').val($LocY1);
+            $('#ste_PicNumber').val($PicNumber);
+            $('#ste_FilmNumber').val($FilmNumber);
+            $('#ste_IPCCStatement').val($IPCCStatement);
+
+            //StePairL = "../.." + $StePairL;
+            //StePairR = "../.." + $StePairR;
+            StePairL = $StePairL;
+            StePairR = $StePairR;
+        });
+        $(document).on("click", "#addDataStero", function () {
+            actiontype = 0;
+            var $this = $(this);
+            var $SortID = $this.data('sortid');
+            $('#ste_CurrentSort').val($SortID);
+
+            $('#ste_IntroName').val('');
+            $('#ste_PhotoA').val('');
+            $('#ste_PhotoB').val('');
+            $('#ste_Locate').val('');
+            $('#ste_SteSuo').val('');
+            $('#ste_Ymax').val('');
+            $('#ste_Ymin').val('');
+            $('#ste_Xmax').val('');
+            $('#ste_Xmin').val('');
+            $('#ste_AltMin').val('');
+            $('#ste_AltMax').val('');
+            $('#ste_Aspect').val('');
+            $('#ste_Area').val('0');
+            $('#ste_LineID').val('');
+            $('#ste_FlyH').val('');
+            $('#ste_ShTime').val('');
+            $('#ste_ShDeg').val('0');
+            $('#ste_CamFoc').val('0');
+            $('#ste_CamMod').val('');
+            $('#ste_FWHM').val('');
+            $('#ste_LocX1').val('');
+            $('#ste_LocY1').val('');
+            $('#ste_PicNumber').val('');
+            $('#ste_FilmNumber').val('');
+            $('#ste_IPCCStatement').val('');
+        });
+    }
+</script>
+<script>
+            $(function () {
+                $('#jqxwin_QueryList').jqxWindow({
+                    width: 900,
+                    height: 600,
+                    resizable: false,
+                    isModal: true,
+                    autoOpen: false,
+                    draggable: true,
+                    showCloseButton: true,
+
+                });
+            });
+                $("#btn_FuzzySearch").click(function () {
+                    var $tb_IPCCSearch = $("#spe_CName").val();
+
+                if ($tb_IPCCSearch != "") {
+                    var species = {
+                        IPCCsubID: 0,
+                    };
+
+                    var $url = "@Url.Action("QueryListWithFuzzyForSystem", "Search")";
+                    var $data = {
+                        species: species,
+                        Nonfuzzy: false,
+                        fuzzyData: $tb_IPCCSearch
+                    };
+                    $.post($url, $data, function (data) {
+                        $("#List").html(data);
+                        $('#jqxwin_QueryList').jqxWindow('open');
+
+                    });
+                    }
+
+            });
+</script>

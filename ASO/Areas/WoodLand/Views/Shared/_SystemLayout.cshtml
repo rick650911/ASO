@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "系統設定";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="system_content_whiteBG_layout system_content_whiteBG">
+        <div class="system_contentLEFT_layout system_contentLEFT">
+            <div class="system_contentLEFT_option_layout left_bulletin ">
+                <div class="system_contentLEFT_option_text left_bulletin">公布欄管理</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_about">
+                <div class="system_contentLEFT_option_text left_about">平台資訊管理</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_IPCC">
+                <div class="system_contentLEFT_option_text left_IPCC">航照查詢種類敘述管理</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_course">
+                <div class="system_contentLEFT_option_text left_course">訓練教室編輯</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_questionedit">
+                <div class="system_contentLEFT_option_text left_questionedit">訓練教室考題編輯</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_stereophoto">
+                <div class="system_contentLEFT_option_text left_stereophoto">立體像片對資料管理</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout">
+                <a href="~/SysAuth/Admin/"> <div class="system_contentLEFT_option_text">帳號維護</div></a>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_classuse">
+                <div class="system_contentLEFT_option_text left_classuse">訓練教室使用統計</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_feedback">
+                <div class="system_contentLEFT_option_text left_feedback">使用者意見回饋</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_userecord">
+                <div class="system_contentLEFT_option_text left_userecord">使用紀錄查詢</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+            <div class="system_contentLEFT_option_layout left_casereference">
+                <div class="system_contentLEFT_option_text left_casereference">案例參考管理</div>
+            </div>
+            <div class="system_contentLEFT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_layout">
+            <div id="content_partial">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_system']");
+        initMenu.addClass("menu_active");
+
+        $('.system_contentLEFT_layout').click(function (event) {
+            var isBoard = $(event.target).hasClass("left_bulletin");
+            var isAbout = $(event.target).hasClass("left_about");
+            var isIPCC = $(event.target).hasClass("left_IPCC");
+            var isClassUse = $(event.target).hasClass("left_classuse");
+            var isFeedBack = $(event.target).hasClass("left_feedback");
+            var isQuestionEdit = $(event.target).hasClass("left_questionedit");
+            var isUseRecord = $(event.target).hasClass("left_userecord");
+            var isStereoPhoto = $(event.target).hasClass("left_stereophoto");
+            var isCourse = $(event.target).hasClass("left_course");
+            var isCaseReference = $(event.target).hasClass("left_casereference");
+            if (isBoard) {
+                window.location.href = '@Url.Action("BulletinMgn", "WLSystem")';
+            } else if (isAbout) {
+                window.location.href = '@Url.Action("AboutMgn", "WLSystem")';
+            } else if (isIPCC) {
+                window.location.href = '@Url.Action("IpccMgn", "WLSystem")';
+            } else if (isClassUse) {
+                window.location.href = '@Url.Action("TrainingUseStatistics", "WLSystem")';
+            } else if (isFeedBack) {
+                window.location.href = '@Url.Action("FeedbackReply", "WLSystem")';
+            } else if (isQuestionEdit) {
+                window.location.href = '@Url.Action("QuestionMgn", "WLSystem")';
+            } else if (isUseRecord) {
+                window.location.href = '@Url.Action("UseRecord", "WLSystem")';
+            } else if (isStereoPhoto) {
+                window.location.href = '@Url.Action("StereoPhoto", "WLSystem")';
+            } else if (isCourse) {
+                window.location.href = '@Url.Action("CourseMgn", "WLSystem")';
+            } else if (isCaseReference) {
+                window.location.href = '@Url.Action("CaseReference", "WLSystem")';
+            }
+        });
+    });
+</script>

@@ -1,0 +1,442 @@
+﻿@{
+    ViewBag.Title = "案例參考管理編輯";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">案例參考管理編輯</div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>編號</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @Model.ID
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>案由</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <div id="CaseReferenceEdit_Ddl_Type"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>判釋態樣</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <div id="CaseReferenceEdit_Ddl_Appearance"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 135px">
+            <div>判讀說明</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 135px">
+            <div>
+                <textarea id="CaseReferenceEdit_Txt_Explain" cols="59" rows="5">@Model.Explain</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>建立日期</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @(Model.CreatTime != null ? Model.CreatTime.ToString("yyyy-MM-dd"): "")
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="contnet_title_layout content_title">影像說明</div>
+    <input type="button" id="CaseReferenceImageEdit_Btn_Submit" value="新增影像" onclick="SaveImageEdit()" />
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>捲片號</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="text" id="CaseReferenceImageEdit_Txt_NO" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>拍攝日期</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <div id="CaseReferenceImageEdit_Txt_ShootingTime"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 135px">
+            <div>判讀說明</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 135px">
+            <div>
+                <textarea id="CaseReferenceImageEdit_Txt_Explain" cols="59" rows="5"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>座標值</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                X：
+                <input type="text" id="CaseReferenceImageEdit_Txt_CoordinateX" />
+                Y：
+                <input type="text" id="CaseReferenceImageEdit_Txt_CoordinateY" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 150px">
+            <div>影像</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 150px">
+            <div>
+                <input type="file" id="CaseReferenceImageEdit_File_ImagePath" accept=".jpg, .jpeg, .png, .tiff, image/jpeg, image/png, image/tiff">
+                <img id="CaseReferenceImageEdit_PreviewImage" src="" alt="Preview Image" style="max-height: 135px; ">
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="SystemContent_layout_row">
+            <div id="grid_files"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+            <input type="button" id="CaseReferenceEdit_Btn_Submit" value="儲存" onclick="SaveEdit()" />
+            <input type="button" id="CaseReferenceEdit_Btn_Cancel" value="取消" onclick="location.href = '@Url.Action("CaseReference","WLSystem")'" />
+        </div>
+    </div>
+    <div class="clear"></div>
+
+    <div id="popup">
+        <div>影像全圖</div>
+        <div style="overflow:hidden;">
+            <img id="popupImage" src="" alt="Large Image" style="max-height: 100%; max-width: 100%;">
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type=button] {
+        font-size: 12px !important;
+    }
+</style>
+
+<script>
+    //#region 變數宣告區
+    var SaveEditUrl = '@Url.Action("SaveCaseReferenceEdit", "WLSystem")';
+    var LocalData = @Html.Raw(Json.Encode(Model));
+    var TypeList = @Html.Raw(Json.Encode(ViewData["TypeList"]));
+    var AppearanceList = @Html.Raw(Json.Encode(ViewData["AppearanceList"]));
+    var ShootingTime;
+    var ImageEdit = null;
+    var ImageIndex = null;
+
+
+    //#endregion
+
+    function objInitCaseReference() {
+        initMenu = $(".menu_options_text[class*='Menu_system']");
+        initMenu.addClass("menu_active");
+        $('[type=button]').jqxButton(JqxBtnSetting);
+        $('[type=text]').jqxInput(JqxInputSetting);
+        $("#CaseReferenceEdit_Ddl_Type").jqxDropDownList(GetJqxDdlSetting(TypeList, "value", "text"));
+        $("#CaseReferenceEdit_Ddl_Type").val(LocalData.Type);
+        $("#CaseReferenceEdit_Ddl_Appearance").jqxDropDownList(GetJqxDdlSetting(AppearanceList, "value", "text"));
+        $("#CaseReferenceEdit_Ddl_Type").val(LocalData.Appearance);
+        $("#CaseReferenceImageEdit_Txt_ShootingTime").jqxDateTimeInput(JqxDateSetting);
+        $('#CaseReferenceImageEdit_Txt_ShootingTime ').jqxDateTimeInput('setDate', new Date(ShootingTime == null ? '' : DateTojqxDateTimeInput(ShootingTime)));
+
+        LocalData.CaseReferenceImageList = LocalData.CaseReferenceImageList ?? [];
+        refreshGridFiles();
+
+        // 當文件選擇變化時
+        $('#CaseReferenceImageEdit_File_ImagePath').on('change', function (e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#CaseReferenceImageEdit_PreviewImage').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+            else {
+                $('#CaseReferenceImageEdit_PreviewImage').attr('src', "");
+            }
+        });
+
+        $('#popup').jqxWindow({
+            width: '90vw',
+            height: '90vh',
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            draggable: false,
+            resizable: false
+        });
+
+        // 使用事件代理綁定 click 事件
+        $(document).on('click', '.grid_images', function () {
+            // 獲取被點擊的圖片的 src
+            var imageUrl = $(this).attr('src');
+
+            // 設置彈出視窗中的圖片 src
+            $('#popupImage').attr('src', imageUrl);
+
+            // 顯示彈出視窗
+            $('#popup').jqxWindow("open");
+        });
+
+        // 點擊彈出視窗時關閉它
+        $('#popup').on('click', function () {
+            $(this).hide();
+        });
+    }
+
+    function refreshGridFiles() {
+        var filteredData = LocalData.CaseReferenceImageList.filter(function (item) {
+            return item.IsDel !== true;
+        });
+        var source = {
+            localdata: filteredData,
+            datafields: [
+                { name: 'ID', type: 'int' },
+                { name: 'NO', type: 'string' },
+                { name: 'ShootingTime', type: 'date' },
+                { name: 'Explain', type: 'string' },
+                { name: 'CoordinateX', type: 'string' },
+                { name: 'CoordinateY', type: 'string' },
+                { name: 'ImagePath', type: 'string' },
+
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            width: '100%',
+            source: dataAdapter,
+            columns: [
+                {
+                    text: '', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "編輯";
+                    },
+                    buttonclick: function (row) {
+                        var tmp = $('#grid_files').jqxGrid('getrowdata', row)
+                        ImageEdit = tmp;
+                        ImageIndex = row;
+                        $("#CaseReferenceImageEdit_Txt_NO").val(tmp.NO);
+                        $("#CaseReferenceImageEdit_Txt_ShootingTime").val(tmp.ShootingTime);
+                        $("#CaseReferenceImageEdit_Txt_Explain").val(tmp.Explain);
+                        $("#CaseReferenceImageEdit_Txt_CoordinateX").val(tmp.CoordinateX);
+                        $("#CaseReferenceImageEdit_Txt_CoordinateY").val(tmp.CoordinateY);
+                        $('#CaseReferenceImageEdit_PreviewImage').attr('src', tmp.ImagePath);
+                    }
+                },
+                {
+                    text: '', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "刪除";
+                    },
+                    buttonclick: function (row) {
+                        if (confirm('確定刪除此檔案?')) {
+                            LocalData.CaseReferenceImageList[row].IsDel = true;
+                            $('#grid_files').jqxGrid('deleterow', row);
+                        }
+                    }
+                },
+                { text: '捲片號', datafield: 'NO', align: 'center' },
+                { text: '拍攝日期', datafield: 'ShootingTime', cellsalign: 'right', align: 'center', cellsformat: 'yyyy/MM/dd' },
+                { text: '判讀說明', datafield: 'Explain', cellsalign: 'left', align: 'center' },
+                { text: 'X', datafield: 'CoordinateX', align: 'center' },
+                { text: 'Y', datafield: 'CoordinateY', align: 'center' },
+                {
+                    text: '影像', datafield: 'ImagePath', align: 'center', cellsalign: 'center',
+                    cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                        return '<img class="grid_images" src="' + value.replace("~/", "../../../") + '" alt="Preview Image" style="max-height: 30px; ">';
+                    }
+                }
+            ]
+        };
+
+        $("#grid_files").jqxGrid(setting);
+    }
+
+    function SaveImageEdit() {
+        if ($("#CaseReferenceImageEdit_Txt_NO").val() == "")
+            alert("請輸入捲片號!");
+        else if ($("#CaseReferenceImageEdit_Txt_ShootingTime").val() == "")
+            alert("請輸入拍攝日期!");
+        else if ($("#CaseReferenceImageEdit_Txt_Explain").val() == "")
+            alert("請輸入判讀說明!");
+        else {
+            var base64Image = "";
+            var fileInput = $('#CaseReferenceImageEdit_File_ImagePath')[0];
+            var file = fileInput.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    base64Image = e.target.result;
+
+                    var CRImage = {};
+
+                    if (ImageEdit) {
+                        var ImageData = LocalData.CaseReferenceImageList.filter(function (item) {
+                            return item.IsDel !== true;
+                        })[ImageIndex];
+                        var filteredData = LocalData.CaseReferenceImageList.filter(function (item) {
+                            for (var key in ImageData) {
+                                if (ImageData[key] !== item[key]) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        });
+                        LocalData.CaseReferenceImageList = filteredData;
+
+                        CRImage.ID = ImageEdit.ID;
+                        CRImage.NO = $("#CaseReferenceImageEdit_Txt_NO").val();
+                        CRImage.ShootingTime = $("#CaseReferenceImageEdit_Txt_ShootingTime").val();
+                        CRImage.Explain = $("#CaseReferenceImageEdit_Txt_Explain").val();
+                        CRImage.CoordinateX = $("#CaseReferenceImageEdit_Txt_CoordinateX").val();
+                        CRImage.CoordinateY = $("#CaseReferenceImageEdit_Txt_CoordinateY").val();
+                        CRImage.ImagePath = base64Image;
+                        CRImage.IsEdit = (CRImage.ID != 0);
+                        CRImage.IsDel = false;
+                    }
+                    else {
+                        CRImage.ID = 0;
+                        CRImage.NO = $("#CaseReferenceImageEdit_Txt_NO").val();
+                        CRImage.ShootingTime = $("#CaseReferenceImageEdit_Txt_ShootingTime").val();
+                        CRImage.Explain = $("#CaseReferenceImageEdit_Txt_Explain").val();
+                        CRImage.CoordinateX = $("#CaseReferenceImageEdit_Txt_CoordinateX").val();
+                        CRImage.CoordinateY = $("#CaseReferenceImageEdit_Txt_CoordinateY").val();
+                        CRImage.ImagePath = base64Image;
+                        CRImage.IsEdit = false;
+                        CRImage.IsDel = false;
+                    }
+
+                    LocalData.CaseReferenceImageList.push(CRImage);
+
+                    $("#CaseReferenceImageEdit_Txt_NO").val("");
+                    $("#CaseReferenceImageEdit_Txt_ShootingTime").val("");
+                    $("#CaseReferenceImageEdit_Txt_Explain").val("");
+                    $("#CaseReferenceImageEdit_Txt_CoordinateX").val("");
+                    $("#CaseReferenceImageEdit_Txt_CoordinateY").val("");
+                    $("#CaseReferenceImageEdit_File_ImagePath").val("");
+                    $('#CaseReferenceImageEdit_PreviewImage').attr('src', "");
+
+                    refreshGridFiles();
+                };
+                reader.readAsDataURL(file);
+            }
+            else {
+                var CRImage = {};
+
+                if (ImageEdit) {
+                    var ImageData = LocalData.CaseReferenceImageList.filter(function (item) {
+                        return item.IsDel !== true;
+                    })[ImageIndex];
+                    var filteredData = LocalData.CaseReferenceImageList.filter(function (item) {
+                        for (var key in ImageData) {
+                            if (ImageData[key] !== item[key]) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                    LocalData.CaseReferenceImageList = filteredData;
+
+                    CRImage.ID = ImageEdit.ID;
+                    CRImage.NO = $("#CaseReferenceImageEdit_Txt_NO").val();
+                    CRImage.ShootingTime = $("#CaseReferenceImageEdit_Txt_ShootingTime").val();
+                    CRImage.Explain = $("#CaseReferenceImageEdit_Txt_Explain").val();
+                    CRImage.CoordinateX = $("#CaseReferenceImageEdit_Txt_CoordinateX").val();
+                    CRImage.CoordinateY = $("#CaseReferenceImageEdit_Txt_CoordinateY").val();
+                    CRImage.ImagePath = ImageEdit.ImagePath;
+                    CRImage.IsEdit = (CRImage.ID != 0);
+                    CRImage.IsDel = false;
+                }
+                else {
+                    CRImage.ID = 0;
+                    CRImage.NO = $("#CaseReferenceImageEdit_Txt_NO").val();
+                    CRImage.ShootingTime = $("#CaseReferenceImageEdit_Txt_ShootingTime").val();
+                    CRImage.Explain = $("#CaseReferenceImageEdit_Txt_Explain").val();
+                    CRImage.CoordinateX = $("#CaseReferenceImageEdit_Txt_CoordinateX").val();
+                    CRImage.CoordinateY = $("#CaseReferenceImageEdit_Txt_CoordinateY").val();
+                    CRImage.ImagePath = "";
+                    CRImage.IsEdit = false;
+                    CRImage.IsDel = false;
+                }
+
+                LocalData.CaseReferenceImageList.push(CRImage);
+
+                $("#CaseReferenceImageEdit_Txt_NO").val("");
+                $("#CaseReferenceImageEdit_Txt_ShootingTime").val("");
+                $("#CaseReferenceImageEdit_Txt_Explain").val("");
+                $("#CaseReferenceImageEdit_Txt_CoordinateX").val("");
+                $("#CaseReferenceImageEdit_Txt_CoordinateY").val("");
+                $("#CaseReferenceImageEdit_File_ImagePath").val("");
+                $('#CaseReferenceImageEdit_PreviewImage').attr('src', "");
+
+                refreshGridFiles();
+            }
+        }
+    }
+
+    function SaveEdit() {
+        var CaseReference = LocalData;
+        CaseReference.Type = $("#CaseReferenceEdit_Ddl_Type").val();
+        CaseReference.Appearance = $("#CaseReferenceEdit_Ddl_Appearance").val();
+        CaseReference.Explain = $("#CaseReferenceEdit_Txt_Explain").val();
+        $.ajax({
+            url: SaveEditUrl,
+            type: "POST",
+            dataType: "text",
+            data: CaseReference,
+            success: function (data) {
+                if (data == "True") {
+                    alert("儲存成功!");
+                    location.href = '@Url.Action("CaseReference","WLSystem")'
+                }
+                else {
+                    alert("儲存失敗!");
+                }
+            },
+            error: function (e) {
+                alert("Error");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        objInitCaseReference();
+    })
+
+</script>

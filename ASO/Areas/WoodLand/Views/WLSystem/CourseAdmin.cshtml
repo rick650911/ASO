@@ -1,0 +1,303 @@
+﻿@{
+    ViewBag.Title = "CourseAdmin";
+}
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">訓練教室編輯</div>
+    <div class="StepRow">
+        <div class="StepRow_OneStep StepRow_OneStep_active" style="margin-left:30px;" id="step_one">
+            <div class="StepRow_OneStep_text" style="margin-top:5px;">STEP&nbsp;1</div>
+            <div class="StepRow_OneStep_text">建立新主題</div>
+        </div>
+        <div class="StepRow_arrow"></div>
+        <div class="StepRow_OneStep" id="step_two">
+            <div class="StepRow_OneStep_text" style="margin-top:5px;">STEP&nbsp;2</div>
+            <div class="StepRow_OneStep_text">課程介紹</div>
+        </div>
+        <div class="StepRow_arrow"></div>
+        <div class="StepRow_OneStep" id="step_three">
+            <div class="StepRow_OneStep_text" style="margin-top:5px;">STEP&nbsp;3</div>
+            <div class="StepRow_OneStep_text">講義上傳</div>
+        </div>
+        <div class="StepRow_arrow"></div>
+        <div class="StepRow_OneStep" id="step_four">
+            <div class="StepRow_OneStep_text" style="margin-top:5px;">課程完成後作業</div>
+            <div class="StepRow_OneStep_text">測驗編輯</div>
+        </div>
+        @*<div class="StepRow_arrow"></div>
+            <div class="StepRow_OneStep">
+                <div class="StepRow_OneStep_text" style="margin-top:5px;">STEP&nbsp;5</div>
+                <div class="StepRow_OneStep_text">預覽</div>
+            </div>*@
+    </div>
+    <div class="SystemContent_layout" id="course_content">
+        @Html.Action("CourseStepOne", "WLSystem")
+    </div>
+</div>
+
+<script>
+    var allData =@Html.Raw(Json.Encode(Model));
+    var courseData = allData != null ? allData[0] : {};
+    var quizData = allData != null ? allData[1] : {};
+    var tmpquizData = courseData != null ? courseData.Quizzes : [];
+    var courseFiles = [], uploadFiles = [], fileNum = 0;
+    var nowPage = 1;
+    var actionType = courseData != null ? 0 : 1;
+    var currentID = @ViewBag.id;
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_system']");
+        initMenu.addClass("menu_active");
+        if (courseData.Handouts != null) {
+            courseData.Handouts.forEach(function (f) {
+                courseFiles.push({ id: f.ID, name: f.Title, size: f.FileSize, type: 0 ,uname:f.name});
+            });
+        }
+
+        var _rUrl = "@ViewBag.rurl";
+
+        if (_rUrl !== "" && _rUrl !== "FinishCourse") {
+            $('.StepRow_OneStep').removeClass('StepRow_OneStep_active');
+            GetPartialView('@Url.Content("~/WLSystem/CourseStepFour")');
+            nowPage = 4;
+        }
+
+        if (_rUrl !== "" && _rUrl === "FinishCourse") {
+            $('.StepRow_OneStep').removeClass('StepRow_OneStep_active');
+            GetPartialView('@Url.Content("~/WLSystem/CourseStepThree")');
+            nowPage = 3;
+        }
+
+    });
+
+    function GetPartialView(url) {
+        $.ajax({
+            url: url
+        }).done(function (data) {
+            $("#course_content").html(data);
+        });
+    }
+
+    function ChangeStep(step) {
+        $('.StepRow_OneStep').removeClass('StepRow_OneStep_active');
+        switch (step) {
+            case 1:
+                courseData.Outline = $('#course_outline').val();
+                courseData.Ability = $('#course_ability').val();
+                courseData.Source = $('#course_source').val();
+                courseData.Link = convertLinksToString();
+                GetPartialView('@Url.Content("~/WLSystem/CourseStepOne")');
+                nowPage = 1;
+                break;
+            case 2:
+                if (nowPage == 1) {
+                    courseData.Title = $('#course_title').val();
+                    courseData.Description = $('#course_description').val();
+                    courseData.Icon = $('input[name=course_icon]:checked').val();$('[type=radio] checked').val();
+                }
+                GetPartialView('@Url.Content("~/WLSystem/CourseStepTwo")');
+                nowPage = 2;
+                break;
+            case 3:
+                if (nowPage == 2) {
+                    courseData.Outline = $('#course_outline').val();
+                    courseData.Ability = $('#course_ability').val();
+                    courseData.Source = $('#course_source').val();
+                    courseData.Link = convertLinksToString();
+                } else if(nowPage == 4) {
+                    tmpquizData = $('#grid_tmpquiz').jqxGrid('getrows');
+                    debugger;
+                }
+
+                GetPartialView('@Url.Content("~/WLSystem/CourseStepThree")');
+                nowPage = 3;
+                break;
+            case 4:
+                GetPartialView('@Url.Content("~/WLSystem/CourseStepFour")');
+                nowPage = 4;
+                break;
+        };
+    }
+
+    function EditCancel() {
+        window.location.href = "@Url.Action("CourseMgn", "WLSystem")";
+    }
+
+    // --
+    function EditSave() {
+        console.log(combieFiles);
+        if (typeof courseData.Title == "undefined" || courseData.Title == "")
+            alert('請輸入主題名稱');
+        else if (typeof courseData.Description == "undefined" || courseData.Description == "")
+            alert('請輸入敘述說明');
+        else if (typeof courseData.Icon == "undefined")
+            alert('請選擇圖示');
+        else if (typeof courseData.Outline == "undefined" || courseData.Outline == "")
+            alert('請輸入授課大綱');
+        else if (typeof courseData.Ability == "undefined" || courseData.Ability == "")
+            alert('請輸入習得能力');
+        else if (typeof courseData.Source == "undefined" || courseData.Source == "")
+            alert('請輸入資料來源');
+        else {
+            var data = new FormData();
+            data.append("data", JSON.stringify(courseData));
+            var unitname = $('#unitname').val();
+            data.append("unitname", unitname);
+            if (uploadFiles.length > 0) {
+                for (i = 0; i < uploadFiles.length; i++) {
+                    if (typeof uploadFiles[i] != 'undefined') {
+                        data.append("file" + i, uploadFiles[i]);
+                    }
+                }
+
+                var $url = "@Url.Action("SaveCourse", "WLSystem")";
+                var _xhr = new XMLHttpRequest();
+
+                _xhr.onload = function() {
+                    // 判定成功或失敗。
+                    if (_xhr.status == 200) {
+
+                        if (courseFiles.length === 0) {
+                            $('#backStep').hide();
+                            alert('課程新增完成，\n如果要新增題庫請點選「新增題庫/編輯測驗」。\n或者點選「取消」返回主頁');
+                        }
+
+                        $('#progress_State').text("新增/更新成功");
+                        $('#StepFour').show();
+                        $.each(uploadFiles, function (i, d) {
+                            var _obj = {
+                                name: d.name,
+                                size: d.size,
+                                type: 0,
+                                uname:d.uname
+                            };
+                            courseFiles.push(_obj);
+                        });
+                        uploadFiles = [];
+
+                        // =================================
+
+                        if ($('#grid_files').length > 0) {
+                            var source = {
+                                localdata: courseFiles,
+                                datafields: [
+                                    { name: 'id', type: 'int' },
+                                    { name: 'name', type: 'string' },
+                                    { name: 'size', type: 'int' },
+                                    { name: 'type', type: 'int' },
+                                    { name: 'uname', type: 'string' }
+
+                                ]
+                            };
+                            var dataAdapter = new $.jqx.dataAdapter(source);
+                            $("#grid_files").jqxGrid({
+                                source: dataAdapter,
+                            });
+
+                        } else {
+                            console.log('EEEEEEEEE');
+                        }
+
+                    } else {
+                        $('#progress_bar').css('width','0%');
+                        $('#progress_Num').text('0');
+                        $('#progress_State').text("新增/更新失敗");
+                    }
+                }
+
+                _xhr.onreadystatechange = function () {
+                    if (_xhr.readyState == XMLHttpRequest.DONE) {
+                        if (_xhr.responseText) {
+                            location = "@Url.Action("CourseAdmin", "WLSystem")" + "?rUrl=FinishCourse";
+                        }
+                    }
+                }
+
+                _xhr.upload.addEventListener("progress", uploadProgress, false);
+                _xhr.upload.addEventListener("load", uploadComplete, false);
+                _xhr.upload.addEventListener("loadend", uploadCompleteEnd, false);
+                _xhr.upload.addEventListener("error", uploadFail, false);
+                _xhr.upload.addEventListener("abort", uploadCancel, false);
+                _xhr.open("POST", $url);
+                _xhr.send(data);
+
+                if (courseFiles.length === 0) {
+                    location = "@Url.Action("CourseAdmin", "WLSystem", new  { rUrl = "FinishCourse" })";
+                }
+            }
+        }
+    }
+
+    function EditSaveTmp() {
+        //if (typeof courseData.Title == "undefined" || courseData.Title == "")
+        //    courseData.Title = $('#course_title').val();
+        //if (typeof courseData.Description == "undefined" || courseData.Description == "")
+        //    courseData.Description = $('#course_description').val();
+        //if (typeof courseData.Icon == "undefined")
+        //    courseData.Icon = $('input[name=course_icon]:checked').val(); $('[type=radio] checked').val();
+        //if (typeof courseData.Outline == "undefined" || courseData.Outline == "")
+        //    courseData.Outline = $('#course_outline').val();
+        //if (typeof courseData.Ability == "undefined" || courseData.Ability == "")
+        //    courseData.Ability = $('#course_ability').val();
+        //if (typeof courseData.Source == "undefined" || courseData.Source == "")
+        //    courseData.Source = $('#course_source').val();
+        //if (typeof courseData.Handouts == "undefined" || courseData.Handouts == null)
+        //    courseData.Handouts = "";
+
+        if ($('#course_title').val() != undefined) {
+            courseData.Title = $('#course_title').val();
+            courseData.Description = $('#course_description').val();
+            courseData.Icon = $('input[name=course_icon]:checked').val(); $('[type=radio] checked').val();
+        }
+        if ($('#course_outline').val() != undefined) {
+            courseData.Outline = $('#course_outline').val();
+            courseData.Ability = $('#course_ability').val();
+            courseData.Source = $('#course_source').val();
+            courseData.Link = convertLinksToString();
+        }
+        var data = new FormData();
+        data.append("data", JSON.stringify(courseData));
+        var $url = "@Url.Action("SaveCourseTmp", "WLSystem")";
+
+        $.ajax({
+            url: $url,
+            type: 'POST',
+            ache: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            //dataType: "json",
+            data: data,
+            success: function () {
+                alert("課程儲存成功")
+                window.location.href = "@Url.Action("CourseMgn", "WLSystem")";
+
+            }
+        });
+
+    }
+
+
+    function uploadProgress(e) {
+
+        if (e.lengthComputable) {
+            var _P = Math.round((e.loaded * 100) / e.total);
+            $('#progress_bar').css('width', _P + '%');
+            $('#progress_Num').text(_P);
+        }
+    }
+
+    function uploadComplete(e) {
+
+    }
+
+    function uploadCompleteEnd(e) {
+
+    }
+
+    function uploadFail(e) {
+
+    }
+    function uploadCancel(e) {
+        alert('上傳取消');
+    }
+</script>

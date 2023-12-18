@@ -1,0 +1,55 @@
+﻿@model ASO.Models.Species
+
+@{
+    Layout = null;
+    var Image = (Model.StereoscopicImages != null && Model.StereoscopicImages.Count != 0) ? Model.StereoscopicImages[0] : null;
+
+}
+<style>
+    #gridPrint {
+        border-collapse: collapse;
+        border-width: 2px;
+        font-family: DFKai-sb;
+        width: 21cm;
+        font-size: 25px;
+        margin-top: 50px;
+    }
+</style>
+<table id="gridPrint" border="1" style="width:780px;">
+    <tbody>
+        <tr>
+            <td>
+                地物種類 : @Model.ComName
+            </td>
+            <td>地點 : @Image.Locate</td>
+        </tr>
+        <tr>
+            <td>圖號 : @Image.PicNumber</td>
+            <td>拍攝日期 :@Image.ShTime</td>
+        </tr>
+        <tr>
+            <td>座標(TWD97) : @Image.LocX1 , @Image.LocY1 , @Image.AltMin m</td>
+            <td>片號 :  @Image.PhotoA , @Image.PhotoB</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <img src="@ViewBag.img1" style="width:@ViewBag.width;height:@ViewBag.height" />
+                <img src="@ViewBag.img2" style="width:@ViewBag.width;height:@ViewBag.height; margin-left:@ViewBag.margin" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table style="float:left;text-align:left;">
+    <tr>
+        <td>
+            <span>
+                *此像對為<span id="extraTag"></span>顯示
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>*為了提高列印精準度，列印設定邊界為無、縮放比例為100</span>
+        </td>
+    </tr>
+</table>

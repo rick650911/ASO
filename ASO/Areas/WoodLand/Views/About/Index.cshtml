@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "影像判釋介紹";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">@*影像判釋*@</div>
+    <!--立體判釋-->
+    <div class="about_content_coulmn_layout" style="margin-top: -5px;">
+        <div class="about_content_coulmnLeft_layout about_content_coulmnLeft about_DDDHeight">
+            <div>立體判釋</div>
+        </div>
+        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_DDDHeight">
+            <div>
+                求取各影像投影中心之外方位元素，則所重組之立體模型即與空間坐標系統形成關聯，更可由模型內直接量測、查驗三維點、線、面等幾何資訊，對於土地利用分類界線精度的提升有實質的助益。
+            </div>
+        </div>
+    </div>
+    <!--立體判釋 end-->
+    <div class="clear"></div>
+    <!--單像判釋-->
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_layout about_content_coulmnLeft about_SingleHeight">
+            <div>單像判釋</div>
+        </div>
+        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_SingleHeight">
+            <div>
+                單像判釋（稱平面判釋）是利用單張航照影像或正射影像進行觀察，單像判釋的立體感有限、可供判斷資訊較少，易受高差位移造成遮蔽所影響，另需注意在判釋成果轉繪後如何維持原有精度。如採用正射影像則需妥善評估幾何糾正後之實
+            </div>
+        </div>
+    </div>
+    <!--單像判釋 end-->
+    <div class="clear"></div>
+    <!--判釋人員訓練-->
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_layout about_content_coulmnLeft about_TrainingHeight">
+            <div>判釋人員訓練</div>
+        </div>
+        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_TrainingHeight">
+            <div>
+                具備航測立體製圖經驗之人員，對於航照影像判釋已有基礎概念，例如各式建物、公路、鐵路、機場、港口、學校、設施部分農作等。然而針對本案第Ⅲ級多達102種類別，本公司已由判釋專家辦理作業講習，目的在於使判釋人員確實瞭解「土地使用分類系統」各類別涵義以及重要分類原則，統一判斷標準，提升內業作業效率。所有土地利用屬性資料最終將
+            </div>
+        </div>
+    </div>
+    <!--判釋人員訓練 end-->
+    <div class="clear"></div>
+    <!--影像判釋之依據-->
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_layout about_content_coulmnLeft about_AccordingToHeight">
+            <div>影像判釋之依據</div>
+        </div>
+        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_AccordingToHeight">
+            <div>
+                影像判釋之基本因子有形狀、大小、色調與顏色、組織、排列、陰影，立地與物體相關性等因素。判釋時，少數類別可就以上一項或數項立即判認物體，但大多需要依據多項資料始能正確判別物體。
+            </div>
+        </div>
+    </div>
+    <!--影像判釋之依據 end-->
+    <div class="clear"></div>
+    <!--影像判釋作業-->
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_layout about_content_coulmnLeft about_PhotoHeight">
+            <div>影像判釋作業</div>
+        </div>
+        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_PhotoHeight">
+            <div>
+                <img src="@Url.Content("~/Content/Images//about_photo01.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo02.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo03.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo04.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo05.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo06.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo07.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo08.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo09.jpg")" width="129" height="129" />
+                <img src="@Url.Content("~/Content/Images//about_photo10.jpg")" width="129" height="129" />
+            </div>
+        </div>
+    </div>
+    <!--影像判釋作業 end-->
+    <div class="clear"></div>
+</div>
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_about']");
+        $(".menu_options_text[class*='Menu_about']").addClass("menu_active");
+    });
+</script>

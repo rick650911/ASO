@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "共用圖檔";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<input id="copy"  style="position:fixed;z-index:-1" value="">
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">共用圖檔</div>
+    <div class="download_content_layout">
+        <div class="clear"></div>
+        <div class="download_content_document_title" style="width:900px;">
+            <div class="download_content_document_title_subject">
+                <div style="float:left;">檔案選擇：</div>
+                @using (Html.BeginForm("UploadCommnImage", "WLSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input type="file" name="file" accept="image/*" />
+                    <input type="text" name="id" hidden />
+                    <input type="submit" id="btn_submit" class="btn_jqxbutton" />
+                }
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="download_content_SeparateLine"></div>
+        <div id="grid_tmpdata"></div>
+        <div class="download_content_text">
+            @*@Html.Raw(ViewBag.files)*@
+        </div>
+        <div class="download_content_SeparateLine"></div>
+    </div>
+    <div id="jqxwin_img" style="display:none">
+        <div>圖片檢視(雙擊圖片可另開視窗檢視)</div>
+        <div id="jqxwin_img_content" style="text-align:center;overflow:hidden">
+            <img id="img" style="height:100%;"/>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#jqxwin_img').jqxWindow({
+            width: 800,
+            height: 800,
+            isModal: true,
+            autoOpen: false,
+            draggable: false,
+            showCloseButton: true,
+        });
+
+
+
+    });
+</script>
+<script>
+    $(function () {
+        if ($('input').hasClass('btn_jqxbutton')) {
+            $('.btn_jqxbutton').jqxButton();
+            //$('.btn_jqxbutton').jqxButton({ width: 120, height: 40 });
+        }
+    });
+</script>
+<script>
+    var allData =@Html.Raw(Json.Encode(Model));
+    var tmpsource = {
+        localdata: allData,
+        datafields: [{
+                name: 'Seq_No',
+                type: 'int'
+            },
+            {
+                name: 'FilePath',
+                type: 'string'
+            },
+            {
+                name: 'FileName',
+                type: 'string'
+            },
+            {
+                name: 'UploadBy',
+                type: 'string'
+            },
+            {
+                name: 'UploadDate',
+                type: 'date',
+
+            },
+        ]
+    };
+        var tmpdataAdapter = new $.jqx.dataAdapter(tmpsource);
+        $('#grid_tmpdata').jqxGrid({
+        width: '100%',
+        source: tmpdataAdapter,
+        columnsresize: true,
+        sortable: true,
+        pageable: true,
+        localization: getLocalization(),
+        columns: [
+            {
+                text: '編號',
+                datafield: 'Seq_No',
+                align: 'center'
+            },
+            {
+                text: '上傳者',
+                datafield: 'UploadBy',
+                align: 'center'
+            },
+            {
+                text: '上傳時間',
+                datafield: 'UploadDate',
+                align: 'center',
+                cellsformat: 'yyyy/MM/dd HH:mm'
+            },
+            {
+                text: '檔案名稱',
+                datafield: 'FileName',
+                align: 'center'
+            },
+            {
+                text: '',
+                width: 80,
+                align: 'center',
+                columntype: 'button',
+                cellsrenderer: function() {
+                    return "檢視";
+                },
+                buttonclick: function(row) {
+                    var tmp = $('#grid_tmpdata').jqxGrid('getrowdata', row);
+
+                    //$("#img").attr("src", tmp.FilePath.replace("~", "/ASO"));
+                    window.open(tmp.FilePath.replace("~", "/photo-interpretation"));
+                    //$('#jqxwin_img').jqxWindow('open');
+                }
+            },
+            {
+                text: '', width: 80, align: 'center', columntype: 'button',
+                cellsrenderer: function () {
+                    return "刪除";
+                    },
+                buttonclick: function (row) {
+                    var tmp = $('#grid_tmpdata').jqxGrid('getrowdata', row);
+                    var Seq_No = tmp.Seq_No;
+                    if (confirm('是否要刪除資料?')) {
+                        DelImage(Seq_No);
+                        $('#grid_tmpdata').jqxGrid('deleterow', row);
+                }
+            }
+            },
+            {
+                text: '',
+                width: 80,
+                align: 'center',
+                columntype: 'button',
+                cellsrenderer: function() {
+                    return "取得連結";
+                },
+                buttonclick: function(row) {
+                    var tmp = $('#grid_tmpdata').jqxGrid('getrowdata', row);
+                    var url = tmp.FilePath.replace("~", "/photo-interpretation");
+                    //$('#jqxwin_img').jqxWindow('open');
+                    copyInput(url);
+                    alert('複製完成 !')
+                }
+            },
+
+        ]
+        });
+
+        function DelImage(Seq_No) {
+
+
+            var $url = "@Url.Action("DeleteCommnImage")";
+            var $data = {
+                Seq_No : Seq_No
+                };
+            $.post($url, $data, function (result) {
+                if (result == "OK") {
+                    alert("刪除成功 !")
+                }
+                else {
+                    alert("刪除失敗 !")
+                }
+                });
+    }
+        $('#img').dblclick(function () {
+            window.open($('#img').attr('src'));
+        });
+    function copyInput(url) {
+        $('#copy').val(url);
+   document.getElementById('copy').select()
+   document.execCommand('copy')
+ }
+</script>

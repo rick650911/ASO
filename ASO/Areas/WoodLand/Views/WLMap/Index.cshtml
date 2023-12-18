@@ -1,0 +1,865 @@
+﻿@{
+    ViewBag.Title = "林業判釋地圖";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<div class="map_content_map_layout">
+    <div style="height:800px">
+        @Html.Action("Map", "Home", new { area = "Maps" })
+    </div>
+</div>
+
+<!-- TOC start -->
+<div id="window">
+    <div style="height:26px;">
+        <div class="map_TOC_layout">
+            <div class="map_TOC_toolbar">
+                <ul>
+                    <li class="toolIcon_01" onclick="arc.zoomIn();"></li>
+                    <li class="toolIcon_02" onclick="arc.zoomOut();"></li>
+                    <li class="toolIcon_04" onclick="arc.prevExtent();"></li>
+                    <li class="toolIcon_05" onclick="arc.nextExtent();"></li>
+                    <li class="toolIcon_03" onclick="arc.fullExtent();"></li>
+                    <li class="toolIcon_06" onclick="arc.setPanMode();"></li>
+                    @*<li class="toolIcon_07"></li>
+                        <li class="toolIcon_08" onclick=""></li>*@
+                    <li class="toolIcon_09" onclick="arc.clearTempGraphic();"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div id='jqxNavigationBar'>
+            <div>
+                圖層管理
+            </div>
+            <div>
+                <div style="margin-left:20px; margin-top: 10px;">
+                    <div id='cb_ortho'>正射影像</div>
+                    <div id='cb_forestind'>國有林事業區界</div>
+                    <div id='forestindlvl'></div>
+                    <div id='cb_combou'>國有林林班界</div>
+                    <div id='comboulvl'></div>
+                    <div id='cb_land'>第四次森林資源調查成果圖資(土地覆蓋型)</div>
+                    <div id='landlvl'></div>
+                    @*<div id="cb_fl">地類範圍_林地</div>*@
+                    <div id="cb_wd"><img src="~/Content/Images/三角形.png" style="width:12px"/>地物種類_森林</div>
+                    <div id="cb_fal"><img src="~/Content/Images/菱形.png" style="width:12px" />地物種類_農田</div>
+                    <div id="cb_gl"><img src="~/Content/Images/圓形.png" style="width:12px" />地物種類_草地</div>
+                    <div id="cb_wl"><img src="~/Content/Images/正方形.png" style="width:12px" />地物種類_濕地</div>
+                    <div id="cb_st"><img src="~/Content/Images/五邊形.png" style="width:12px" />地物種類_定居地</div>
+                    <div id="cb_oths"><img src="~/Content/Images/山崩.png" style="width:12px" />地物種類_其他土地</div>
+                </div>
+            </div>
+            <div>
+                定位查詢
+            </div>
+            <div>
+                <div style="margin:10px 15px;">
+                    <div id="nb_search" style="margin-bottom:10px">
+                        <ul>
+                            @*<li>行政區</li>
+                                <li>林地區劃</li>*@
+                            <li>地物種類</li>
+
+                        </ul>
+                    </div>
+                    @*<div id="area">
+                            <div id="ddl_counties"></div>
+                            <div id="ddl_town"></div>
+                        </div>
+                        <div id="forest">
+                            <div id="ddl_dist"></div>
+                            <div id="ddl_wkng"></div>
+                            <div id="ddl_cmpt"></div>
+                        </div>*@
+                    <div id="species">
+                        <div id="ddl_IPCCcities"></div>
+                        <div id="ddl_IPCC"></div>
+                        <div id="ddl_IPCCSub"></div>
+                        <div id="ddl_Family"></div>
+                    </div>
+                    <input type="button" id="btn_search" value="查詢" style="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- TOC End -->
+<!-- jqx_win -->
+<div id="jqxwindow" style="display:none">
+    <div id="jqx_Header">查詢</div>
+    <div id="jqx_Content">
+        <div id="jqxgrid">
+        </div>
+    </div>
+</div>
+<style>
+    .jqx-window-header > div:first-child {
+        margin-top: 0px !important;
+    }
+
+    .jqx-window-collapse-button-background {
+        margin-top: 5px;
+    }
+
+    .jqx-window-content {
+        padding: 0px;
+    }
+
+    .jqx-expander-header-content {
+        font-size: 16px;
+        font-weight: bolder;
+    }
+
+    [id^=ddl] {
+        margin-bottom: 10px;
+    }
+
+    .jqx-slider-track-horizontal {
+        border-style: solid;
+    }
+</style>
+<script>
+    var data = @Html.Raw(Json.Encode(Model));
+    var arc, map, wmtslayer;
+    var forestindlayer, comboulayer, landlayer, ortholayer, flarealayer,Woodslayer;
+    var getinfo= null;
+    $(function () {
+        var hint = "航照攝影時間與介接底圖攝影時間可能有落差，所以僅供參考。";
+        alert(hint);
+        initMenu = $(".menu_options_text[class*='Menu_map']");
+        $(".menu_options_text[class*='Menu_map']").addClass("menu_active");
+        mapInit();
+        MapobjInit();
+        MapobjAction();
+        setTimeout("arc.fullExtent()", 3000 )
+        $("#jqxwindow ").jqxWindow({
+           width: '40%',
+            maxWidth: 1500,
+            position: { x: 550, y: 125 },
+           height: 2000,
+           resizable: true,
+           isModal: false,
+           autoOpen: false,
+           draggable: true,
+           showCloseButton: true,
+           showCollapseButton: true,
+        });
+        //test2();
+
+    });
+
+    function MapobjInit() {
+        $('#window').jqxWindow({
+            height: 500, width: 300, theme: 'metro', position: { x: 250, y: 125 }, collapsed: true,draggable: false,
+            resizable: false, showCollapseButton: true, showCloseButton: false,
+            initContent: function () {
+                $('#jqxNavigationBar').jqxNavigationBar({
+                    width: '100%', height: '99.5%',expandMode: 'toggle', theme: 'metro', expandedIndexes: [1],
+                    initContent: function (index) {
+                        $("[id^=cb]").jqxCheckBox({ width: 250, height: 25, theme: 'metro' });
+                        $("#cb_forestind").jqxCheckBox({ checked: true });
+                        //$("#cb_combou, #cb_land").jqxCheckBox({ checked: false });
+                        $('[id$=lvl]').jqxSlider({ width: 250, mode: "fixed", height: 35, min: 0, max: 1, ticksFrequency: 0.1, value: 0.5, step: 0.1, theme: 'metro' });
+                    }
+                });
+            }
+        });
+        $('#comboulvl, #landlvl, #forest').hide();
+        $("#nb_search").jqxNavBar({ height: 30, selectedItem: 0, theme: 'metro' });
+        $('#btn_search').jqxButton({ width: '90.03%', height: 30, theme: 'metro' });
+        $("[id^=ddl_]").jqxDropDownList({ width: '100%', height: 30, placeHolder: "請選擇", theme: 'metro', disabled: true});
+        //$("#ddl_dist").jqxDropDownList({  placeHolder: "林區管理處"});
+        //$("#ddl_wkng").jqxDropDownList({  placeHolder: "事業區"});
+        //$("#ddl_cmpt").jqxDropDownList({ placeHolder: "林班" });
+        $("#ddl_IPCCcities").jqxDropDownList({  placeHolder: "縣市"});
+        $("#ddl_IPCC").jqxDropDownList({  placeHolder: "IPCC分類類型"});
+        $("#ddl_IPCCSub").jqxDropDownList({  placeHolder: "資源調查種類"});
+        $("#ddl_Family").jqxDropDownList({ placeHolder: "科名" });
+
+        //$('#ddl_dist, #ddl_wkng').jqxDropDownList({autoDropDownHeight: true});
+        //$('#ddl_counties').jqxDropDownList({ source: data[0], disabled: false });
+        //$('#ddl_dist').jqxDropDownList({ source: data[1], disabled: false });
+        $('#ddl_IPCCcities').jqxDropDownList({ source: data[2], disabled: false });
+        //$('#ddl_IPCC').jqxDropDownList({ source: data[2], disabled: false });
+        $(".toolIcon_01").jqxTooltip({ content: '<b>區域放大</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_02").jqxTooltip({ content: '<b>區域縮小</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_04").jqxTooltip({ content: '<b>上一圖面</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_05").jqxTooltip({ content: '<b>下一圖面</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_03").jqxTooltip({ content: '<b>預設圖面</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_06").jqxTooltip({ content: '<b>圖面平移</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip'});
+        $(".toolIcon_09").jqxTooltip({ content: '<b>刪除暫存</b>', theme: 'metro', position: 'bottom', name: 'movieTooltip' });
+
+    }
+        getinfo = function (obj){
+        debugger;
+        var o = {};
+        o.title = '屬性';
+        o.h = 200;
+        o.w = 300;
+        o.content = '<table>';
+        if (obj.hasOwnProperty("IPCC")) {
+            o.content += '<tr><td>資源調查種類：</td><td>' + obj.IPCC + '</td></tr>';
+            o.content += '<tr><td>IPCC分類類型：</td><td>' + obj.IPCCsub + '</td></tr>';
+            if (obj.Family != '') {
+                o.content += '<tr><td>科名：</td><td>' + obj.Family + '</td></tr>';
+            }
+            o.content += '<tr><td>地物種類種：</td><td>' + obj.ComName + '</td></tr>';
+            o.content += '<tr><td><a href="@Url.Content("~/Search/SolidPhotoInfo?SID=")'+ obj.SID+'&SortID='+obj.SortID +'" target="_blank">前往立體像對</a></td><td>';
+
+        } else if (obj.hasOwnProperty("DIST_C")) {
+            o.content = o.content + '<tr><td>林管處：</td><td>' + obj.DIST_C + '</td></tr>';
+            o.content = o.content + '<tr><td>林管處編碼：</td><td>' + obj.DIST + '</td></tr>';
+            o.content = o.content + '<tr><td>林區：</td><td>' + obj.WKNG_C + '</td></tr>';
+            o.content = o.content + '<tr><td>林區編碼：</td><td>' + obj.WKNG + '</td></tr>';
+            if (obj.CMPT != null) {
+                o.content = o.content + '<tr><td>林班:</td><td>' + obj.CMPT + '</td></tr>';
+            }
+            if (obj["ASOSDE.SDE.Plant.AREA"] != null) {
+                o.content = o.content + '<tr><td>面積:</td><td>' + obj["ASOSDE.SDE.Plant.AREA"] + 'm²</td></tr>';
+            }
+            if (obj["ASOSDE.SDE.Forest.AREA"] != null) {
+                o.content = o.content + '<tr><td>面積:</td><td>' + obj["ASOSDE.SDE.Forest.AREA"] + 'm²</td></tr>';
+            }
+        }
+        else
+            o.content = o.content + '<tr><td>無資料</td></tr>';
+            o.content = o.content + '</table>';
+        //if(obj.hasOwnProperty("LocX1"))
+        //arc.locationCoord(obj.LocX1, LocY1);
+
+        return o;
+    };
+    function mapInit() {
+        whenAvailable(function (t) {
+            arc = new MapCtrl(mapInitconfig);
+            wmtslayer = new LayerCtrl({
+                url: '',
+                //layertype: OpLayerType.tgos97,
+                layertype: EMAP3826_OPENDATA,
+                id: 'wmts',
+                visible: true
+            });
+            arc.addLayer(wmtslayer);
+
+            ortholayer = new LayerCtrl({
+                url: '',
+                //layertype: OpLayerType.tgos97,
+                layertype: PHOTO3826,
+                id: 'wmts2',
+                visible: false
+            });
+            arc.addLayer(ortholayer);
+            ortholayer.hide();
+
+            //ortholayer = new LayerCtrl({
+            //    url: '',
+            //    layertype: OpLayerType.aso97,
+            //    id: 'ASO'
+            //});
+            //arc.addLayer(ortholayer);
+            //ortholayer.hide();
+
+            forestindlayer = new LayerCtrl({
+                //url: 'http://192.168.1.56/arcgis/rest/services/aso/aso/MapServer/0',
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO/MapServer/0',
+
+                layertype: OpLayerType.featureLayer,
+                id: '國有林事業區界圖',
+                visible: true
+            });
+            arc.addLayer(forestindlayer);
+            forestindlayer.setFeatureInfo(getinfo);
+
+            comboulayer = new LayerCtrl({
+                //url: 'http://192.168.1.56/arcgis/rest/services/aso/aso/MapServer/1'
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO/MapServer/1',
+                layertype: OpLayerType.featureLayer,
+                id: '國有林林班界圖',
+                visible: false
+            });
+            arc.addLayer(comboulayer);
+            comboulayer.setFeatureInfo(getinfo);
+
+
+            //landlayer = new LayerCtrl({
+            //    //url: 'http://192.168.1.56/arcgis/rest/services/aso/aso/MapServer/2',
+            //    url: 'http://118.163.96.187/arcgis/rest/services/ASO4/MapServer/0',
+            //    layertype: OpLayerType.featureLayer,
+            //    id: '土地覆蓋',
+            //    visible: false
+            //});
+            //arc.addLayer(landlayer);
+            landlayer = new LayerCtrl({
+                url: '',
+                layertype: OpLayerType.ntpcdynamic,
+                id: 'testASO4',
+                visible: false
+            });
+            arc.addLayer(landlayer);
+            flarealayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/%E7%AC%AC%E5%9B%9B%E6%AC%A1%E6%A3%AE%E6%9E%97%E8%B3%87%E6%BA%90%E8%AA%BF%E6%9F%A5/MapServer/0',
+                layertype: OpLayerType.featureLayer,
+                id: '林地範圍',
+                visible: false
+            });
+            arc.addLayer(flarealayer);
+
+
+            //testlayer = new LayerCtrl({
+            //    url: 'http://118.163.96.187/arcgis/rest/services/ASO/ASO/MapServer/3',
+            //    layertype: QueryLayer,
+            //    id: '測試範圍',
+            //    visible: true,
+            //    strwhere:"Family='松科'"
+            //});
+            //arc.addLayer(testlayer);
+            Grasslandlayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/0',
+                layertype: OpLayerType.featureLayer,
+                id: '草地點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Grasslandlayer);
+            Grasslandlayer.setFeatureInfo(getinfo);
+
+            Wetlandlayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/1',
+                layertype: OpLayerType.featureLayer,
+                id: '濕地點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Wetlandlayer);
+            Wetlandlayer.setFeatureInfo(getinfo);
+
+            Settlementlayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/2',
+                layertype: OpLayerType.featureLayer,
+                id: '定居地點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Settlementlayer);
+            Settlementlayer.setFeatureInfo(getinfo);
+
+            Woodslayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/3',
+                layertype: OpLayerType.featureLayer,
+                id: '森林點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Woodslayer);
+            Woodslayer.setFeatureInfo(getinfo);
+
+            Farmlandslayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/4',
+                layertype: OpLayerType.featureLayer,
+                id: '農田點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Farmlandslayer);
+            Farmlandslayer.setFeatureInfo(getinfo);
+
+
+            Otherslayer = new LayerCtrl({
+                url: 'https://10.51.231.56/arcgis/rest/services/ASO2/MapServer/5',
+                layertype: OpLayerType.featureLayer,
+                id: '其它土地點位',
+                visible: false
+            });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Otherslayer);
+            Otherslayer.setFeatureInfo(getinfo);
+
+            // Testlayer = new LayerCtrl({
+              //  url: 'http://118.163.96.187/arcgis/rest/services/stereoimage/MapServer/0',
+               // layertype: OpLayerType.featureLayer,
+               // id: '測試點位',
+               // visible: true
+           // });
+            //arc.mapCtrl.enableProxy(null);
+            //esriConfig.defaults.io.alwaysUseProxy = false;
+            arc.addLayer(Testlayer);
+            Testlayer.setFeatureInfo(getinfo);
+
+            arc.setDrawPointIcon('@Url.Content("~/Content/Images/PointIcon_32.png")', 34, 34);
+            forestindlayer.setOpacity(0.5);
+            comboulayer.setOpacity(0.5);
+            //landlayer.setOpacity(0.5);
+        });
+    }
+    //function test() {
+    //    whenAvailable(function (t) {
+    //        testlayer = new LayerCtrl({
+    //            url: 'http://118.163.96.187/arcgis/rest/services/ASO/ASO/MapServer/3',
+    //            layertype: OpLayerType.featureLayer,
+    //            id: '測試範圍',
+    //            visible: true
+    //        });
+    //        //arc.mapCtrl.enableProxy(null);
+    //        //esriConfig.defaults.io.alwaysUseProxy = false;
+    //        arc.addLayer(testlayer);
+    //    });
+    //}
+    function ToQueryLayer() {
+        var IPCC = $("#ddl_IPCC").jqxDropDownList('getSelectedItem').label;
+        var type;
+        switch (IPCC) {
+            case '草地':
+                type = 0;
+                break;
+            case '濕地':
+                type = 1;
+                break;
+            case '定居地':
+                type = 2;
+                break;
+            case '森林':
+                type = 3;
+                break;
+            case '農田':
+                type = 4;
+                break;
+            case '其它土地':
+                type = 5;
+                break;
+        }
+        var url = 'http://118.163.96.187/arcgis/rest/services/ASO/ASO/MapServer/' + type;
+        var Query = "Locate like '%" +  $("#ddl_IPCCcities").jqxDropDownList('getSelectedItem').label  +"%' AND Family='"+ $("#ddl_Family").jqxDropDownList('getSelectedItem').label + "'";
+
+        whenAvailable(function (t) {
+            Querylayer = new LayerCtrl({
+                url: url,
+                layertype: QueryLayer,
+                id: 'Query',
+                visible: true,
+                strwhere:Query
+            });
+
+            arc.addLayer(Querylayer);
+        });
+    }
+    function GetSpecies() {
+        var url = '@Url.Action("GetSpeciesList", "WLMap")';
+        var data = {
+            city: $("#ddl_IPCCcities").jqxDropDownList('getSelectedItem').label,
+            IPCC: $("#ddl_IPCC").jqxDropDownList('getSelectedItem').label,
+            IPCCSub: $("#ddl_IPCCSub").jqxDropDownList('getSelectedItem').label,
+            Family: $("#ddl_Family").jqxDropDownList('getSelectedItem').label,
+        };
+        $.post(url, data, function (result) {
+            //arc.locationCoord(result[0].LocX1, result[0].LocY1);
+            //arc.clearTempGraphic();
+        var datasource = {
+        localdata: result,
+        datafields: [{
+                name: 'SID',
+                type: 'int'
+            },
+            {
+                name: 'SortID',
+                type: 'int'
+            },
+            {
+                name: 'Locate',
+                type: 'string'
+            },
+            {
+                name: 'IPCC',
+                type: 'string'
+            },
+            {
+                name: 'IPCCsub',
+                type: 'string'
+            },
+            {
+                name: 'Family',
+                type: 'string'
+            },
+            {
+                name: 'ComName',
+                type: 'int'
+            },
+            {
+                name: 'LocX1',
+                type: 'float'
+            },
+            {
+                name: 'LocY1',
+                type: 'float'
+            },
+        ]
+            };
+        var dataAdapter = new $.jqx.dataAdapter(datasource);
+        $('#jqxgrid').jqxGrid({
+            width: '90%',
+            height :400,
+            source: dataAdapter,
+            sortable: true,
+            pageable: false,
+            filterable: true,
+            localization: getLocalization(),
+            columns: [
+            {
+                text: '像對所在地區',
+                datafield: 'Locate',
+                align: 'center'
+            },
+            {
+                text: 'IPCC分類類型',
+                datafield: 'IPCC',
+                align: 'center'
+            },
+            {
+                text: '資源調查種類',
+                datafield: 'IPCCsub',
+                align: 'center'
+            },
+            {
+                text: '科名',
+                datafield: 'Family',
+                align: 'center'
+            },
+            {
+                text: '地物種類',
+                datafield: 'ComName',
+                align: 'center'
+            },
+            {
+                text: '',
+                width: 80,
+                align: 'center',
+                columntype: 'button',
+                cellsrenderer: function() {
+                    return "縮放至";
+                },
+                buttonclick: function(row) {
+                    var tmp = $('#jqxgrid').jqxGrid('getrowdata', row);
+                    //console.log(tmp);
+
+                    arc.locationCoord(tmp.LocX1, tmp.LocY1);
+                    //arc.clearTempGraphic();
+                    arc.mapCtrl.arcMap.infoWindow.resize(300, 200);
+                    arc.mapCtrl.arcMap.infoWindow.setTitle('屬性');
+                    var infocontent = "";
+                    infocontent += '<tr><td>資源調查種類：</td><td>' + tmp.IPCC + '<br/></td></tr>';
+                    infocontent += '<tr><td>IPCC分類類型：</td><td>' + tmp.IPCCsub + '<br/></td></tr>';
+                    if (tmp.Family != '') {
+                        infocontent += '<tr><td>科名：</td><td>' + tmp.Family + '<br/></td></tr>';
+                    }
+                    infocontent += '<tr><td>地物種類種：</td><td>' + tmp.ComName + '<br/></td></tr>';
+                    infocontent += '<tr><td><a href="@Url.Content("~/Search/SolidPhotoInfo?SID=")' + tmp.SID + '&SortID=' + tmp.SortID + '" target="_blank">前往立體像對</a></td><td>';
+                    arc.mapCtrl.arcMap.infoWindow.setContent(infocontent);
+                    var point ={spatialReference: {wkid: 102443},type: "point",x:tmp.LocX1,y:tmp.LocY1}
+                    arc.mapCtrl.arcMap.infoWindow.show(point)
+                    //arc.mapCtrl.arcMap.infoWindow.show();
+                    arc.setDrawPointIcon('@Url.Content("~/Content/Images/PointIcon_32.png")', 34, 34);
+
+                }
+            },
+        ]
+    });
+            $('#jqxwindow').jqxWindow('open');
+        });
+    }
+    function MapobjAction() {
+        $('[id^=cb]').on('change', function (event) {
+            var checked = event.args.checked;
+            var id = event.target.id;
+            switch (id) {
+                case 'cb_forestind':
+                    if (checked) {
+                        forestindlayer.show();
+                        $('#forestindlvl').show();
+                    }
+                    else {
+                        forestindlayer.hide();
+                        $('#forestindlvl').hide();
+                    }
+                    break;
+                case 'cb_combou':
+                    if (checked) {
+                        comboulayer.show();
+                        $('#comboulvl').show();
+                    }
+                    else {
+                        comboulayer.hide();
+                        $('#comboulvl').hide();
+                    }
+                    break;
+                case 'cb_land':
+                    if (checked) {
+                        landlayer.show();
+                        $('#landlvl').show();
+                    }
+                    else {
+                        landlayer.hide();
+                        $('#landlvl').hide();
+                    }
+                    break;
+                case 'cb_ortho':
+                    if(checked)
+                        ortholayer.show();
+                    else
+                        ortholayer.hide();
+                    break;
+                //case 'cb_fl':
+                //    if(checked)
+                //        flarealayer.show();
+                //    else
+                //        flarealayer.hide();
+                //    break;
+                case 'cb_gl':
+                    if(checked)
+                        Grasslandlayer.show();
+                    else
+                        Grasslandlayer.hide();
+                    break;
+                case 'cb_wl':
+                    if(checked)
+                        Wetlandlayer.show();
+                    else
+                        Wetlandlayer.hide();
+                    break;
+                case 'cb_st':
+                    if(checked)
+                        Settlementlayer.show();
+                    else
+                        Settlementlayer.hide();
+                    break;
+                case 'cb_wd':
+                    if(checked)
+                        Woodslayer.show();
+                    else
+                        Woodslayer.hide();
+                    break;
+                case 'cb_fal':
+                    if(checked)
+                        Farmlandslayer.show();
+                    else
+                        Farmlandslayer.hide();
+                    break;
+                case 'cb_oths':
+                    if(checked)
+                        Otherslayer.show();
+                    else
+                        Otherslayer.hide();
+                    break;
+            }
+        });
+
+        $('[id$=lvl]').on('change', function (event) {
+            //debugger;
+            var value = event.args.value;
+            var id = event.target.id;
+            switch (id) {
+                case 'forestindlvl':
+                    if ( forestindlayer!= null){
+                        forestindlayer.setOpacity(value);
+                    }
+                    break;
+                case 'comboulvl':
+                    if ( comboulayer != null){
+                        comboulayer.setOpacity(value);
+                    }
+                    break;
+                case 'landlvl':
+                    if ( landlayer != null){
+                        landlayer.setOpacity(value);
+                    }
+                    break;
+            }
+        });
+
+        //$('#nb_search').on('change', function (event) {
+        //    if (event.args.selectedItem == '0') {
+        //        $('#area').show();
+        //        $('#forest').hide();
+        //        $('#species').hide();
+
+        //    }
+        //    else if (event.args.selectedItem == '1') {
+        //        $('#forest').show();
+        //        $('#area').hide();
+        //        $('#species').hide();
+        //    }
+        //    else {
+        //        $('#forest').hide();
+        //        $('#area').hide();
+        //        $('#species').show();
+        //    }
+        //});
+
+        $('#ddl_counties').on('change', function(event){
+            if(event.args){
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetTowns","WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {name: value},
+                    success: function(data){
+                        $("#ddl_town").jqxDropDownList({ source: data, disabled: false, selectedIndex: 0 });
+                    },
+                    error: function(e){
+                        alert(e);
+                    }
+                });
+            }
+        });
+        $('#ddl_IPCCcities').on('change', function(event){
+            if(event.args){
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetIPCCByCities","WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {name: value},
+                    success: function(data){
+                        $("#ddl_IPCC").jqxDropDownList({ source: data, disabled: false });
+                        $("#ddl_IPCC").jqxDropDownList('insertAt', { label: '請選擇', value: 0 }, 0);
+                        $("#ddl_IPCC").jqxDropDownList({  selectedIndex: 0 });
+                    },
+                    error: function(e){
+                        alert(1);
+                    }
+                });
+            }
+        });
+        $('#ddl_IPCC').on('change', function(event){
+            if(event.args){
+                var cname = $("#ddl_IPCCcities").jqxDropDownList('getSelectedItem').label;
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetIPCCSub","WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {City:cname,IPCC: value},
+                    success: function(data){
+                        $("#ddl_IPCCSub").jqxDropDownList({ source: data, disabled: false });
+                        $("#ddl_IPCCSub").jqxDropDownList('insertAt', { label: '請選擇', value: 0 }, 0);
+                        $("#ddl_IPCCSub").jqxDropDownList({  selectedIndex: 0 });
+
+                    },
+                    error: function(e){
+                        alert(2);
+                    }
+                });
+            }
+        });
+        $('#ddl_dist').on('change', function(event){
+            if(event.args){
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetWkngs", "WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {name: value},
+                    success: function(data){
+                        $("#ddl_wkng").jqxDropDownList({ source: data, disabled: false, selectedIndex: 0 });
+                    },
+                    error: function(e){
+                        alert(e);
+                    }
+                });
+            }
+        });
+
+        $('#ddl_wkng').on('change', function(event){
+            if(event.args){
+                var dname = $("#ddl_dist").jqxDropDownList('getSelectedItem').label;
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetCmpts", "WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {dname: dname, wname: value},
+                    success: function(data){
+                        $("#ddl_cmpt").jqxDropDownList({ source: data, disabled: false, selectedIndex: 0 });
+                    },
+                    error: function(e){
+                        alert(e);
+                    }
+                });
+            }
+        });
+
+         $('#ddl_IPCCSub').on('change', function(event){
+             if (event.args) {
+                var cname = $("#ddl_IPCCcities").jqxDropDownList('getSelectedItem').label;
+                var dname = $("#ddl_IPCC").jqxDropDownList('getSelectedItem').label;
+                var value = event.args.item.label;
+                $.ajax({
+                    url: '@Url.Action("GetFamily", "WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {City:cname,IPCC: dname, IPCCSub: value},
+                    success: function(data){
+                        $("#ddl_Family").jqxDropDownList({ source: data, disabled: false });
+                        $("#ddl_Family").jqxDropDownList('insertAt', { label: '請選擇', value: 0 }, 0);
+                        $("#ddl_Family").jqxDropDownList({  selectedIndex: 0 });
+                    },
+                    error: function(e){
+                        alert(3);
+                    }
+                });
+            }
+        });
+
+        $('#btn_search').on('click', function () {
+            //$('#Query_layer').empty();
+            //$('.actionList').remove();
+            //ToQueryLayer();
+            GetSpecies();
+            @*var selfun = $("#nb_search").jqxNavBar('getSelectedIndex');
+            var obj = [];
+            if (selfun == '0' && $('#ddl_town').jqxDropDownList('disabled'))
+                alert('請選擇縣市鄉鎮');
+            else if (selfun == '1' && $('#ddl_cmpt').jqxDropDownList('disabled'))
+                alert('請選擇管理處及事業區');
+            else if (selfun == '2') {
+                $('#Query_layer').empty();
+                $('.actionList').remove();
+                //ToQueryLayer();
+                GetSpecies();
+            }
+            else{
+                if(selfun == '0'){
+                    obj.push($("#ddl_counties").jqxDropDownList('getSelectedItem').label);
+                    obj.push($("#ddl_town").jqxDropDownList('getSelectedItem').label);
+                } else {
+                    obj.push($("#ddl_dist").jqxDropDownList('getSelectedItem').label);
+                    obj.push($("#ddl_wkng").jqxDropDownList('getSelectedItem').label);
+                    obj.push($("#ddl_cmpt").jqxDropDownList('getSelectedItem').label.replace("第", "").replace("林班", ""));
+                }
+                $.ajax({
+                    url: '@Url.Action("GetCenterPoint", "WLMap")',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {type: selfun, names: JSON.stringify(obj)},
+                    success: function(data){
+                        arc.locationCoord(data.X, data.Y, 20000);
+                    },
+                    error: function(e){
+                        alert(e);
+                    }
+                })
+            }*@
+        });
+
+        $('#window').on('close', function (event) {
+            $('#window').jqxWindow('open');
+        });
+    }
+
+</script>

@@ -1,0 +1,205 @@
+﻿@{
+    ViewBag.Title = "CourseResult";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">
+    測驗結果表
+    <input id="btn_Order" type="button" value="資料預設排序" />
+    <input id="btn_impOrderSave" style="display:none;" type="button" value="儲存排序" />
+    <input id="btn_import" type="button" value="匯出" />
+
+</div>
+<div id="grid_CourseResult"></div>
+
+<div id="pnl_order" style="display:none;">
+    <div class="clear"></div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="PhotoSearch1_contentRIGHT_info_title">
+            <div style="width:100px;padding-left:10px;">&nbsp;</div>
+            <div style="width:200px;padding-left:10px;">受測者帳號</div>
+            <div style="width:200px;padding-left:10px;">課程內容</div>
+            <div style="width:200px;padding-left:10px;">測驗日期</div>
+            <div style="width:200px;padding-left:10px;">測驗分數</div>
+        </div>
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <div id="sortOrder">
+        </div>
+    </div>
+</div>
+
+<div id="win_Detail">
+    <div>
+        檢視列表
+    </div>
+    <div id="det_content"></div>
+</div>
+
+<script>
+    var GetCourseUrl = '@Url.Action("getCourseResult", "Course")';
+    var getDetUrl = '@Url.Action("getCourseExamDet", "Course")';
+    var CourseTime = {};
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_CourseTime']");
+        $(".menu_options_text[class*='Menu_CourseTime']").addClass("menu_active");
+
+        $('#btn_Order').jqxButton();
+        $('#btn_import').jqxButton();
+        $('#btn_impOrderSave').jqxButton();
+        dataInit();
+        dataDetWindow();
+        order_click();
+    });
+
+    function dataInit() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetCourseUrl,
+            async: false,
+            success: function (data) {
+                CourseTime = data;
+            }
+        });
+        var source = {
+            localdata: CourseTime,
+            datatype: "Json",
+            datafields: [
+                { name: 'NO' },
+                { name: 'AccountID' },
+                { name: 'Title' },
+                { name: 'SubmitTimeDetail' },
+                { name: 'grade' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              { text: '受測者帳號', datafield: 'AccountID', width: 230, align: 'center', cellsalign: 'center' },
+              { text: '課程內容', datafield: 'Title', width: 230, align: 'center', cellsalign: 'center' },
+              { text: '測驗日期', datafield: 'SubmitTimeDetail', width: 230, align: 'center' },
+              { text: '測驗結果', datafield: 'grade', width: 230, align: 'center', cellsalign: 'center' },
+              {
+                  text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                      return "檢視";
+                  }, buttonclick: function (row) {
+                      var ID = $("#grid_CourseResult").jqxGrid('getcellvalue', row, "NO");
+                      dataDetWindowAction(ID);
+                  }
+              },
+            ],
+        };
+        $("#grid_CourseResult").jqxGrid(GetJqxGvSetting(setting));
+    }
+
+    function dataDetWindow() {
+
+        $('#win_Detail').jqxWindow({
+            width: 2000,
+            height: 2000,
+            maxWidth:1030, // 要突破最大值要設這個
+            resizable: false,
+            isModal: true, // 讓背景變黑屏。
+            autoOpen: false,
+            draggable: false,
+        });
+    }
+
+    function dataDetWindowAction($id) {
+        var $data = {
+            _id: $id
+        };
+        $.post(getDetUrl, $data, function (data) {
+            $("#det_content").html(data);
+        });
+        $('#win_Detail').jqxWindow("open");
+    }
+
+    function order_click() {
+        $.each(CourseTime, function (i, d) {
+            var _html = "";
+            _html += ' <div> ';
+            _html += ' <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text"> ';
+            _html += ' <div style="width:100px;padding-left:10px;" class="mainorderJs" >' + d["NO"]+'</div> ';
+            _html += ' <div style="width:200px;padding-left:10px;">' + d["AccountID"]+'</div> ';
+            _html += ' <div style="width:200px;padding-left:10px;">' + d["Title"]+'</div> ';
+            _html += ' <div style="width:200px;padding-left:10px;">' + d["SubmitTimeDetail"]+'</div> ';
+            _html += ' <div style="width:200px;padding-left:10px;">' + d["grade"]+ '</div> ';
+            _html += ' </div> ';
+            _html += ' <div class="clear"></div> ';
+            _html += ' <div class="system_contentRIGHT_SeparateLine"></div> ';
+            _html += ' </div> ';
+
+            $('#sortOrder').append(_html);
+        });
+
+        $("#sortOrder").jqxSortable();
+
+        $("#sortOrder").change(function () {
+            $('#btn_impOrderSave').show();
+        });
+
+        $("#btn_impOrderSave").click(function () {
+
+            var _tmpArr = [];
+
+            $('.mainorderJs').each(function (i, d) {
+                var _this = $(this);
+                var _text = _this.text();
+                _tmpArr.push(_text);
+            });
+
+            $('#btn_impOrderSave').hide();
+
+            $data = {
+                Order: _tmpArr
+            };
+            $.ajax({
+                url: "@Url.Action("ExamNewOrder", "Course")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    if (data) {
+                        alert('排序更新成功');
+                        location = "@Url.Action("CourseResult", "Course")";
+                    }
+                }
+            });
+
+        });
+
+        $("#btn_Order").click(function () {
+            var _this = $(this);
+
+            if (_this.val() === "資料預設排序") {
+                $('#grid_CourseResult').hide();
+                $('#pnl_order').show();
+                _this.val("返回");
+            } else {
+                $('#grid_CourseResult').show();
+                $('#pnl_order').hide();
+                $('#btn_impOrderSave').hide();
+                _this.val("資料預設排序");
+            }
+        });
+    }
+</script>
+<script>
+
+    $("#btn_import").click(function () {
+        var data = "?AccountID=admin";
+        var url= "@Url.Action("CourseResultImport", "Course")";
+
+        window.location = url+data;
+
+    })
+</script>

@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">群組權限</div>
+<div id="grid_srf"></div>
+<style>
+    .content_whiteBG_layout {
+        padding-bottom: 0px;
+    }
+</style>
+<script>
+    //#region 變數宣告
+    var GetRoleGroupMngUrl = '@Url.Action("GetRoleGroupMng", "Admin")';
+    var GetSRFEditUrl = '@Url.Action("EditSRF", "SysRoleFunc")';
+    var SysRole = {};
+    //#endregion
+
+    //#region Grid
+    function dataInit() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetRoleGroupMngUrl,
+            async: false,
+            success: function (data) {
+                SysRole = data;
+            }
+        });
+        var source = {
+            localdata: SysRole,
+            datatype: "Json",
+            datafields: [{ name: 'RoleID' }, { name: 'Name' }, { name: 'StartDate' }, { name: 'EndDate' }, { name: 'Comment' }, { name: 'Status' }]
+        };
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            height: 305,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              {
+                  text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                      return "編輯";
+                  }, buttonclick: function (row) {
+                      var ID = $("#grid_srf").jqxGrid('getcellvalue', row, "RoleID");
+                      location.href = GetSRFEditUrl + "/" + ID;
+                  }
+              },
+              { text: '群組代號', datafield: 'RoleID', width: 80, align: 'center', cellsalign: 'center' },
+              { text: '群組名稱', datafield: 'Name', width: 200, align: 'center' },
+              { text: '起始時間', datafield: 'StartDate', width: 120, align: 'center', cellsalign: 'center' },
+              { text: '結束時間', datafield: 'EndDate', width: 120, align: 'center', cellsalign: 'center' },
+              { text: '群組說明', datafield: 'Comment', align: 'center' },
+              {
+                  text: '狀態', datafield: 'Status', width: 120, align: 'center', cellsalign: 'center',
+                  cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                      return '<div class="jqx-grid-cell-middle-align" style="margin-top: 6px;">' + (value == "1" ? "啟用" : "停用") + '</div>';
+                  }
+              }
+            ]
+        };
+        $("#grid_srf").jqxGrid(GetJqxGvSetting(setting));
+    }
+    //#endregion
+
+    $(document).ready(function () {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        dataInit();
+    })
+</script>

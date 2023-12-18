@@ -1,0 +1,169 @@
+﻿@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div id='SDate' class="jqxdateinput" style="float: left;"></div>
+    <div style="float: left;"> ~ </div>
+    <div id='EDate' class="jqxdateinput" style="float: left;"></div>
+
+    <div style="float:left;padding-left:10px;padding-top:3px">
+        類別 
+    </div>
+    <div style="float:left">
+        @Html.DropDownList("ddl_CID", (SelectList)ViewBag.TrainingTypeSel, "全部")
+    </div>
+    <div style="float:left;padding-left:10px;">
+        <input id="btnQry" type="button" class="btn_jqxbutton" value="查詢" />
+    </div>
+    <div id="chartExamPassRate" style="width:700px; height: 400px;"></div>
+    <div id="chartTimeRate" style="width:700px; height: 400px;"></div>
+</div>
+<script>
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_classuse']");
+        activeOption.addClass("system_contentLEFT_option_active");
+
+        $("#ddl_CID").jqxDropDownList({ width: 180 });
+        $('.btn_jqxbutton').jqxButton();
+        $('.jqxdateinput').jqxDateTimeInput({formatString: "yyyy/MM/dd", width: '110px'});
+
+        $('#btnQry').click(BindChart);
+        BindChart();
+    });
+
+    function BindChart() {
+        BindExamPassRateChart();
+        BindchartTimeRateChart();
+    }
+
+    function BindExamPassRateChart() {
+        var url = '@Url.Content("~/WoodLand/WLSystem/GetExamPassRateStatistics")';
+        //#region 統計表
+        $.ajax({
+            type: 'POST',
+            cache: false,
+            url: url,
+            data: JSON.stringify({
+                SDate: $('#SDate').val(),
+                EDate: $('#EDate').val(),
+                CID: $('#ddl_CID').val()
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                df = [
+                        { name: '結果' },
+                        { name: '比率' }
+                ];
+                source = { datatype: 'json', datafields: df, localdata: data };
+                var dataAdapter = new $.jqx.dataAdapter(source);
+                var settings = {
+                    title: '答題正確率',
+                    description: '',
+                    enableAnimations: true,
+                    showLegend: true,
+                    showBorderLine: true,
+                    legendLayout: { left: 560, top: 160, width: 300, height: 100, flow: 'vertical' },
+                    padding: { left: 5, top: 5, right: 5, bottom: 5 },
+                    titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
+                    source: dataAdapter,
+                    colorScheme: 'scheme01',
+                    seriesGroups:
+                        [
+                            {
+                                type: 'pie',
+                                showLabels: true,
+                                series:
+                                    [
+                                        {
+                                            dataField: '比率',
+                                            displayText: '結果',
+                                            labelRadius: 170,
+                                            initialAngle: 15,
+                                            radius: 145,
+                                            centerOffset: 0,
+                                            formatFunction: function (value) {
+                                                if (isNaN(value))
+                                                    return value;
+                                                return parseFloat(value) + '%';
+                                            },
+                                        }
+                                    ]
+                            }
+                        ]
+                };
+                $('#chartExamPassRate').jqxChart(settings);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                debugger;
+                alert('error:' + xhr.status + thrownError);
+                return false;
+            }
+        });
+        //#endregion 統計表
+    }
+
+    function BindchartTimeRateChart() {
+        var url = '@Url.Content("~/WoodLand/WLSystem/GetExamTimeRateStatistics")';
+        //#region 統計表
+        $.ajax({
+            type: 'POST',
+            cache: false,
+            url: url,
+            data: JSON.stringify({
+                SDate: $('#SDate').val(),
+                EDate: $('#EDate').val(),
+                CID: $('#ddl_CID').val()
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                df = [
+                        { name: '結果' },
+                        { name: '比率' }
+                ];
+                source = { datatype: 'json', datafields: df, localdata: data };
+                var dataAdapter = new $.jqx.dataAdapter(source);
+                var settings = {
+                    title: '答題時間統計',
+                    description: '',
+                    enableAnimations: true,
+                    showLegend: true,
+                    showBorderLine: true,
+                    legendLayout: { left: 560, top: 160, width: 300, height: 100, flow: 'vertical' },
+                    padding: { left: 5, top: 5, right: 5, bottom: 5 },
+                    titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
+                    source: dataAdapter,
+                    colorScheme: 'scheme01',
+                    seriesGroups:
+                        [
+                            {
+                                type: 'pie',
+                                showLabels: true,
+                                series:
+                                    [
+                                        {
+                                            dataField: '比率',
+                                            displayText: '結果',
+                                            labelRadius: 170,
+                                            initialAngle: 15,
+                                            radius: 145,
+                                            centerOffset: 0,
+                                            formatFunction: function (value) {
+                                                if (isNaN(value))
+                                                    return value;
+                                                return parseFloat(value) + '%';
+                                            },
+                                        }
+                                    ]
+                            }
+                        ]
+                };
+                $('#chartTimeRate').jqxChart(settings);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('error:' + xhr.status + thrownError);
+                return false;
+            }
+        });
+        //#endregion 統計表
+    }
+</script>

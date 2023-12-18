@@ -1,0 +1,59 @@
+﻿@model ASO.Models.Species
+@{
+    Layout = null;
+}
+<style>
+    .solid_content_button {
+         width: 660px; 
+    }
+    .search_content_info {
+        margin-left: 5px;
+
+    }
+
+    .search_content_info {
+        color: #ffffff;
+        font-size: 18px;
+    }
+        .search_content_info div:first-child {
+             width: auto; 
+        }
+</style>
+
+@if (Model.IDCompare != null && Model.IDCompare != "")
+{
+    <div class="search_content_info">
+        <div style="display: inline-block;">易混淆地物種類名稱　：　</div>
+        <span id="compareHref" data-idcomp="@Model.IDCompare"></span>
+    </div>
+}
+
+<script>
+    $(function () {
+        // 易混淆地物。
+
+        var _IDComp = $('#compareHref');
+        if (_IDComp.length > 0) {
+
+            var _winOpen = "@Url.Content("~/Search/TreeDetail?ID=")";
+            var _obj = null;
+            $data = {
+                IDCluster: _IDComp.data("idcomp")
+            };
+            $.ajax({
+                url: "@Url.Action("getIDCompName","Search")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    var it = JSON.parse(data);
+                    var _html = "";
+                    $.each(it, function (i, d) {
+                        _html += '<a href="@Url.Content("~/Search/SolidPhotoInfo?SID=")'+ d.ID +'" target="_blank">' + d.ComName+'</a>,';
+                    });
+                    $('#compareHref').html(_html);
+                }
+            });
+        }
+    });
+</script>

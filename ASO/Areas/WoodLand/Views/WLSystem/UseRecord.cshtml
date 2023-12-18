@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "UseRecord";
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">使用紀錄查詢</div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <div id="grid_userecord"></div>
+    </div>
+</div>
+
+<script>
+    var urdata
+    var funclist
+    var actlist
+    debugger;
+    $(function () {
+        var url = '@Url.Action("GetUseRecord")';
+        $.post(url, "", function (result) {
+            urdata = result[0];
+            funclist = result[1];
+            actlist = result[2];
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_userecord']");
+        activeOption.addClass("system_contentLEFT_option_active");
+
+        var source = {
+            localdata: urdata,
+            datatype: "JSON",
+            datafields: [
+                { name: 'UserName', type: 'string' },
+                { name: 'DeptName', type: 'string' },
+                { name: 'FuncStr', type: 'string' },
+                { name: 'ActStr', type: 'string' },
+                { name: 'UseTime', type: 'date' },
+                { name: 'UserIP', type: 'string' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            height: 305,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            showfilterrow: true,
+            columns: [
+                { text: '操作人員', datafield: 'UserName', align: 'center', cellsalign: 'center' },
+                { text: '操作單位', datafield: 'DeptName', align: 'center', cellsalign: 'center' },
+                { text: '操作功能', datafield: 'FuncStr', align: 'center', cellsalign: 'center', filteritems: funclist, filtertype: 'list' },
+                { text: '操作動作', datafield: 'ActStr', width: 80, align: 'center', cellsalign: 'center' , filteritems: actlist, filtertype: 'list'  },
+                { text: '操作日期時間', datafield: 'UseTime', align: 'center', cellsalign: 'center', cellsformat: 'yyyy/MM/dd', filtertype: 'range' },
+                { text: '操作人員IP', datafield: 'UserIP', width: 120, align: 'center', cellsalign: 'center' }
+            ]
+        };
+        $("#grid_userecord").jqxGrid(GetJqxGvSetting(setting));
+        })
+    });
+</script>
+

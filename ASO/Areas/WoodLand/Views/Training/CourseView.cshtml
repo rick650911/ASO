@@ -1,0 +1,235 @@
+﻿@model ASO.Models.Course
+@{
+    ViewBag.Title = "訓練教室";
+}
+
+<div class="content_bg_layout content_bg">
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div class="contnet_title_layout content_title">@Model.Title</div>
+        <div class="TrainingTabs_layout">
+            <div class="TrainingTabs TrainingTabs_active" onclick="TabChange(1)" id="tabs_intro">課程介紹</div>
+            <div class="TrainingTabs" onclick="TabChange(0)" id="tabs_info">課程內容</div>
+            @*<div class="TrainingTabs" id="tabs_viwer">課程主題</div>*@
+        </div>
+        <div class="SystemContent_layout" id="intro">
+            <div class="Training_OneInfo">
+                <div class="Training_OneInfo_title">授課大綱</div>
+                <div class="Training_OneInfo_separateline"></div>
+                <p class="Training_OneInfo_text">
+                    @if (Model.Outline != "")
+                    {
+                        int i = 1;
+                        foreach (var tmp in Model.Outline.Split('\n'))
+                        {
+                            @(i + ". " + tmp) <br />
+                            i++;
+                        }
+                    }
+                </p>
+            </div>
+            <div class="Training_OneInfo">
+                <div class="Training_OneInfo_title">習得能力</div>
+                <div class="Training_OneInfo_separateline"></div>
+                <p class="Training_OneInfo_text">
+                    @if (Model.Ability != "")
+                    {
+                        int i = 1;
+                        foreach (var tmp in Model.Ability.Split('\n'))
+                        {
+                            @(i + ". " + tmp) <br />
+                            i++;
+                        }
+                    }
+                </p>
+            </div>
+            <div class="Training_OneInfo">
+                <div class="Training_OneInfo_title">資料來源</div>
+                <div class="Training_OneInfo_separateline"></div>
+                <p class="Training_OneInfo_text">
+                    @if (Model.Source != "")
+                    {
+                        int i = 1;
+                        foreach (var tmp in Model.Source.Split('\n'))
+                        {
+                            @(i + ". " + tmp) <br />
+                            i++;
+                        }
+                    }
+                </p>
+            </div>
+            <div class="Training_OneInfo">
+                <div class="Training_OneInfo_title">外部連結</div>
+                <div class="Training_OneInfo_separateline"></div>
+                <p class="Training_OneInfo_text">
+                    @if (Model.Link != "")
+                    {
+                        var links = Model.Link.Split(';');
+                        for (int i = 0; i < links.Length; i++)
+                        {
+                            var linkParts = links[i].Split('：'); 
+                            if (linkParts.Length == 2)
+                            {
+                                var linkName = linkParts[0];
+                                var linkURL = linkParts[1];
+                                <a href="@linkURL" target="_blank">@linkName</a> <br />
+                            }
+                        }
+                    }
+                </p>
+            </div>
+        </div>
+        <div class="SystemContent_layout" hidden="hidden" id="info">
+            @*<div class="Training_OneInfo">
+                    <div class="Training_OneInfo_title">課程清單</div>
+                    <div class="Training_OneInfo_separateline"></div>
+                    <p class="Training_OneInfo_text">
+                        @if (Model.Handouts != null)
+                        {
+                            int i = 1;
+                            foreach (var tmp in Model.Handouts)
+                            {
+                                @(i + ". ")<a href="javascript: pdfView('@tmp.FileName');">@tmp.Title</a> <br />
+                                i++;
+                            }
+                        }
+                    </p>
+                </div>
+                <div class="Training_OneInfo">
+                    <div class="Training_OneInfo_title">課後測驗</div>
+                    <div class="Training_OneInfo_separateline"></div>
+                    <p class="Training_OneInfo_text">
+                        @if (Model.Quizzes != null)
+                        {
+                            int i = 1;
+                            foreach (var tmp in Model.Quizzes)
+                            {
+                                @(i + ". ")<a href="@(Url.Content("~/Training/Exam/?id=") + tmp.CID + "&title=" + tmp.QuizTitle)">@tmp.QuizTitle</a> <br />
+                                i++;
+                            }
+                        }
+                    </p>
+                </div>*@
+            <div class="Training_OneInfo">
+                <div class="Training_OneInfo_title">課程清單</div>
+                <div class="Training_OneInfo_separateline"></div>
+                <p class="Training_OneInfo_text">
+                    @if (Model.Unit != null)
+                    {
+                        foreach (var tmp in Model.Unit)
+                        {
+                            <div class="Training_OneInfo_title">
+                                <a href="@(Url.Content("~/Training/Exam/?id=") + tmp.CID + "&UID=" + tmp.ID)">@tmp.Name</a>
+
+                            </div><br />
+                            if (Model.Handouts != null)
+                            {
+
+                                var handouts = from s in Model.Handouts
+                                               where s.UID == tmp.ID
+                                               select s;
+
+                                int i = 1;
+                                <div class="Training_UnitBlock">
+                                    <div class="Training_OneInfo_title" style="font-size:16px">課程講義</div>
+                                    <br />
+                                    @foreach (var item in handouts)
+                                    {
+                                        @(i + ". ")<a href="javascript: pdfView('@item.FileName');">@item.Title</a> <br />
+                                        i++;
+                                    }
+                                </div>
+                            }
+
+                            if (Model.Quizzes != null)
+                            {
+                                var Quizzes = from s in Model.Quizzes
+                                              where s.UID == tmp.ID
+                                              select s;
+
+                                int i = 1;
+                                <div class="Training_UnitBlock">
+                                    <div class="Training_OneInfo_title" style="font-size:16px">課後測驗</div>
+                                    <br />
+                                    @foreach (var item in Quizzes)
+                                    {
+
+                                        @(i + ". ")<a href="@(Url.Content("~/Training/Exam/?id=") + tmp.CID + "&Title=" + item.QuizTitle + "&UID=" + tmp.ID)">@item.QuizTitle</a><br />
+                                        i++;
+                                    }
+                                </div>
+                            }
+                            <br />
+                            <div class="Training_OneInfo_separateline"></div>
+
+                        }
+                    }
+                    @if (Model.Quizzes != null)
+                    {
+                    var Quizzes = from s in Model.Quizzes
+                    where s.UID == 0
+                    select s;
+
+                    int i = 1;
+                    <div class="Training_UnitBlock">
+                        <div class="Training_OneInfo_title" style="font-size:20px;font-weight:bold">課程總測驗</div>
+
+                        <br />
+                        @foreach (var item in Quizzes)
+                        {
+
+                            @(i + ". ")<a href="@(Url.Content("~/Training/Exam/?id=") + item.CID + "&Title=" + item.QuizTitle + "&UID=0")">@item.QuizTitle</a><br />
+                            i++;
+                        }
+                    </div>
+                    }
+                    <br />
+                </p>
+            </div>
+        </div>
+        <div id="pdfviewer" class="SystemContent_layout" hidden="hidden">
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_train']");
+        $(".menu_options_text[class*='Menu_train']").addClass("menu_active");
+
+    })
+
+    function TabChange(tab) {
+        $('.TrainingTabs').removeClass('TrainingTabs_active');
+        if (tab == 0) {
+            $('#tabs_info').addClass('TrainingTabs_active');
+            $('#intro, #pdfviewer').hide();
+            $('#info').show();
+        } else if (tab == 1) {
+            $('#tabs_intro').addClass('TrainingTabs_active');
+            $('#intro').show();
+            $('#info, #pdfviewer').hide();
+        } else {
+            //$('#tabs_viwer').addClass('TrainingTabs_active');
+            $('#pdfviewer').show();
+            $('#info, #intro').hide();
+        }
+    }
+
+    function pdfView(filename) {
+        var pdfviewer = $('#pdfviewer')[0];
+        pdfviewer.innerHTML = "";
+        var iframe = document.createElement('iframe');
+        iframe.addEventListener("load", function () {
+            var $iframe = $(this),
+                $contents = $iframe.contents();
+            $contents.find('#documentName').hide();
+            $contents.find('#fullscreen').hide();
+            $contents.find('#about').hide();
+        });
+        iframe.src = "../../ViewerJS/#../CourseHandouts/" + filename;
+        iframe.width = "100%";
+        iframe.height = 500;
+        pdfviewer.appendChild(iframe);
+        TabChange(2);
+    }
+</script>

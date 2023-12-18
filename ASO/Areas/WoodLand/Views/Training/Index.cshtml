@@ -1,0 +1,80 @@
+﻿@model List<ASO.Models.Course>
+    @{
+        ViewBag.Title = "訓練教室";
+        int i = 0;
+
+    }
+
+    @*<div class="content_whiteBG_layout content_whiteBG">
+            <div class="contnet_title_layout content_title">立體判釋互動式測驗訓練教室</div>
+            <div class="Train_content_secondTitle_layout Train_content_secondTitle">請選擇訓練類別</div>
+            <div class="Train_content_ALLtrain_layout">
+                <div class="Train_content_trainBTN_layout Train_content_trainBTN" onclick="ToExam(1)">
+                    <div class="Train_content_trainBTN_icon Train_content_trainBTN_icon_DDD"></div>
+                    <div class="Train_content_trainBTN_text_layout Train_content_trainBTN_text">航照判釋基本概念問答</div>
+                </div>
+                <div class="Train_content_trainBTN_layout Train_content_trainBTN">
+                    <div class="Train_content_trainBTN_icon Train_content_trainBTN_icon_AerialPhoto"></div>
+                    <div class="Train_content_trainBTN_text_layout Train_content_trainBTN_text">航照判釋基本介紹</div>
+                </div>
+                <div class="Train_content_trainBTN_layout Train_content_trainBTN" onclick="ToExam(2)">
+                    <div class="Train_content_trainBTN_icon Train_content_trainBTN_icon_Geometry"></div>
+                    <div class="Train_content_trainBTN_text_layout Train_content_trainBTN_text">立體觀察</div>
+                </div>
+                <div class="Train_content_trainBTN_layout Train_content_trainBTN" onclick="ToExam(0)">
+                    <div class="Train_content_trainBTN_icon Train_content_trainBTN_icon_Tree"></div>
+                    <div class="Train_content_trainBTN_text_layout Train_content_trainBTN_text">樹種判釋問答</div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>*@
+
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div style="width:100%">
+            <div class="contnet_title_layout content_title">航照判釋知識學習及訓練</div>
+            <a href="@Url.Content("~/WoodLand/OperatingInstructions?Item=3")" class="deep-blue-button" target="_blank">操作指引</a>
+        </div>
+        <div class="Train_content_secondTitle_layout Train_content_secondTitle">請選擇訓練類別</div>
+        <div class="Train_content_ALLtrain_layout">
+            
+            @foreach ( var course in Model ) {
+                i++;
+                string _styleFix = i % 4 == 1 ?"margin-left:0;": string.Empty;
+                <div class="Train_content_trainBTN_layout Train_content_trainBTN" style="@_styleFix">
+                    <div class="Train_content_trainBTN_blackBG">
+                        @foreach ( var outline in course.Outline.Split('\n') ) {
+                            <div class="Train_content_trainBTN_blackBG_row">
+                                <span></span>
+                                <div class="Train_content_trainBTN_blackBG_row_text">@outline</div>
+                            </div>
+                        }
+                        <div class="Train_content_trainBTN_blackBG_row" style="width: 174px;margin: 0 auto;margin-top:20px;">
+                            <div class="Train_content_trainBTN_blackBG_row_optionBTN" onclick="ToView(@course.ID)">前往學習</div>
+                            <div class="Train_content_trainBTN_blackBG_row_optionBTN" name="exam" onclick="ToExam(@course.ID)" style="margin-left:10px;">自我測驗</div>
+                        </div>
+                    </div>
+                    <div class="Train_content_trainBTN_icon Train_content_trainBTN_icon_Photo" style="background-image: url(../Content/Images/@("PIC" + course.Icon).png"></div>
+                    <div class="Train_content_trainBTN_text_layout Train_content_trainBTN_text">@course.Title</div>
+                </div>
+            }
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script>
+        $(function () {
+            initMenu = $(".menu_options_text[class*='Menu_train']");
+            $(".menu_options_text[class*='Menu_train']").addClass("menu_active");
+
+            $("[name=exam]").jqxTooltip({ content: '建議閱讀課程內容後再進行測驗。', position: 'bottom', name: 'movieTooltip' });
+        });
+
+        function ToExam(TrainingType) {
+            window.location.href = '@Url.Content("~/Training/Exam/")' + TrainingType;
+        }
+
+        function ToView(ID) {
+            window.location.href = '@Url.Content("~/Training/CourseView/")' + ID;
+        }
+        
+    </script>
+

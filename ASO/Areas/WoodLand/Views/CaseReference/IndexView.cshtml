@@ -1,0 +1,177 @@
+﻿@model ASO.Models.CaseReference
+@{
+    ViewBag.Title = "案例參考";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">案例參考檢視</div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>編號</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @Model.ID
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>案由</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @Model.TypeStr
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>判釋態樣</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @Model.AppearanceStr
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 135px">
+            <div>判讀說明</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 135px">
+            <div>
+                @Model.Explain
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>建立日期</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                @(Model.CreatTime.HasValue ? Model.CreatTime.Value.ToString("yyyy-MM-dd"): "")
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="contnet_title_layout content_title">影像說明</div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="SystemContent_layout_row">
+            <div id="grid_files"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+            <input type="button" id="GroupEdit_btn_Back" value="回上頁" onclick="location.href = '@Url.Action("Index","CaseReference")'" />
+        </div>
+    </div>
+    <div class="clear"></div>
+
+    <div id="popup">
+        <div>影像全圖</div>
+        <div style="overflow:hidden;">
+            <img id="popupImage" src="" alt="Large Image" style="max-height: 100%; max-width: 100%;">
+        </div>
+    </div>
+</div>
+<style>
+    input[type=button] {
+        font-size: 12px !important;
+    }
+</style>
+
+<script>
+    //#region 變數宣告區
+    var LocalData = @Html.Raw(Json.Encode(Model));
+    var ShootingTime;
+    var ImageEdit = null;
+    var ImageIndex = null;
+
+
+    //#endregion
+
+    function refreshGridFiles() {
+        var filteredData = LocalData.CaseReferenceImageList.filter(function (item) {
+            return item.IsDel !== true;
+        });
+        var source = {
+            localdata: filteredData,
+            datafields: [
+                { name: 'ID', type: 'int' },
+                { name: 'NO', type: 'string' },
+                { name: 'ShootingTime', type: 'date' },
+                { name: 'Explain', type: 'string' },
+                { name: 'ImagePath', type: 'string' },
+
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            width: '100%',
+            source: dataAdapter,
+            columns: [
+                { text: '捲片號', datafield: 'NO', align: 'center', width: 120 },
+                { text: '拍攝日期', datafield: 'ShootingTime', cellsalign: 'right', align: 'center', cellsformat: 'yyyy/MM/dd', width: 100 },
+                { text: '判讀說明', datafield: 'Explain', cellsalign: 'left', align: 'center', width: 300, cellsrenderer: wrapText },
+                {
+                    text: '影像', datafield: 'ImagePath', align: 'center', cellsalign: 'center',
+                    cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                        return '<img class="grid_images" src="' + value.replace("~/", "../../../") + '" alt="Preview Image" style="max-width: 100%;height: 100%; ">';
+                    }
+                }
+            ],
+            rowsheight: 300, // 設定每一行的高度為 40 像素
+        };
+
+        function wrapText(row, columnfield, value, defaulthtml, columnproperties) {
+            return '<div style="white-space:normal;margin: 6px 2px 0 4px;">' + value + '</div>';
+        }
+
+        $("#grid_files").jqxGrid(setting);
+    }
+
+    $(document).ready(function () {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        $('[type=button]').jqxButton(JqxBtnSetting);
+
+        LocalData.CaseReferenceImageList = LocalData.CaseReferenceImageList ?? [];
+        refreshGridFiles();
+
+        $('#popup').jqxWindow({
+            width: '90vw',
+            height: '90vh',
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            draggable: false,
+            resizable: false
+        });
+
+        // 使用事件代理綁定 click 事件
+        $(document).on('click', '.grid_images', function () {
+            // 獲取被點擊的圖片的 src
+            var imageUrl = $(this).attr('src');
+
+            // 設置彈出視窗中的圖片 src
+            $('#popupImage').attr('src', imageUrl);
+
+            // 顯示彈出視窗
+            $('#popup').jqxWindow("open");
+        });
+
+        // 點擊彈出視窗時關閉它
+        $('#popup').on('click', function () {
+            $(this).hide();
+        });
+    })
+
+</script>

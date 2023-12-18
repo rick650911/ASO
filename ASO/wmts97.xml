@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Capabilities xmlns="http://www.opengis.net/wmts/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd" version="1.0.0">
+	<ows:ServiceIdentification>
+	<ows:Title>Taiwan MAP Service For TWD97</ows:Title>
+		<ows:ServiceType>OGC WMTS</ows:ServiceType>
+		<ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+		</ows:ServiceIdentification>
+		<ows:OperationsMetadata>
+			<ows:Operation name="GetCapabilities">
+			<ows:DCP>
+			<ows:HTTP>
+			<ows:Get xlink:href="https://wmts.nlsc.gov.tw/97/wmts/WMTSCapabilities.xml">
+			<ows:Constraint name="GetEncoding">
+			<ows:AllowedValues>
+				<ows:Value>RESTful</ows:Value>
+			</ows:AllowedValues>
+			</ows:Constraint>
+			</ows:Get>
+			<ows:Get xlink:href="https://wmts.nlsc.gov.tw/97/wmts?">
+			<ows:Constraint name="GetEncoding">
+			<ows:AllowedValues>
+				<ows:Value>KVP</ows:Value>
+			</ows:AllowedValues>
+			</ows:Constraint>
+			</ows:Get>
+			</ows:HTTP>
+			</ows:DCP>
+			</ows:Operation>
+			<ows:Operation name="GetTile">
+			<ows:DCP>
+			<ows:HTTP>
+			<ows:Get xlink:href="https://wmts.nlsc.gov.tw/97/wmts/">
+			<ows:Constraint name="GetEncoding">
+			<ows:AllowedValues>
+				<ows:Value>RESTful</ows:Value>
+			</ows:AllowedValues>
+			</ows:Constraint>
+			</ows:Get>
+			<ows:Get xlink:href="https://wmts.nlsc.gov.tw/97/wmts?">
+			<ows:Constraint name="GetEncoding">
+			<ows:AllowedValues>
+				<ows:Value>KVP</ows:Value>
+			</ows:AllowedValues>
+			</ows:Constraint>
+			</ows:Get>
+			</ows:HTTP>
+			</ows:DCP>
+			</ows:Operation>
+		</ows:OperationsMetadata>
+		<Contents>
+			<Layer>
+				<ows:Title>臺灣通用電子地圖_3826</ows:Title>
+				<ows:Identifier>EMAP3826</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::3826">
+				<ows:LowerCorner>128548.4443375419 2394066.4166165744</ows:LowerCorner>
+				<ows:UpperCorner>606875.5521 2919551.2968000006</ows:UpperCorner>
+				</ows:BoundingBox>
+				<ows:WGS84BoundingBox>
+				<ows:LowerCorner>119.78601992369354 21.62107936426654</ows:LowerCorner>
+				<ows:UpperCorner>124.57396520964366 26.388196853864937</ows:UpperCorner>
+				</ows:WGS84BoundingBox>
+				<Style isDefault="true">
+				<ows:Title>Default Style</ows:Title>
+				<ows:Identifier>default</ows:Identifier>
+				</Style>
+				<Format>image/jpeg</Format>
+				<TileMatrixSetLink>
+				<TileMatrixSet>default028mm</TileMatrixSet>
+				</TileMatrixSetLink>
+				<ResourceURL format="image/jpeg" resourceType="tile" template="https://wmts.nlsc.gov.tw/97/wmts/EMAP3826/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}"/>
+				</Layer>
+			<Layer>
+				<ows:Title>臺灣通用電子地圖_3825</ows:Title>
+				<ows:Identifier>EMAP3825</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::3826">
+				<ows:LowerCorner>143770.12750815426 2551454.526287509</ows:LowerCorner>
+				<ows:UpperCorner>436425.23043508956 2930500.6681629512</ows:UpperCorner>
+				</ows:BoundingBox>
+				<ows:WGS84BoundingBox>
+				<ows:LowerCorner>117.93448580734288 23.054294634815378</ows:LowerCorner>
+				<ows:UpperCorner>120.86962556946614 26.487032471996287</ows:UpperCorner>
+				</ows:WGS84BoundingBox>
+				<Style isDefault="true">
+				<ows:Title>Default Style</ows:Title>
+				<ows:Identifier>default</ows:Identifier>
+				</Style>
+				<Format>image/jpeg</Format>
+				<TileMatrixSetLink>
+				<TileMatrixSet>default028mm</TileMatrixSet>
+				</TileMatrixSetLink>
+				<ResourceURL format="image/jpeg" resourceType="tile" template="https://wmts.nlsc.gov.tw/97/wmts/EMAP3825/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}"/>
+				</Layer>
+			<Layer>
+				<ows:Title>國土利用調查成果圖_3826</ows:Title>
+				<ows:Identifier>LUIMAP3826</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::3826">
+				<ows:LowerCorner>128548.4443375419 2394066.4166165744</ows:LowerCorner>
+				<ows:UpperCorner>606875.5521 2919551.2968000006</ows:UpperCorner>
+				</ows:BoundingBox>
+				<ows:WGS84BoundingBox>
+				<ows:LowerCorner>119.78601992369354 21.62107936426654</ows:LowerCorner>
+				<ows:UpperCorner>124.57396520964366 26.388196853864937</ows:UpperCorner>
+				</ows:WGS84BoundingBox>
+				<Style isDefault="true">
+				<ows:Title>Default Style</ows:Title>
+				<ows:Identifier>default</ows:Identifier>
+				</Style>
+				<Format>image/png</Format>
+				<TileMatrixSetLink>
+				<TileMatrixSet>default028mm</TileMatrixSet>
+				</TileMatrixSetLink>
+				<ResourceURL format="image/png" resourceType="tile" template="https://wmts.nlsc.gov.tw/97/wmts/LUIMAP3826/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}"/>
+				</Layer>
+			<Layer>
+				<ows:Title>國土利用調查成果圖_3825</ows:Title>
+				<ows:Identifier>LUIMAP3825</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::3826">
+				<ows:LowerCorner>143770.12750815426 2551454.526287509</ows:LowerCorner>
+				<ows:UpperCorner>436425.23043508956 2930500.6681629512</ows:UpperCorner>
+				</ows:BoundingBox>
+				<ows:WGS84BoundingBox>
+				<ows:LowerCorner>117.93448580734288 23.054294634815378</ows:LowerCorner>
+				<ows:UpperCorner>120.86962556946614 26.487032471996287</ows:UpperCorner>
+				</ows:WGS84BoundingBox>
+				<Style isDefault="true">
+				<ows:Title>Default Style</ows:Title>
+				<ows:Identifier>default</ows:Identifier>
+				</Style>
+				<Format>image/png</Format>
+				<TileMatrixSetLink>
+				<TileMatrixSet>default028mm</TileMatrixSet>
+				</TileMatrixSetLink>
+				<ResourceURL format="image/png" resourceType="tile" template="https://wmts.nlsc.gov.tw/97/wmts/LUIMAP3825/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}"/>
+				</Layer>
+			<Layer>
+				<ows:Title>正射影像圖(通用)_3826</ows:Title>
+				<ows:Identifier>PHOTO3826</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::3826">
+				<ows:LowerCorner>128548.4443375419 2394066.4166165744</ows:LowerCorner>
+				<ows:UpperCorner>606875.5521 2919551.2968000006</ows:UpperCorner>
+				</ows:BoundingBox>
+				<ows:WGS84BoundingBox>
+				<ows:LowerCorner>119.78601992369354 21.62107936426654</ows:LowerCorner>
+				<ows:UpperCorner>124.57396520964366 26.388196853864937</ows:UpperCorner>
+				</ows:WGS84BoundingBox>
+				<Style isDefault="true">
+				<ows:Title>Default Style</ows:Title>
+				<ows:Identifier>default</ows:Identifier>
+				</Style>
+				<Format>image/jpeg</Format>
+				<TileMatrixSetLink>
+				<TileMatrixSet>default028mm</TileMatrixSet>
+				</TileMatrixSetLink>
+				<ResourceURL format="image/jpeg" resourceType="tile" template="https://wmts.nlsc.gov.tw/97/wmts/PHOTO3826/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}"/>
+				</Layer>
+			<TileMatrixSet>
+			<ows:Title>TileMatrix using 0.28mm</ows:Title>
+			<ows:Abstract>The tile matrix set that has scale values calculated based on the dpi defined by OGC specification (dpi assumes 0.28mm as the physical distance of a pixel).</ows:Abstract>
+			<ows:Identifier>default028mm</ows:Identifier>
+			<ows:SupportedCRS>urn:ogc:def:crs:EPSG::3826</ows:SupportedCRS>
+			<TileMatrix>
+			<ows:Identifier>0</ows:Identifier>
+			<ScaleDenominator>1.181177957593862E7</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>1</MatrixWidth>
+			<MatrixHeight>1</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>1</ows:Identifier>
+			<ScaleDenominator>9449423.660750896</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>1</MatrixWidth>
+			<MatrixHeight>1</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>2</ows:Identifier>
+			<ScaleDenominator>4724711.830375448</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>2</MatrixWidth>
+			<MatrixHeight>2</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>3</ows:Identifier>
+			<ScaleDenominator>2362355.915187724</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>3</MatrixWidth>
+			<MatrixHeight>4</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>4</ows:Identifier>
+			<ScaleDenominator>944942.3660750897</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>8</MatrixWidth>
+			<MatrixHeight>9</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>5</ows:Identifier>
+			<ScaleDenominator>472471.18303754483</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>15</MatrixWidth>
+			<MatrixHeight>18</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>6</ows:Identifier>
+			<ScaleDenominator>236235.59151877242</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>29</MatrixWidth>
+			<MatrixHeight>36</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>7</ows:Identifier>
+			<ScaleDenominator>94494.23660750895</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>72</MatrixWidth>
+			<MatrixHeight>90</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>8</ows:Identifier>
+			<ScaleDenominator>47247.118303754476</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>143</MatrixWidth>
+			<MatrixHeight>179</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>9</ows:Identifier>
+			<ScaleDenominator>23623.559151877238</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>285</MatrixWidth>
+			<MatrixHeight>358</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>10</ows:Identifier>
+			<ScaleDenominator>9449.423660750896</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>711</MatrixWidth>
+			<MatrixHeight>895</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>11</ows:Identifier>
+			<ScaleDenominator>4724.711830375448</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>1422</MatrixWidth>
+			<MatrixHeight>1790</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>12</ows:Identifier>
+			<ScaleDenominator>2362.355915187724</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>2844</MatrixWidth>
+			<MatrixHeight>3579</MatrixHeight>
+			</TileMatrix>
+			<TileMatrix>
+			<ows:Identifier>13</ows:Identifier>
+			<ScaleDenominator>944.9423660750896</ScaleDenominator>
+			<TopLeftCorner>50000 3000000</TopLeftCorner>
+			<TileWidth>256</TileWidth>
+			<TileHeight>256</TileHeight>
+			<MatrixWidth>7109</MatrixWidth>
+			<MatrixHeight>8946</MatrixHeight>
+			</TileMatrix>
+			</TileMatrixSet>
+		</Contents>
+	</Capabilities>

@@ -1,0 +1,157 @@
+﻿@model ASO.Models.Species
+@{
+    Layout = null;
+    var Image = (Model.StereoscopicImages != null && Model.StereoscopicImages.Count != 0) ? Model.StereoscopicImages[0] : null;
+}
+<div class="search_content_ALLinfo_layout ">
+    @if (Image != null)
+    {
+        <div class="search_content_info_title" style="font-weight:bold"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>拍攝時間　：　</div>
+            <div id="image_ShTime">@Image.ShTime</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>像對所在地區　：　</div>
+            <div id="image_Locate">@Image.Locate</div>
+        </div>
+        <div class="clear"></div>
+
+        if (Image.StereoscopicImageFL != null)
+        {
+            if (!string.IsNullOrEmpty(Image.StereoscopicImageFL.StAge))
+            {
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>林齡　：　</div>
+                    <div>@(Image.StereoscopicImageFL != null ? Image.StereoscopicImageFL.StAge : string.Empty)</div>
+                </div>
+                <div class="clear"></div>
+            }
+        }
+
+
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>像對海拔</div>
+            <div>最低海拔　 :　  <span id="image_AltMin">@Image.AltMin</span> (m)， 最高海拔　：　 <span id="image_AltMax">@Image.AltMax</span> (m)</div>
+        </div>
+        <div class="clear"></div>
+    }
+    @if (!String.IsNullOrEmpty(Image.IPCCStatement))
+    {
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>像對地物說明　：　</div>
+            <div id="image_IPCCStatement">@Image.IPCCStatement</div>
+        </div>
+        <div class="clear"></div>
+
+    }
+    <br />
+    <br />
+    <br />
+    @if (Model.FeaturesFL != null)
+    {
+        <div class="clear"></div>
+        @*二、判釋特徵*@
+        <div class="search_content_info_title_layout search_content_info_title" style="font-weight:bold">判釋特徵</div>
+        <div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 冠層結構-樹梢　 :　 </div>
+                <div>@Model.FeaturesFL.Crown6</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 冠層結構-深度　 :　 </div>
+                <div>@Model.FeaturesFL.Crown7</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 冠層結構-層次　 :　 </div>
+                <div>@Model.FeaturesFL.Crown8</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 冠層結構-通透　 :　 </div>
+                <div>@Model.FeaturesFL.Crown9</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 冠層結構-質地　 :　 </div>
+                <div>@Model.FeaturesFL.Crown10</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 色調　 :　 </div>
+                <div>@Model.FeaturesFL.ToneColor</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 組織　 :　 </div>
+                <div>@Model.FeaturesFL.Texture</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 陰影　 :　 </div>
+                <div>@Model.FeaturesFL.Shadow</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 位置與關聯物　 :　 </div>
+                <div>@Model.FeaturesFL.Association</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 排列與圖案　 :　 </div>
+                <div>@Model.FeaturesFL.Pattern</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 樹冠邊緣　 :　 </div>
+                <div>@Model.FeaturesFL.Crown2</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 樹冠表面　 :　 </div>
+                <div>@Model.FeaturesFL.Crown3</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 樹冠數量　 :　 </div>
+                <div>@Model.FeaturesFL.Crown4</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 樹冠尺寸　 :　 </div>
+                <div>@Model.FeaturesFL.Crown5</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 樹冠輪廓　 :　 </div>
+                <div>@Model.FeaturesFL.Crown1</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+        </div>
+    }
+</div>

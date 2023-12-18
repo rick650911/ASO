@@ -1,0 +1,102 @@
+﻿@model List<ASO.Models.WLQuestion>
+    @{
+        Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+        int i = 0;
+        string _saveOrderUrl = Url.Action("QuestionOrderSave");
+    }
+    <div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+        <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">
+            <div style="float:left;padding-bottom:20px;">@ViewBag.TrainingType</div>
+            <div style="float:right">
+                <input id="btn_orderSave" style="display:none;" type="button" class="btn_jqxbutton" value="修改排序" />
+                <input id="btn_add" type="button" class="btn_jqxbutton" value="新增" onclick="Edit()" />
+                <input id="btn_next" style="display:none;" type="button" class="btn_jqxbutton" value="測驗編輯" onclick="ToStepFour()" />
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_ALLnews_layout">
+            <div class="PhotoSearch1_contentRIGHT_info_title">
+                <div style="width:40px">&nbsp;</div>
+                <div style="width:80px;padding-left:10px;">題型</div>
+                <div style="width:230px;padding-left:10px;">題目</div>
+                <div style="width:60px;padding-left:20px;padding-right:10px;">答案</div>
+                <div style="width:160px;padding-left:10px;">詳解</div>
+                <div style="width:60px;padding-left:20px;">狀態</div>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+            <div id="sortOrder">
+                @if (Model != null)
+                {
+                    foreach (var b in Model)
+                    {
+                        i++;
+                        <div>
+                            <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text" onclick="window.location.href='@Url.Action("QuestionEdit", "WLSystem", new { CID = ViewBag.CID, NO = b.NO })'">
+                                <div class="orderJs" style="display:none">@b.NO</div>
+                                <div style="width:40px;">@i</div>
+                                <div style="width:80px;padding-left:10px;">@b.QuestionType</div>
+                                <div style="width:230px;padding-left:10px;">@b.QuestionDesc</div>
+                                <div style="width:60px;padding-left:30px;">@(b.QuestionType == ASO.Models.enQuestionType.是非題 ? b.Answer == 1 ? "O" : "X" : b.Answer.ToString())</div>
+                                <div style="width:150px;padding-left:10px;">@Html.Raw(b.AnswerDesc.Replace("\n", "<br/>").Replace(" ", "&nbsp;"))&nbsp;</div>
+                                <div style="width:60px;padding-left:30px;">@b.IsOn</div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="system_contentRIGHT_SeparateLine"></div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <script>
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_questionedit']");
+        activeOption.addClass("system_contentLEFT_option_active");
+
+        var _questionCoint = $('#sortOrder').find('.system_contentRIGHT_news_text_layout').length;
+
+        if (_questionCoint > 0) {
+            $('#btn_next').show();
+        }
+
+        $('.btn_jqxbutton').jqxButton();
+        SortableFunc();
+    });
+    function Edit(NO) {
+        window.location.href = '@Url.Action("QuestionEdit", "WLSystem", new { CID = ViewBag.CID })';
+    }
+    function ToStepFour() {
+        window.location.href = '@Url.Action("CourseAdmin", "WLSystem", new { ID = ViewBag.CID, rUrl = "True" })';
+    }
+    function SortableFunc() {
+        $("#sortOrder").jqxSortable();
+
+        $("#sortOrder").change(function () {
+            $("#btn_orderSave").show();
+        });
+
+        $("#btn_orderSave").click(function () {
+            var $this = $(this);
+            $this.hide();
+            var $url = "@_saveOrderUrl";
+            var $CID = "@ViewBag.CID";
+
+            var $dataArray = [];
+            $(".orderJs").each(function () {
+                var $txt = $(this).text();
+                $dataArray.push($txt);
+            });
+
+            var $data = {
+                CID: $CID,
+                Order: $dataArray
+            };
+            $.post($url, $data, function (data) {
+                if (data) {
+                    alert("修改排序成功");
+                }
+            });
+        });
+    }
+    </script>

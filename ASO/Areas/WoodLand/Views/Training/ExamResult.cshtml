@@ -1,0 +1,104 @@
+﻿@model List<ASO.Models.WLQuestion>
+@{
+    ViewBag.Title = "訓練教室";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">訓練教室：@ViewBag.TrainingType</div>
+    <div class="Train2_content_Test_layout">
+        <div class="Train2_content_Test_coulmnLEFT_layout Train2_content_Test_coulmnLEFT">
+            <div class="Train2_content_Test_columnLEFT_Question_layout Train2_content_Test_columnLEFT_Question">
+                <div>目前題數</div>
+                <div class="Train2_content_Test_coulmnLEFT_Question_now">第<span class="CurrentNum">1</span>題</div>
+            </div>
+            <div class="Train2_contnet_Test_coulmnLEFT_Question_numbers">
+                <div>
+                    @for (int i = 1; i <= Model.Count(); i++)
+                    {
+                        <span id="Qnum_@i" onclick="ShowQuestion(@i)" @(i==1? "class=Train2_contnet_Test_coulmnLEFT_Question_numbers_active" : "")>@(i.ToString().PadLeft(2,'0'))</span>
+                    }
+                </div>
+            </div>
+            <div class="Train2_content_Test_coulmnLEFT_Time_layout Train2_content_Test_coulmnLEFT_Time">
+                <div style="text-align:center; padding-top:20px;">
+                    您共答對@(ViewBag.PassNum)/@(ViewBag.ExamNum)題<br/>
+                    正確率為 : @ViewBag.Score%
+                </div>
+            </div>
+        </div>
+        <div class="Train2_content_Test_coulmnRIGHT_layout Train2_content_Test_coulmnRIGHT">
+            <div class="Train2_content_Test_coulmnRIGHT_question_layout">
+                <div class="Train2_content_Test_coulmnRIGHT_question_text">題號<span class="CurrentNum"></span> :<span id="QuestionDesc"></span></div>       
+                <div class="Train2_content_Test_coulmnRIGHT_question_photo_layout Train2_content_Test_coulmnRIGHT_question_photo" id="ImageArea">
+                </div>   
+                <div class="clear"></div>
+            </div>
+            <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+            <div id="QuestionArea"></div>
+            <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+            <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_layout">
+                <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_text">答案：<span id="AnswerArea"></span></div>
+                <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_layout">
+                    <div id="AnswerDescArea"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<script>
+    var Question = @Html.Raw(Json.Encode(Model)); //題目
+    var CurrentNum = 1;
+    var MaxNum = Question.length;
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_train']");
+        $(".menu_options_text[class*='Menu_train']").addClass("menu_active");
+
+        $('.CurrentNum').html(CurrentNum); //題號
+        $('#QuestionDesc').html(Question[CurrentNum-1].QuestionDesc); //題目
+        ShowQuestion(1);
+    });
+
+    function ShowQuestion(num){
+        if (num<1) num = 1;
+        else if (num > MaxNum) num = MaxNum;
+        CurrentNum = num;
+        $('.CurrentNum').html(CurrentNum);
+        $('#QuestionDesc').html(Question[CurrentNum-1].QuestionDesc);
+        $('.Train2_contnet_Test_coulmnLEFT_Question_numbers_active').removeClass('Train2_contnet_Test_coulmnLEFT_Question_numbers_active');
+        $('#Qnum_' + num).addClass('Train2_contnet_Test_coulmnLEFT_Question_numbers_active');
+
+        $('#ImageArea,#QuestionArea,#AnswerArea,#AnswerDescArea').html('');
+        if (Question[CurrentNum-1].ImagePath != ''){
+            $('#ImageArea').html('<div style="height:400px"><img src="' + Question[CurrentNum-1].ImagePath + '" height="400px" /></div>');
+        }
+
+        var QuestionStr = '',AnswerStr = '', AnswerDescStr = '';
+        var OptionList = Question[num-1].OptionList;
+        //答案
+        AnswerStr = Question[num-1].Answer ;
+        AnswerDescStr = Question[num-1].AnswerDesc ;
+        for (i = 0; i < OptionList.length; i++) {
+            QuestionStr += '<div class="Train2_content_Test_coulmnRIGHT_answer_layout"';
+            if (OptionList[i].OptionID == Question[num-1].UserAnswer){
+                QuestionStr+= ' style="background-color:#9EC4D2"';
+            }
+            QuestionStr += '>';
+            QuestionStr += '<div class="Train2_content_Test_coulmnRIGHT_answer_option_layout Train2_content_Test_coulmnRIGHT_answer_option">';
+            QuestionStr += '<div>'+ (i+1) +'.</div>';
+            QuestionStr += '<div style="padding-left:5px">'+ OptionList[i].OptionDesc+'</div>';
+            if (OptionList[i].ImagePath != ''){
+                QuestionStr += '<div class="clear"></div>';
+                QuestionStr += '<div>&nbsp;&nbsp;&nbsp;&nbsp;<img src="' + OptionList[i].ImagePath + '" /></div>';
+            }
+            QuestionStr += '</div>';
+            QuestionStr += '<div class="clear"></div>';
+            QuestionStr += '</div>';
+
+        }
+        $('#QuestionArea').html(QuestionStr);
+        $('#AnswerArea').html(AnswerStr);
+        $('#AnswerDescArea').html(AnswerDescStr);
+    }
+</script>

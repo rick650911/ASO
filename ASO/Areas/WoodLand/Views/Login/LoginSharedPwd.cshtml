@@ -1,0 +1,175 @@
+﻿
+
+<style>
+    .content_whiteBG_layoutLogin {
+        width: 600px;
+        margin-top: 0px;
+        padding-bottom: 0px;
+    }
+
+    .contnet_title_layoutLogin {
+        height: 40px;
+        width: 100%;
+        margin: 0;
+        background-color: #EEEEEE;
+        line-height: 40px;
+    }
+
+    .about_content_coulmnRight_authLogin {
+        height: 37px;
+        width: 585px;
+        text-align: left;
+    }
+
+        .about_content_coulmnRight_authLogin div {
+            font-size: 15px;
+            font-family: Arial, 微軟正黑體;
+            color: rgb(102, 102, 102);
+            padding-left: 10px;
+            margin-top: 5px;
+            line-height: 15px;
+        }
+
+    .about_content_coulmn_layoutLogin {
+        margin: 0;
+    }
+
+    .about_content_coulmnLeft_authLogin {
+        float: left;
+        line-height: 27px;
+        height: 37px;
+        width: 150px;
+        margin-top: 5px;
+    }
+
+        .about_content_coulmnLeft_authLogin div {
+            color: rgb(255, 255, 255);
+            height: 18px;
+            font-size: 15px;
+            font-family: Arial, 微軟正黑體;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    .about_content_coulmnLeftLogin {
+        background-color: #314851;
+        border: 1px solid #314851;
+        text-align: center;
+    }
+
+    .about_content_coulmnRightA {
+        border: 1px solid #8f9197;
+    }
+</style>
+
+<script>
+    var editUrl = '@Url.Action("SaveUserSelf", "Organization", new { Area = "SysAuth" })';
+
+    $(function () {
+        var msg = '@TempData["ErrorMsg"]';
+        if (msg != '') {
+            alert(msg);
+        }
+        objInit();
+        objAction();
+    });
+
+    function objInit() {
+        $('#editBody').jqxValidator({
+            rules: [
+                {
+                    input: '#edit_password', message: '密碼強度不符合', action: 'keyup, blur',
+                    rule: function (input, commit) {
+                        return pwdconfirm(input.val());
+                    }
+                },
+            ]
+        });
+        $('#jqxwin_editpwd').jqxWindow({
+            width: 610,
+            height: 150,
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            initContent: function () {
+                $('#edit_password').jqxInput({ width: '200', height: '25' });
+                $('#btn_editsent').jqxButton({ width: '100', height: '25' });
+            }
+        });
+    }
+    function objAction() {
+        $('#btn_editsent').on('click', function () {
+            $('#editBody').jqxValidator('validate');
+        });
+
+        $('#editBody')
+            .on('validationSuccess', function (event) {
+                editpwd();
+            })
+            .on('validationError', function (event) {
+                alert('請確認輸入的資料是否有誤')
+            });
+
+        $('#jqxwin_editpwd')
+            .on('open', function (event) {
+                $('#logform').jqxValidator('hide');
+            })
+            .on('close', function (event) {
+                $('#editBody').jqxValidator('hide');
+            });
+    }
+
+    function editpwd() {
+        var pwd = $('#edit_password').val();
+        $.ajax({
+            url: editUrl,
+            type: "POST",
+            dataType: "text",
+            data: { pwd: pwd },
+            success: function (data) {
+                var jsonResult = JSON.parse(data);
+                if (jsonResult.result) {
+                    alert('修改成功');
+                    $('#jqxwin_editpwd').jqxWindow('close');
+                }
+                else {
+                    alert(jsonResult.msg ?? "修改失敗");
+                }
+            },
+            error: function (e) {
+                alert("Error");
+            }
+        });
+    }
+
+</script>
+
+<!--修改密碼div-->
+<div id="jqxwin_editpwd">
+    <div id="editHead">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="contnet_title_layoutLogin content_title">
+                修改密碼
+            </div>
+        </div>
+    </div>
+    <div id="editBody">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>密碼</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="password" id="edit_password" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin" style="margin-top:10px;">
+                <input type="button" id="btn_editsent" value="送出" />
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改密碼div-->

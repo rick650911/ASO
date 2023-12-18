@@ -1,0 +1,67 @@
+﻿@using ASO.Areas.SysAuth.Models;
+@model List<clsCourseExamDet>
+
+<div id="grid_DetCourse"></div>
+
+<script>
+    var CourseDet = @Html.Raw(Json.Encode(Model));
+    //var CourseDet = {};
+
+    $(function () {
+        dataInit();
+    });
+
+    function dataInit() {
+        var source = {
+            localdata: CourseDet,
+            datatype: "Json",
+            datafields: [
+                { name: 'Sort' },
+                { name: 'QNO' },
+                { name: 'QuestionDesc' },
+                { name: 'Answer' },
+                { name: 'RightAns' },
+                { name: 'personalResult' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+                { text: '測驗題號', datafield: 'Sort', width: 80, align: 'center', cellsalign: 'center' },
+                { text: '題庫題號', datafield: 'QNO', width: 80, align: 'center', cellsalign: 'center' },
+                { text: '題目敘述', datafield: 'QuestionDesc', width: 500, align: 'center' },
+                { text: '使用者填答', datafield: 'Answer', width: 80, align: 'center', cellsalign: 'center' },
+                { text: '正確答案', datafield: 'RightAns', width: 80, align: 'center', cellsalign: 'center' },
+                { text: '答題狀況', datafield: 'personalResult', width: 100, align: 'center', cellsalign: 'center' },
+                {
+                    text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                        return "檢視";
+                    }, buttonclick: function (row) {
+                        var _QNO = $("#grid_DetCourse").jqxGrid('getcellvalue', row, "QNO");
+                        var _Sort = $("#grid_DetCourse").jqxGrid('getcellvalue', row, "Sort");
+
+                        dataQuestionPerview(_QNO, _Sort);
+                    }
+                },
+            ],
+        };
+        $("#grid_DetCourse").jqxGrid(GetJqxGvSetting(setting));
+    }
+
+    function dataQuestionPerview(_QNO, _Sort) {
+
+        var ENO = @ViewBag.ENO;
+
+        if (ENO != null) {
+            var _url = "@Url.Action("CourseQuestion", "Course")";
+            open(_url + '?QNO=' + _QNO + '&ENO=' + ENO + '&QNum=' + _Sort);
+        }
+    }
+
+</script>

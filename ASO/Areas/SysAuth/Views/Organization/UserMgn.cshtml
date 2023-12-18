@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "UserMgn";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">帳號審核</div>
+<div id="grid_userlist" style="margin-bottom:10px;"></div>
+<div id="confirmWindow">
+    <div>
+        帳號審核
+    </div>
+    <div>
+        <div style="text-align:center;margin-top:10px;">
+            <input type="radio" name="Status" id="confirm_pass" checked />&nbsp;通過
+            &nbsp;
+            <input type="radio" name="Status" id="confirm_deny" style="margin-left:10px;" />&nbsp;拒絕
+        </div>
+        <div>
+            <div style="float: right; margin-top: 15px;margin-right:10px;">
+                <input type="button" id="btn_confirm" value="確定" style="margin-right: 10px" />
+                <input type="button" id="btn_cancel" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    initMenu = $(".menu_options_text[class*='Menu_org']");
+    var UsetList = @Html.Raw(Json.Encode(Model));
+    var UserConfirmUrl = '@Url.Action("UserConfirm", "Organization")';
+    var selectedRow;
+    var selectedUsr;
+    function objInit() {
+        source = {
+            localdata: UsetList,
+            datatype: "JSON",
+            datafields: [
+                { name: 'UserID', type: 'int' },
+                { name: 'DeptNO', type: 'string', map: 'Dept>DeptNo'},
+                { name: 'DeptName', type: 'string', map: 'Dept>DeptName' },
+                { name: 'TilName', type: 'string', map: 'Title>TilName'},
+                { name: 'UserNo', type: 'string' },
+                { name: 'Name', type: 'string' },
+                { name: 'Comment', type: 'string' },
+                { name: 'RegTime', type: 'date' },
+                { name: 'RegIP', type: 'string' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            height: 305,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              {
+                  text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button',
+                  cellsrenderer: function () {
+                      return "審核";
+                  },
+                  buttonclick: function (row) {
+                      selectedRow = row;
+                      selectedUsr = $('#grid_userlist').jqxGrid('getrowdata', row);
+                      $('#confirmWindow').jqxWindow('open');
+                  }
+              },
+              { text: '使用者名稱', datafield: 'Name', cellsalign: 'center',align: 'center', width: 150 },
+              { text: '單位編號', datafield: 'DeptNO', cellsalign: 'center', align: 'center', width: 80 },
+              { text: '單位名稱', datafield: 'DeptName', cellsalign: 'center',align: 'center', width: 150 },
+              { text: '角色', datafield: 'TilName', cellsalign: 'center',align: 'center',  width: 150 },
+              { text: '註冊時間', datafield: 'RegTime', cellsalign: 'center',align: 'center',  width: 150, cellsformat: 'yyyy/MM/dd' },
+              { text: 'IP位址', datafield: 'RegIP', cellsalign: 'center',align: 'center',  width: 150 },
+              { text: '申請備註', datafield: 'Comment', align: 'center' }
+            ]
+        };
+        $("#grid_userlist").jqxGrid(GetJqxGvSetting(setting));
+
+        //審核視窗init
+        $('#confirmWindow').jqxWindow({
+            height: 120, width: 200,
+            resizable: false, isModal: true, modalOpacity: 0.3, autoOpen: false,
+            initContent: function () {
+                $('#btn_confirm').jqxButton({ width: '65px' });
+                $('#btn_cancel').jqxButton({ width: '65px' });
+                $('#btn_confirm').focus();
+            }
+        });
+    }
+
+    function objAction(){
+        $('#btn_confirm').on('click', function(){
+            var result = $('#confirm_pass').prop('checked');
+            $.ajax({
+                url: UserConfirmUrl,
+                type: "POST",
+                dataType: "text",
+                data: {ID: selectedUsr.UserID, confirm: result },
+                success: function (data) {
+                    if(data){
+                        $('#grid_userlist').jqxGrid('deleterow', selectedRow);
+                        alert('審核成功');
+                    }
+                    else
+                        alert('審核失敗');
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+            $('#confirmWindow').jqxWindow('close');
+        });
+
+        $('#btn_cancel').on('click', function(){
+            $('#confirmWindow').jqxWindow('close');
+        });
+    }
+    $(document).ready(function () {
+        objInit();
+        objAction();
+    });
+</script>

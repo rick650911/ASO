@@ -1,0 +1,109 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @*<title>相片對查詢</title>*@
+    <title>@ViewBag.Title</title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery-ui.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.mousewheel.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.gzoom.js' charset="utf-8"></script>
+    <script type="text/javascript" src="~/Scripts/fontawesome-all.min.js"></script>
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.gzoom.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.metro.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.energyblue.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.office.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+</head>
+<body style="background-color:white;">
+    <div id="jqx_win">
+        <div id="winheader"></div>
+        <div id="wincontent"></div>
+    </div>
+    <script>
+        function twd97_to_latlng($x, $y) {
+            var pow = Math.pow, M_PI = Math.PI;
+            var sin = Math.sin, cos = Math.cos, tan = Math.tan;
+            var $a = 6378137.0, $b = 6356752.314245;
+            var $lng0 = 121 * M_PI / 180, $k0 = 0.9999, $dx = 250000, $dy = 0;
+            var $e = pow((1 - pow($b, 2) / pow($a, 2)), 0.5);
+
+            $x -= $dx;
+            $y -= $dy;
+
+            var $M = $y / $k0;
+
+            var $mu = $M / ($a * (1.0 - pow($e, 2) / 4.0 - 3 * pow($e, 4) / 64.0 - 5 * pow($e, 6) / 256.0));
+            var $e1 = (1.0 - pow((1.0 - pow($e, 2)), 0.5)) / (1.0 + pow((1.0 - pow($e, 2)), 0.5));
+
+            var $J1 = (3 * $e1 / 2 - 27 * pow($e1, 3) / 32.0);
+            var $J2 = (21 * pow($e1, 2) / 16 - 55 * pow($e1, 4) / 32.0);
+            var $J3 = (151 * pow($e1, 3) / 96.0);
+            var $J4 = (1097 * pow($e1, 4) / 512.0);
+
+            var $fp = $mu + $J1 * sin(2 * $mu) + $J2 * sin(4 * $mu) + $J3 * sin(6 * $mu) + $J4 * sin(8 * $mu);
+
+            var $e2 = pow(($e * $a / $b), 2);
+            var $C1 = pow($e2 * cos($fp), 2);
+            var $T1 = pow(tan($fp), 2);
+            var $R1 = $a * (1 - pow($e, 2)) / pow((1 - pow($e, 2) * pow(sin($fp), 2)), (3.0 / 2.0));
+            var $N1 = $a / pow((1 - pow($e, 2) * pow(sin($fp), 2)), 0.5);
+
+            var $D = $x / ($N1 * $k0);
+
+            var $Q1 = $N1 * tan($fp) / $R1;
+            var $Q2 = (pow($D, 2) / 2.0);
+            var $Q3 = (5 + 3 * $T1 + 10 * $C1 - 4 * pow($C1, 2) - 9 * $e2) * pow($D, 4) / 24.0;
+            var $Q4 = (61 + 90 * $T1 + 298 * $C1 + 45 * pow($T1, 2) - 3 * pow($C1, 2) - 252 * $e2) * pow($D, 6) / 720.0;
+            var $lat = $fp - $Q1 * ($Q2 - $Q3 + $Q4);
+
+            var $Q5 = $D;
+            var $Q6 = (1 + 2 * $T1 + $C1) * pow($D, 3) / 6;
+            var $Q7 = (5 - 2 * $C1 + 28 * $T1 - 3 * pow($C1, 2) + 8 * $e2 + 24 * pow($T1, 2)) * pow($D, 5) / 120.0;
+            var $lng = $lng0 + ($Q5 - $Q6 + $Q7) / cos($fp);
+
+            $lat = ($lat * 180) / M_PI;
+            $lng = ($lng * 180) / M_PI;
+
+            return {
+                lat: $lat,
+                lng: $lng
+            };
+        }
+    </script>
+    <script>
+        $(function () {
+            var ID = "@ViewBag.ID";
+            $('#wincontent').load('@Url.Action("QueryResult", "Search")' + '/' + ID);
+        });
+        
+        function Loc(locx, locy) {
+            window.open('@Url.Action("LocationCoordMap", "WLMap")' + '/?locx=' + locx + '&locy=' + locy);
+        }
+
+        function GoogleMap(locx, locy) {
+            var lat = twd97_to_latlng(locx,locy).lat;
+
+            var lon = twd97_to_latlng(locx, locy).lng;
+
+            var hint = "航照攝影時間與 Google 街景攝影時間可能有落差，所以僅供參考。";
+
+            //var url = "https://maps.google.com/maps?q=&layer=c&cbll=" + lat + "," + lon + "&cbp=12,270"; 
+            //var url = "https://www.google.com.tw/maps/@@" + lat+ "," + lon+ "," + "16z";
+            var url = "http://maps.google.com/maps?q=here@@" + lat + "," + lon;
+            alert(hint);
+            window.open(url);
+        }
+    </script>
+</body>
+</html>

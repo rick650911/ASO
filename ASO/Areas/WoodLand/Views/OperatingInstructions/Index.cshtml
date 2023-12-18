@@ -1,0 +1,191 @@
+﻿@{
+    ViewBag.Title = "操作指引";
+}
+<style>
+    .DDDphoto_content_ipcc_text {
+        color: #666666;
+        font-size: 15px;
+        font-family: "Arial","微軟正黑體";
+        height: 30px;
+        cursor: pointer;
+    }
+
+        .DDDphoto_content_ipcc_text div:last-child:hover {
+            color: #48a3c5;
+        }
+
+    .DDDphoto_content_ipccsub_text {
+        color: #666666;
+        font-size: 15px;
+        font-family: "Arial","微軟正黑體";
+        cursor: pointer;
+    }
+
+        .DDDphoto_content_ipccsub_text div {
+            padding-left: 30px;
+        }
+
+            .DDDphoto_content_ipccsub_text div:last-child:hover {
+                color: #48a3c5;
+            }
+
+    input[type=text].jqx-input, input[type=password].jqx-input {
+        padding-left: 0px !important;
+    }
+
+    .PhotoSearch1_contentRIGHT_ALLinfo_layout {
+        margin-top: 0px;
+    }
+
+    .orderArrow {
+        cursor: pointer;
+    }
+
+    #accordion .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+        background-color: #57b9dc;
+    }
+
+    #accordion li {
+        cursor: pointer;
+    }
+
+        #accordion li:hover {
+            color: #57b9dc;
+        }
+
+    .allprogess {
+        cursor: progress;
+    }
+
+    #accordion div {
+        height: auto !important;
+    }
+</style>
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">
+        操作指引
+    </div>
+    <div class="DDDphoto_contnet_ALLinfo_layout">
+        <div class="clear"></div>
+        <div class="DDDphoto_content_info_SeparateLine" style="margin-top:5px;"></div>
+        <table style="width:100%">
+            <tr>
+                <td style="width:200px; vertical-align:top">
+                    <div id="accordion">
+                        <h3 id="IPCC_1">平台首頁</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_1" value="1">平台首頁</li>
+                                <li id="sub_2" value="2">最新消息選取</li>
+                                <li id="sub_3" value="3">最新消息檢視</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_2">基本介紹</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_4" value="4">基本介紹</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_3">航照立體像片對查詢</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_5" value="5">航照立體像片對查詢</li>
+                                <li id="sub_6" value="6">查詢結果檢視</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_4">訓練教室</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_7" value="7">訓練教室</li>
+                                <li id="sub_8" value="8">課程介紹</li>
+                                <li id="sub_9" value="9">課程內容</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_5">案例參考</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_10" value="10">案例參考</li>
+                                <li id="sub_11" value="11">案例參考檢視</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_6">地圖瀏覽</h3>
+                        <div>
+                            <ul>
+                                <li id="sub_12" value="12">地圖瀏覽-圖層管理</li>
+                                <li id="sub_13" value="13">地圖瀏覽-定位查詢</li>
+                            </ul>
+                        </div>
+                        <h3 id="IPCC_7">系統管理</h3>
+                        <div>
+                            <ul>
+                                @*<li id="sub_14" value="14">系統管理</li>*@
+                                <li id="sub_15" value="15">公布欄管理</li>
+                                <li id="sub_16" value="16">平台資訊管理</li>
+                                <li id="sub_17" value="17">航照查詢種類敘述管理</li>
+                                <li id="sub_18" value="18">訓練教室編輯</li>
+                                <li id="sub_19" value="19">訓練教室考題編輯</li>
+                                <li id="sub_20" value="20">立體像片對資料管理</li>
+                                <li id="sub_21" value="21">帳號維護</li>
+                                <li id="sub_22" value="22">訓練教室使用統計</li>
+                                <li id="sub_23" value="23">使用者意見回饋</li>
+                                <li id="sub_24" value="24">使用紀錄查詢</li>
+                                <li id="sub_25" value="25">案例參考管理</li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+                <td style="vertical-align:top" id="divSubList"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    var solidinited = false;
+    $(function () {
+        // 解析網址，獲取參數的值
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemParam = urlParams.get('Item');
+
+        // 將參數轉換為數字，這是因為 active 選項期望的是一個數字
+        const activeIndex = parseInt(itemParam);
+        initMenu = $(".menu_options_text[class*='Menu_operatinginstructions']");
+        $(".menu_options_text[class*='Menu_operatinginstructions']").addClass("menu_active");
+        $("#accordion").accordion({
+            active: activeIndex ?? 0
+        });
+
+        $('[id^=sub_]').on('click', function () {
+            console.log(2);
+            var _val = this.value;
+            var str = '<img id="subImage" src="../Photos/OperatingInstructions/' + _val + '.png" alt="Large Image" style="max-height: 100%; width: 100%;">';
+            $('#divSubList').html(str);
+        });
+
+        switch (activeIndex) {
+            case 0:
+                $('#sub_1').click();
+                break;
+            case 1:
+                $('#sub_4').click();
+                break;
+            case 2:
+                $('#sub_5').click();
+                break;
+            case 3:
+                $('#sub_7').click();
+                break;
+            case 4:
+                $('#sub_10').click();
+                break;
+            case 5:
+                $('#sub_12').click();
+                break;
+            case 6:
+                $('#sub_15').click();
+                break;
+            default:
+                $('#sub_1').click();
+                break;
+        }
+    });
+</script>

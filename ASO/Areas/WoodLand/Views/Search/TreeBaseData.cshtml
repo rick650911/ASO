@@ -1,0 +1,104 @@
+﻿@model ASO.Models.Species
+@{
+    Layout = null;
+}
+<div class="search_content_ALLphoto_layout">
+    @if ( Model.SpeciesFL != null && (!string.IsNullOrEmpty(Model.SpeciesFL.MonoCro) || !string.IsNullOrEmpty(Model.SpeciesFL.GrouCro) || !string.IsNullOrEmpty(Model.SpeciesFL.SideShape)) ) {
+        <table style="width:100%">
+            <tr>
+                @if ( System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.SpeciesFL.MonoCro)) ) {
+                    <td style="text-align:center">
+                        <img src="@Url.Content("~/Photos/" + Model.SpeciesFL.MonoCro)" style="width:260px;" />
+                        <div style="text-align:center;">頂視單株立體冠幅描繪</div>
+                    </td>
+                }
+                @if ( System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.SpeciesFL.GrouCro)) ) {
+                    <td style="text-align:center">
+                        <img src="@Url.Content("~/Photos/" + Model.SpeciesFL.GrouCro)" style="width:260px;padding-left:12px;" />
+                        <div style="text-align:center;">頂視林型立體冠幅描繪</div>
+                    </td>
+                }
+                @if ( System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.SpeciesFL.SideShape)) ) {
+                    <td style="text-align:center">
+                        <img src="@Url.Content("~/Photos/" + Model.SpeciesFL.SideShape)" style="width:260px;padding-left:12px;" />
+                        <div style="text-align:center;">側視樹型描繪</div>
+                    </td>
+                }
+            </tr>
+        </table>
+    }
+</div>
+<!--大photo end-->
+<div class="clear"></div>
+<!--文字資訊-->
+<div class="search_content_ALLinfo_layout">
+    <div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>1.地物種類編號</div>
+            <div>@Model.ID</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>2.地物種類中文名稱</div>
+            <div>@Model.ComName</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>3.判釋難易程度</div>
+            <div>@Model.Level</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>4.IPCC分類類型</div>
+            <div>@Model.IPCCsub</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>5.科名</div>
+            <div>@Model.Family</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>6.學名</div>
+            <div><i>@Model.SciName</i></div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>7.基本型態、分布及特性說明</div>
+            <div>@Model.BasDes</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>8.地物種類介紹</div>
+            <div>@Model.SpeDes</div>
+        </div>
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div class="search_content_info_text">
+            <div>9.分布海拔範圍(m)</div>
+            <div>@Model.AltRange</div>
+        </div>
+        @if ( Model.IDCompare != null && Model.IDCompare != "" ) {
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>10.易混淆地物種類名稱</div>
+                <span id="compareHref" data-idcomp="@Model.IDCompare"></span>
+            </div>
+        }
+        <div class="clear"></div>
+        <div class="search_content_info_SeparateLine"></div>
+        <div style="padding:20px;text-align:center">
+            <input id="btnDetail" type="button" class="btn_jqxbutton" value="檢視詳細資訊" onclick="window.open('@Url.Content("~/Search/TreeDetail?ID=" + Model.ID)')" />
+        </div>
+    </div>
+</div>
+<!--文字資訊 end-->

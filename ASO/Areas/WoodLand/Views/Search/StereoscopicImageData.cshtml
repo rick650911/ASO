@@ -1,0 +1,127 @@
+﻿@model ASO.Models.Species
+@{
+    Layout = null;
+    var Image = (Model.StereoscopicImages != null && Model.StereoscopicImages.Count != 0) ? Model.StereoscopicImages[0] : null;
+}
+@if ( Image != null ) {
+    <div class="search_content_ALLinfo_layout">
+        <div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                @*<div>@Image.Locate</div>*@
+                <div></div>
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Image.StePairL)))
+                                {
+                                    <img id="StePairL_Stero" src="@Url.Content("~/Photos/" + Image.StePairL)" style="width:300px;" />
+                                }
+                                @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Image.StePairR)))
+                                {
+                                    <img id="StePairR_Stero" src="@Url.Content("~/Photos/" + Image.StePairR)" style="width:300px;" />
+                                }
+                            </td>
+                            <td valign="top">
+                                <table id="grid_stero"></table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Image.StePair)))
+                                {
+                                    <img id="StePair_Stero" src="@Url.Content("~/Photos/" + Image.StePair)" style="width:300px;" />
+                                }
+                                @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Image.ScePic)))
+                                {
+                                    <img id="ScePic_Stero" src="@Url.Content("~/Photos/" + Model.ScePic)" style="width:300px;padding-left:10px" />
+                                }
+                                else
+                                {
+                                    <img id="ScePic_Stero" style="width:300px;padding-left:10px;display:none;" />
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (Image.LocX1 != 0 && Image.LocY1 != 0)
+                                {
+                                    <input id="btnLoc" type="button" class="btn_jqxbutton" value="地圖定位" onclick="Loc('@Image.LocX1','@Image.LocY1')" />
+                                }
+                                @if (Image.StePairL != null && Image.StePairL != "")
+                                {
+                                    <input id="btnPhotoPair" type="button" class="btn_jqxbutton" data-SortID="0" value="像對觀測" />
+                                }
+                                @if (Image.StePairL != null && Image.StePairL != "")
+                                {
+                                    @*<input id="btnAnaglyph" type="button" class="btn_jqxbutton" data-SortID="0" value="紅藍像對觀測" />*@
+                                }
+                                @if (Image.LocX1 != 0 && Image.LocY1 != 0)
+                                {
+                                    <input id="btnGoogleMap" type="button" class="btn_jqxbutton" value="Google實景" onclick="GoogleMap('@Image.LocX1','@Image.LocY1')" style="width: 170px" />
+                                }
+                                @if (Image.StePairL != null && Image.StePairL != "")
+                                {
+                                    <input id="btnPhotoPairtest" type="button" class="btn_jqxbutton" data-SortID="0" value="測試像對觀測" />
+                                }
+                                @*@if (Image.LocX2 != 0 && Image.LocY2 != 0)
+        {
+            <input id="btnLoc" type="button" class="btn_jqxbutton" value="地圖定位(二)" onclick="Loc('@Image.LocX2','@Image.LocY2')" />
+        }
+        @if (Image.LocX3 != 0 && Image.LocY3 != 0)
+        {
+            <input id="btnLoc" type="button" class="btn_jqxbutton" value="地圖定位(三)" onclick="Loc('@Image.LocX3','@Image.LocY3')" />
+        }*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_title_layout search_content_info_title" style="font-weight:bold">地物說明</div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>拍攝時間</div>
+                                    <div id="image_ShTime">@Image.ShTime</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>像對所在地區</div>
+                                    <div id="image_Locate">@Image.Locate</div>
+                                </div>
+                                <div class="clear"></div>
+
+                                @if (Image.StereoscopicImageFL != null)
+                                {
+                                    if (!string.IsNullOrEmpty(Image.StereoscopicImageFL.StAge))
+                                    {
+                                        <div class="search_content_info_SeparateLine"></div>
+                                        <div class="search_content_info_text">
+                                            <div>林齡</div>
+                                            <div>@(Image.StereoscopicImageFL != null ? Image.StereoscopicImageFL.StAge : string.Empty)</div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    }
+                                }
+
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>像對海拔</div>
+                                    <div>最低海拔 :  <span id="image_AltMin">@Image.AltMin</span> (m)， 最高海拔 <span id="image_AltMax">@Image.AltMax</span> (m)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="clear"></div>
+        </div>
+    </div>
+} else {
+    <span>查無資料</span>
+}
+

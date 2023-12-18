@@ -1,0 +1,300 @@
+﻿@model Wei.SysAuth.SysUser
+@{
+    ViewBag.Title = "EditUserFunction";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+<div class="contnet_title_layout content_title">個人權限編輯</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>使用者編碼</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            @Model.UserNo
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>使用者姓名</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            @Model.Name
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>單位</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            @ViewBag.DeptName
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>單位</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="UserFunction_Ddl_Dept"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>使用者</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="UserFunction_Ddl_User" style="float:left"></div><div style="float:left;margin-left:10px;"><input type="checkbox" id="UserFunction_chb_Copy" />複製功能權限至以下使用者</div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="UserFunction_Btn_AddUser" value="加入" />
+        <input type="button" id="UserFunction_Btn_RemoveUser" value="移除" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px; height:415px">
+        <div>
+            <div id="UserFunctiont_LB_UserList" style="float:left"></div>
+            <div id="EditUserFunction_GV_SRF" style="float:left"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="EditUserFunction_btn_Save" onclick="SaveFuns()" value="確定" />
+        <input type="button" id="EditUserFunction_btn_Cancel" value="取消" onclick="Disable()" />
+        <input type="button" id="EditUserFunction_btn_Edit" value="修改" onclick="Able()" />
+        <input type="button" value="回上頁" id="EditUserFunction_btn_Back" onclick="location.href = '@Url.Action("UserFunction", "SysRoleFunc")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<script>
+    //#region 變數宣告
+    var GetFunsUrl = '@Url.Action("GetFuns", "SysRoleFunc")';
+    var UserFuns =@Json.Encode(ViewData["UserFuns"]);
+    var SelectFuns = {};
+    var DelFuns = {};
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var Dept =[];
+    var GroupList=[];
+    var FunList = @Html.Raw(Json.Encode(ViewData["FunList"]));
+    var GetRoleGroupMngUrl = '@Url.Action("GetRoleGroupMng", "Admin")';
+    var UserID = '@Model.UserID';
+    var SaveUserFunUrl = '@Url.Action("SaveUserFun", "SysRoleFunc")';
+    var UserList={};
+    var GetUserListUrl = '@Url.Action("GetUserList", "SysRoleFunc")';
+    var SelUserList = {};
+    //#endregion
+
+    //#region 事件處理
+    function SaveFuns() {
+        var SelList = [];
+        for (var i in SelectFuns) {
+            SelList.push(i);
+        }
+        var DelList = [];
+        for (var i in DelFuns) {
+            DelList.push(i);
+        }
+        var SysUserList = [];
+        SysUserList[0]=UserID;
+        if($("#UserFunction_chb_Copy").prop("checked")) {
+            for(var i in SelUserList)
+                SysUserList.push(i);
+        }
+        $.ajax({
+            url: SaveUserFunUrl,
+            type: "POST", dataType: "text",
+            data: { selfunc: JSON.stringify(SelList), delfunc: JSON.stringify(DelList), userlist: JSON.stringify(SysUserList) },
+            success: function (data) {
+                if (data == "True") {
+                    alert("個人功能權限設定完成!");
+                    location.reload();
+                }
+                else 
+                    alert("個人功能權限設定失敗!");                
+            },
+            error: function (e) {
+                alert("Error");
+            }
+        });
+    };
+
+    function AddUser() {
+        $("#UserFunctiont_LB_UserList").jqxListBox({ source: SelUserList, selectedIndex: 0 });
+    };
+
+
+    function Disable() {
+        $("#UserFunction_chb_Copy").attr('disabled',true);
+        $("#UserFunction_Ddl_Dept,#UserFunction_Ddl_User").jqxDropDownList({disabled:true});
+        $("#UserFunction_Btn_AddUser,#UserFunction_Btn_RemoveUser, #EditUserFunction_btn_Save, #EditUserFunction_btn_Cancel").jqxButton({disabled:true});
+        $("#EditUserFunction_GV_SRF").jqxTreeGrid({disabled:true});
+    }
+
+    function Able() {
+        $("#UserFunction_chb_Copy").removeAttr('disabled');
+        $("#UserFunction_Ddl_Dept,#UserFunction_Ddl_User").jqxDropDownList({disabled:false});
+        $("#UserFunction_Btn_AddUser,#UserFunction_Btn_RemoveUser, #EditUserFunction_btn_Save, #EditUserFunction_btn_Cancel").jqxButton({disabled:false});
+        $("#EditUserFunction_GV_SRF").jqxTreeGrid({disabled:false});
+    }
+    //#endregion
+
+    //#region 頁面初始
+    function dataInit() {
+        var source = {
+            localdata: FunList,
+            datatype: "array",
+            datafields: [
+                 { name: 'FunID', type: 'string' },
+                 { name: 'FunPID', type: 'string' },
+                 { name: 'Name', type: 'string' },
+            ],
+            hierarchy: {
+                keyDataField: { name: 'FunID' },
+                parentDataField: { name: 'FunPID' }
+            },
+            id: 'FunID'
+        }
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#EditUserFunction_GV_SRF").jqxTreeGrid({
+            source: dataAdapter,
+            altRows: true,
+            width: 560,
+            height: 400,
+            checkboxes: true,
+            hierarchicalCheckboxes: true,
+            columns: [
+              {
+                  text: "選取", columntype: 'checkbox', cellsAlign: "center", align: "center", dataField: "Ch", width: 100,
+                  cellsrenderer: function () { return "" }
+              },
+              { text: "航照判釋知識教育推廣平台", dataField: "Name", cellsAlign: "center", align: "center" }
+            ]
+        });
+        var rows = $('#EditUserFunction_GV_SRF').jqxTreeGrid('getRows');
+        var traverseTree = function(rows) {
+            for(var i = 0; i < rows.length; i++) {
+                if (rows[i].records) {
+                    idValue = rows[i][idColumn];
+                    $('#EditUserFunction_GV_SRF').jqxTreeGrid('expandRow',idValue);
+                    traverseTree(rows[i].records);
+                }
+            }
+        };
+        var idColumn = $('#EditUserFunction_GV_SRF').jqxTreeGrid('source')._source.id;
+        traverseTree(rows);
+
+        if (UserFuns.length > 0) {
+            for (var i = 0; i < UserFuns.length; i++) {
+                if (!SelectFuns.hasOwnProperty(UserFuns[i]))
+                    SelectFuns[UserFuns[i]] = UserFuns[i];
+                $("#EditUserFunction_GV_SRF").jqxTreeGrid('checkRow', UserFuns[i])
+            }
+        }
+
+        $('#EditUserFunction_GV_SRF').on('rowCheck',
+            function (event) {
+                var ID = event.args.row.FunID;
+                if (!SelectFuns.hasOwnProperty(ID)) {
+                    SelectFuns[ID] = ID;
+                }
+                delete DelFuns[ID];
+            });
+
+        $('#EditUserFunction_GV_SRF').on('rowUncheck', function (event) {
+            var ID = event.args.row.FunID;
+            delete SelectFuns[ID];
+            if (!DelFuns.hasOwnProperty(ID))
+                DelFuns[ID] = ID;
+        });
+
+        $("#UserFunction_Ddl_Dept").jqxDropDownList(GetJqxDdlSetting(DeptList, "DeptID", "Name"));
+        $("#UserFunction_Ddl_Dept").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+        $("#UserFunction_Ddl_User").jqxDropDownList(GetJqxDdlSetting(UserList, "UserID", "Name"));
+        $("#UserFunction_Ddl_User").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+
+        $("#UserFunctiont_LB_UserList").jqxListBox({
+            height: 400,
+            width: 360,
+            theme: 'energyblue',
+            valueMember: 'ID',
+            displayMember: 'Content',
+            selectedIndex: 0
+        });
+    }
+
+    function objInit() {
+        $('[type=button]').jqxButton(JqxBtnSetting);
+        $("#UserFunction_Ddl_Dept").on("select",function(event){
+            var args = event.args;
+            var item = $('#UserFunction_Ddl_Dept').jqxDropDownList('getItem', args.index);
+            var Value = item.value;
+            var SysUser={};
+            SysUser.DeptID=Value;
+            $.ajax({
+                type: 'POST',
+                dataType: 'JSON',
+                url: GetUserListUrl,
+                async: false,
+                data:{data:JSON.stringify(SysUser)},
+                success: function (data) {
+                    UsetList = data;
+                    $("#UserFunction_Ddl_User").jqxDropDownList({source:UsetList,displayMember:"Name",valueMember:"UserID", selectedIndex: 0});
+                    $("#UserFunction_Ddl_User").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+                }
+            })
+        });
+
+        $("#UserFunction_Btn_AddUser").on("click",function(event){
+            var UID = $("#UserFunction_Ddl_User").val();
+            var UserName = $("#UserFunction_Ddl_User").text();
+            var DeptName = $("#UserFunction_Ddl_Dept").text();
+            var Content =DeptName+"_"+UserName;
+            if(UID !=0) {
+                if (!SelUserList.hasOwnProperty(UID) && UserID != UID) {
+                    var obj = {};
+                    obj.ID = UID;
+                    obj.Content=Content;
+                    SelUserList[UID]=obj;
+                }
+            }
+            AddUser();
+        });
+
+        $("#UserFunction_Btn_RemoveUser").click(function () {
+            var item = $("#UserFunctiont_LB_UserList").jqxListBox('getSelectedItem');
+            var ID = item.value;
+            delete SelUserList[ID];
+            AddUser();
+        });
+        Disable();
+    };
+    //#endregion
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        dataInit();
+        objInit();
+    });
+</script>

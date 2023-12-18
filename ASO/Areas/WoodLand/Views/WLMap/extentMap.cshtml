@@ -1,0 +1,62 @@
+﻿@using ASO.Models
+@{
+    Layout = null;
+    ViewBag.Title = "地圖定位";
+}
+<script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+
+
+
+
+<body class="claro">
+    <div>
+        @Html.Action("Map", "Home", new { area = "Maps" })
+    </div>
+</body>
+
+<script>
+    var extentdata = @Html.Raw(Json.Encode(Model));
+    extentdata.wkid = 102443;
+    //debugger;
+    var mapInitconfig = {
+        domDiv: 'map',
+        defExtent:extentdata, //{ minx: 275509.2695315677, miny: 2751645.1634475225, maxx: 346755.2810787978, maxy: 2787368.3745819633, wkid: 102443 },
+        optionFuns: [
+        { fun: "proxy", param: "http://210.242.163.56/proxy/proxy.ashx" },
+        { fun: "geometryService", param: "http://210.242.163.58/ArcGIS/rest/services/Geometry/GeometryServer" },
+        { fun: "printTask", param: "http://192.168.1.56/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task" },
+        { fun: "userLocateBtn", param: null },
+        { fun: "fenceToShp", param: "http://wa.e-land.gov.tw/arcgis/rest/services/HDST/ExtractZionData/GPServer/ExtractZionData" }
+        ]
+    };
+
+    $(function () {
+        mapInit();;
+    });
+
+    function mapInit() {
+        whenAvailable(function (t) {
+            arc = new MapCtrl(mapInitconfig);
+            wmtslayer = new LayerCtrl({
+                url: '',
+                layertype: OpLayerType.tgos97,
+                id: 'wmts',
+                visible: true
+            });
+            arc.addLayer(wmtslayer);
+
+            var g = arc.StringToGeometry('{"rings":[[['+  extentdata.minx +','+ extentdata.maxy +'],['+ extentdata.maxx +','+ extentdata.maxy +'],[' + extentdata.maxx + ','+ extentdata.miny +'],['+ extentdata.minx +',' + extentdata.miny + '],['+  extentdata.minx +','+ extentdata.maxy +']]]}');
+            arc.loadDrawGraphic([g], 1);
+
+            var a = [];
+            a.push([extentdata.minx,extentdata.maxy]);
+            a.push([extentdata.maxx,extentdata.maxy]);
+            a.push([extentdata.maxx,extentdata.miny]);
+            a.push([extentdata.minx,extentdata.miny]);
+            arc.fitGeometryXY(a);
+
+        });
+    }
+</script>
+
+@Html.PageScripts()

@@ -1,0 +1,106 @@
+﻿@model List<ASO.Models.Species>
+    @{
+        Layout = null;
+    }
+    <div class="PhotoSearch1_contentRIGHT_ALLinfo_layout">
+        @if (Model != null)
+        {
+            string _IPCCsubID = Model.Count() > 0 ? Model[0].IPCCsubID.ToString() : string.Empty;
+
+            <div class="PhotoSearch1_contentRIGHT_info_title">
+                @*<div class="PhotoSearch1_contentRIGHT_info_Number">立體像對</div>*@
+                <div class="PhotoSearch1_contentRIGHT_info_Number"><span class="orderArrow" data-col="ID">序號<i style="padding-left: 6px;" class="fas fa-caret-down downTarget"></i><i style="padding-left: 6px;display:none;" class="fas fa-caret-up upTarget"></i></span></div>
+                <div class="PhotoSearch1_contentRIGHT_info_ComName"><span class="orderArrow" data-col="ComName">地物種類<i style="padding-left: 6px;" class="fas fa-caret-down downTarget"></i><i style="padding-left: 6px;display:none;" class="fas fa-caret-up upTarget"></i></span></div>
+                <div class="PhotoSearch1_contentRIGHT_info_IPCCsub"><span class="orderArrow" data-col="IPCCsub">資源調查分類<i style="padding-left: 6px;" class="fas fa-caret-down downTarget"></i><i style="padding-left: 6px;display:none;" class="fas fa-caret-up upTarget"></i></span></div>
+                <div class="PhotoSearch1_contentRIGHT_info_SciName"><span class="orderArrow" data-col="Family">科名<i style="padding-left: 6px;" class="fas fa-caret-down downTarget"></i><i style="padding-left: 6px;display:none;" class="fas fa-caret-up upTarget"></i></span></div>
+                <div class="PhotoSearch1_contentRIGHT_info_Family"><span class="orderArrow" data-col="SciName">學名<i style="padding-left: 6px;" class="fas fa-caret-down downTarget"></i><i style="padding-left: 6px;display:none;" class="fas fa-caret-up upTarget"></i></span></div>
+            </div>
+            <div class="clear"></div>
+            <div id="DivListData">
+                @{ 
+                    Html.RenderPartial("QueryListDataForSystem", Model);
+                }
+            </div>
+            <div class="PhotoSearch1_contentRIGHT_info_SeparateLine"></div>
+            <script>
+                $(function () {
+
+                    $(".orderArrow").click(function () {
+                        var list = @Html.Raw(Json.Encode(Model));
+                        var $this = $(this);
+                        var $col = $this.data("col");
+                        var _downTarget = $this.find(".downTarget");
+                        var _upTarget = $this.find(".upTarget");
+                        var _display = _downTarget.css("display");
+                        var _orderState = true;
+
+                        $(".downTarget").show();
+                        $(".upTarget").hide();
+
+                        if (_display != "none") {
+                            _downTarget.hide();
+                            _upTarget.show();
+                            _orderState = true;
+                        } else {
+                            _downTarget.show();
+                            _upTarget.hide();
+                            _orderState = false;
+                        }
+
+                        var _data = {
+                            list: list,
+                            _col: $col,
+                            _asc: _orderState,
+                        }
+
+                        $.ajax({
+                            type: 'POST',
+                            cache: false,
+                            async: false,
+                            url: '@Url.Content("~/Search/QueryListWithOrderForSystem")',
+                            data: JSON.stringify(_data),
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                $("#DivListData").html(data);
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                $("#DivListData").html("");
+                            }
+                        });
+                    });
+                });
+            </script>
+           } else {
+            <div class="PhotoSearch1_contentRIGHT_info_SeparateLine"></div>
+            <div class="PhotoSearch1_contentRIGHT_info" style="text-align:center">
+                <div class="PhotoSearch1_contentRIGHT_info_Name">建置中</div>
+            </div>
+            <div class="clear"></div>
+            }
+    </div>
+
+    <script>
+        $(function () {
+            $('#jqxwin_solid').jqxWindow({
+                width: 793.7,
+                height: 2000,
+                resizable: false,
+                isModal: true,
+                autoOpen: false,
+                draggable: false
+            });
+        });
+    </script>
+    <div id="jqxwin_solid" style="display:none;">
+        <div>
+            滑鼠左鍵點擊像片可另開視窗檢視
+        </div>
+        <div id="jqxwin_solid_content" style="background:#000;overflow:hidden;">
+            @{
+                if (Model != null)
+                {
+                    Html.RenderAction("SolidPhoto","Search");
+                }
+            }
+        </div>
+    </div>

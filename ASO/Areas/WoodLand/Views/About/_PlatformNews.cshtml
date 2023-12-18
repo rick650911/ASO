@@ -1,0 +1,31 @@
+﻿@model List<ASO.Models.WLBulletinBoard>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <div class="PhotoSearch1_contentRIGHT_info_SeparateLine" style="width:275px"></div>
+        <span id="NewS_@item.ID" data-id="@item.ID" style="cursor:pointer;">
+            <span class="NewDateCoor">@item.AddTime.ToString("yyyy.MM.dd")</span>
+            <br />
+            <span class="NewContentColor">
+                <i class="fas fa-chevron-right fa-xs" style="color:#893133;"></i>
+                @item.Title
+                @if (item.File != null)
+                {
+                    <span>，詳情請參考<a href="@Url.Content(item.File.First().FilePath)" target="_blank" style="text-decoration:underline;color:#141681;">連結</a></span>
+                }
+            </span>
+        </span>
+    }
+}
+
+<script>
+    $(function () {
+        $("[id^='NewS_']").click(function () {
+            var _this = $(this);
+            var _id = _this.data('id');
+            location = "@Url.Action("NewsContent","About")" + '/' + _id;
+        });
+    }); 
+</script>

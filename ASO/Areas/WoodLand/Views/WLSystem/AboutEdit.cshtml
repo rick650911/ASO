@@ -1,0 +1,119 @@
+﻿@model ASO.Models.WLAbout
+@{
+    ViewBag.Title = "平台資訊管理編輯";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<script src="~/ckeditor/ckeditor.js"></script>
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">平台資訊管理編輯</div>
+    <div class="download_content_layout">
+        <div class="download_content_document_title_layout">
+            <div class="download_content_document_title" style="margin-bottom:10px;">
+                <div class="download_content_document_title_subject">
+                    項目：@Model.Item
+                    <input id="btnImageLink" type="button" value="取得圖檔連結" class="btn_jqxbutton" />
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="download_content_SeparateLine"></div>
+        <div class="download_content_text">
+            <textarea name="ta_editor" id="ta_editor">@Model.Content</textarea>
+        </div>
+        <div class="download_content_SeparateLine"></div>
+        <div style="margin-top:10px;text-align:center">
+            <button id="btn_save" class="btn_jqxbutton">儲存</button>
+            <button id="btn_cancel" class="btn_jqxbutton">取消</button>
+        </div>
+    </div>
+</div>
+<script>
+    var data = @Html.Raw(Json.Encode(Model));
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_system']");
+        $(".menu_options_text[class*='Menu_system']").addClass("menu_active");
+        $('button').jqxButton();
+        //CKEDITOR.replace('ta_editor', {height: 500  });
+        $('#ta_editor').jqxEditor({ height: "400px", width: '100%' });
+
+        $('#btn_save').on('click', function(){
+            WLBSave();
+        });
+
+        $('#btn_cancel').on('click', function(){
+            location.href = '@Url.Action("AboutMgn", "WLSystem")';
+        });
+
+        if ($('input').hasClass('btn_jqxbutton')) {
+            $('.btn_jqxbutton').jqxButton();
+        }
+
+        $('#btnImageLink').click(function () {
+            open("@Url.Action("AboutEditImage", "WLSystem")");
+        });
+    });
+
+    function WLBSave() {
+        var _data = $('#ta_editor').val();
+        if (_data.length == 0) {
+            alert('請輸入內容')
+        } else if (_data.length > 2094610) {
+            alert('內容過長!!');
+        } else {
+            var data = {
+                Item:  '@Model.Item',
+                Content: _data
+            };
+
+            $.ajax({
+                url:  '@Url.Action("SaveAbout", "WLSystem")',
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                data: JSON.stringify({ wb : data }),
+                success: function(result){
+                    if (result == 'OK' || !isNaN(parseInt(result))) {
+                        alert('儲存成功');
+                    } else {
+                        alert(result);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('error:' + xhr.status + thrownError);
+                    return false;
+                }
+            });
+        }
+
+
+        //var data = CKEDITOR.instances.ta_editor.getData();
+        @*if(data.length == 0)
+            alert('請輸入內容')
+        else if (data.length >2094610)
+            alert('內容過長!!');
+        else{
+            var data = {
+                Item:  '@Model.Item',
+                Content: data
+            };
+
+            $.ajax({
+                url:  '@Url.Action("SaveAbout", "WLSystem")',
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                data: JSON.stringify({ wb : data }),
+                success: function(result){
+                    if( result == 'OK' || !isNaN(parseInt(result))){
+                        alert('儲存成功');
+                    } else
+                        alert(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('error:' + xhr.status + thrownError);
+                    return false;
+                }
+            });
+        }*@
+    }
+</script>

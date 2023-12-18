@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "CourseTime";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">上課時數統計</div>
+<div id="grid_CourseTime"></div>
+
+<script>
+    var GetCourseUrl = '@Url.Action("getCourseTime", "Course")';
+    var CourseTime = {};
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_CourseTime']");
+        $(".menu_options_text[class*='Menu_CourseTime']").addClass("menu_active");
+        dataInit();
+    })
+
+    function dataInit() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetCourseUrl,
+            async: false,
+            success: function (data) {
+                CourseTime = data;
+            }
+        })
+        var source = {
+            localdata: CourseTime,
+            datatype: "Json",
+            datafields: [
+                { name: 'AccountID' },
+                { name: 'Title' },
+                { name: 'LearnTime' },
+                { name: 'min' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              { text: '帳號', datafield: 'AccountID', width: 255, align: 'center', cellsalign: 'center' },
+              { text: '課程內容', datafield: 'Title', width: 255, align: 'center', cellsalign: 'center' },
+              { text: '上課日期', datafield: 'LearnTime', width: 255, align: 'center' },
+              { text: '上課時數(分鐘)', datafield: 'min', width: 255, align: 'center', cellsalign: 'center' },
+            ],
+        };
+        $("#grid_CourseTime").jqxGrid(GetJqxGvSetting(setting));
+    }
+</script>
+
+

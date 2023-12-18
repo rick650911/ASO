@@ -1,0 +1,88 @@
+﻿@model List<Wei.SysAuth.SysRole>
+@{
+    ViewBag.Title = "角色群組維護";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">群組管理</div>
+<div id="grid_group"></div>
+
+<script>
+    var QueryUrl = '@Url.Action("", "Admin")';
+    var GetRoleGroupMngUrl = '@Url.Action("GetRoleGroupMng", "Admin")';
+    var GroupEditUrl = '@Url.Action("GroupEdit", "Admin")';
+    var GroupAddUrl = '@Url.Action("GroupEdit", "Admin", new { ID = 0})';
+    var SysRole = {};
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        dataInit();
+    })
+
+    function dataInit() {
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetRoleGroupMngUrl,
+            async: false,
+            success: function (data) {
+                SysRole = data;
+            }
+        })
+        var source = {
+            localdata: SysRole,
+            datatype: "Json",
+            datafields: [
+                { name: 'RoleID' },
+                { name: 'Name' },
+                { name: 'StartDate' },
+                { name: 'EndDate' },
+                { name: 'Comment' },
+                { name: 'Status' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              {
+                  text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                      return "編輯";
+                  }, buttonclick: function (row) {
+                      var ID = $("#grid_group").jqxGrid('getcellvalue', row, "RoleID");
+                      location.href = GroupEditUrl + "/" + ID;
+                  }
+              },
+              { text: '群組代號', datafield: 'RoleID', width: 80, align: 'center', cellsalign: 'center' },
+              { text: '群組名稱', datafield: 'Name', width: 200, align: 'center' },
+              { text: '起始時間', datafield: 'StartDate', width: 120, align: 'center', cellsalign: 'center' },
+              { text: '結束時間', datafield: 'EndDate', width: 120, align: 'center', cellsalign: 'center' },
+              { text: '群組說明', datafield: 'Comment', align: 'center' },
+              {
+                  text: '狀態', datafield: 'Status', width: 120, align: 'center', cellsalign: 'center',
+                  cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                      return '<div class="jqx-grid-cell-middle-align" style="margin-top: 6px;">' + (value == "1" ? "啟用" : "停用") + '</div>';
+                  }
+              }
+            ],
+            showstatusbar: true,
+            renderstatusbar: function (statusbar) {
+                var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                var addButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>新增</span></div>");
+                container.append(addButton);
+                statusbar.append(container);
+                addButton.jqxButton({ width: 60, height: 15 });
+                addButton.click(function (event) {
+                    location.href = GroupAddUrl;
+                });
+            }
+        };
+        $("#grid_group").jqxGrid(GetJqxGvSetting(setting));
+    }
+</script>

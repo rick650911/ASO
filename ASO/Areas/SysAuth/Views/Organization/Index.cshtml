@@ -1,0 +1,152 @@
+﻿@model Wei.SysAuth.Department
+@{
+    ViewBag.Title = "單位資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+<div class="contnet_title_layout content_title">單位資料</div>
+<div>
+    <table cellpadding="2" cellspacing="1" border="0" style="margin-bottom:5px">
+        <tr>
+            <td style="padding-left:30px">單位名稱：</td>
+            <td><input type="text" id="OrgIndex_text_DeptName" /></td>
+            <td style="padding-left:10px">單位編號：</td>
+            <td><input type="text" id="OrgIndex_text_DeptNO" /></td>
+            <td style="padding-left:10px">單位狀態：</td>
+            <td><div id="OrgIndex_Ddl_DeptStatus"></div></td>
+            <td style="padding-left:10px">
+                <input type="button" id="OrgIndex_btn_Query" value="查詢" onclick="Query()" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="margin-bottom:10px;" id="grid_org"></div>
+<style>
+    .content_whiteBG_layout {
+        padding-bottom: 0px;
+    }
+</style>
+
+<script>
+    //#region 宣告變數
+    var DeptList = {};
+    var Dept =[];
+    var UserTitleList = @Html.Raw(Json.Encode(ViewData["UserTitleList"]));
+    var Title =[];
+    var GetDeptListUrl = '@Url.Action("GetDeptList", "Organization")';
+    var EditDeptUrl = '@Url.Action("EditDept", "Organization")';
+    var AddDeptUrl = '@Url.Action("AddDept", "Organization")';
+    //#endregion
+
+    //#region 事件處理
+    function GetDeptist() {
+        var source = {
+            localdata: DeptList,
+            datatype: "JSON",
+            datafields: [
+                { name: 'DeptID', type: 'int' },
+                { name: 'DeptPID', type: 'int' },
+                { name: 'DeptNo', type: 'string' },
+                { name: 'DeptName', type: 'string' },
+                { name: 'RowStatus', type: 'string' },
+            ],
+            hierarchy: {
+                keyDataField: { name: 'DeptID' },
+                parentDataField: { name: 'DeptPID' }
+            },
+            id: 'DeptID'
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#grid_org").jqxTreeGrid({
+            source: dataAdapter,
+            sortable: true,
+            columns: [
+              {
+                    text: '', width: 80, align: 'center', columntype: 'button',
+                                    cellsrenderer: function () {
+                      return '<input type="button" id="OrgIndex_btn_Query" class="jqx-rc-all jqx-button jqx-widget jqx-fill-state-normal" value="編輯" />'
+                  },
+                  buttonclick: function (row) {
+                      var selection = $("#grid_org").jqxTreeGrid('getSelection');
+                      var rowData = selection[0];
+                      location.href= EditDeptUrl +"/"+rowData.DeptID;
+                  }
+              },
+              { text: '單位編號', datafield: 'DeptNo', cellsalign: 'center', align: 'center' },
+              { text: '單位名稱', datafield: 'DeptName', align: 'center' },
+              {
+                  text: '單位狀態', datafield: 'RowStatus', align: 'center', cellsalign:'center', width: '100px',
+                  cellsrenderer: function (row, column, value) {
+                      return value==1?"啟用":"停用";
+                  }
+              }
+            ],
+            showStatusBar: true,
+            renderStatusBar: function (statusbar) {
+                var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                var addButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>新增</span></div>");
+                container.append(addButton);
+                statusbar.append(container);
+                addButton.jqxButton({ width: 60, height: 15 });
+                addButton.click(function (event) {
+                    location.href = AddDeptUrl;
+                });
+            }
+        });
+        $("#grid_org").jqxTreeGrid(JqxGvSetting);
+        var rows = $('#grid_org').jqxTreeGrid('getRows');
+        var traverseTree = function(rows) {
+            for(var i = 0; i < rows.length; i++) {
+                if (rows[i].records) {
+                    idValue = rows[i][idColumn];
+                    $('#grid_org').jqxTreeGrid('expandRow',idValue);
+                    traverseTree(rows[i].records);
+                }
+            }
+        };
+        var idColumn = $('#grid_org').jqxTreeGrid('source')._source.id;
+        traverseTree(rows);
+    }
+
+    function Query() {
+        var dept = {};
+        dept.DeptNo = $("#OrgIndex_text_DeptNO").val();
+        dept.Name = $("#OrgIndex_text_DeptName").val();
+        dept.RowStatus = $("#OrgIndex_Ddl_DeptStatus").val();
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetDeptListUrl,
+            async: false,
+            data: {data: JSON.stringify(dept)},
+            success: function (data) {
+                DeptList = data;
+                GetDeptist();
+            }
+        })
+    }
+    //#endregion
+
+    //#region 頁面初始
+    function dataInit() {
+        var DeptStatus = [{name:"請選擇",value:"-1"},{name:"啟用",value:"1"},{name:"停用",value:"0"}];
+        $("#OrgIndex_Ddl_DeptStatus").jqxDropDownList(GetJqxDdlSetting(DeptStatus, "value", "name"));
+    };
+
+    function objInit() {
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+        $('#grid_org').on('rowDoubleClick', function (event) {
+            var key = event.args.key;
+            location.href= EditDeptUrl +"/"+key;
+        });
+    };
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        objInit();
+        dataInit();
+        GetDeptist();
+    })
+</script>

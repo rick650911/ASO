@@ -1,0 +1,127 @@
+﻿@model Wei.SysAuth.Department
+@{
+    ViewBag.Title = "修改單位資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">修改單位資料</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>單位編碼</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="EditDept_Txt_DeptNo" value="@Model.DeptNo" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>單位名稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="EditDept_Txt_DeptName" value="@Model.DeptName" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+@*<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>上層分類</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="EditDept_Ddl_PType"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>*@
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>註記說明</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <td><input type="text" id="EditDept_Txt_Comment" value="@Model.Comment" /></td>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>啟用狀態</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="Status" id="EditDept_Rd_Status1" @(Model.RowStatus == 1 ? "checked" : "") />啟用
+            &nbsp;
+            <input type="radio" name="Status" id="EditDept_Rd_Status0" @(Model.RowStatus == 0 ? "checked" : "") />停用
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="btn_edit" value="確認" onclick="SaveEdit()" />&nbsp;
+        <input type="button" id="btn_cancel" value="取消" onclick="location.href = '@Url.Action("Index","Organization")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<script>
+    //#region 變數宣告區
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var PType  = @Model.DeptPID;
+    var DeptID = @Model.DeptID;
+    var SaveDeptUrl = '@Url.Action("SaveDept", "Organization")';
+    //#ednregion
+
+    //#region 程式集
+    function SaveEdit() {
+        if( $("#EditDept_Txt_DeptNo").val()=="") {
+            alert("請輸入部門編碼!");
+            $("#EditDept_Txt_DeptNo").focus();
+        }
+        else if( $("#EditDept_Txt_DeptName").val()=="") {
+            alert("請輸入部門名稱!");
+            $("#EditDept_Txt_DeptName").focus();
+        }
+        else {
+            var Dept={};
+            Dept.DeptID =DeptID;
+            Dept.DeptNo = $("#EditDept_Txt_DeptNo").val();
+            Dept.DeptName = $("#EditDept_Txt_DeptName").val();
+            Dept.Comment = $("#EditDept_Txt_Comment").val();
+            Dept.DeptPID = -1;
+            Dept.RowStatus = $("#EditDept_Rd_Status0").prop("checked") ? 0 : 1;
+            debugger;
+            $.ajax({
+                url: SaveDeptUrl,
+                type: "POST",
+                dataType: "text",
+                data: {data: JSON.stringify(Dept), Type: "Edit" },
+                success: function (data) {
+                    alert(data == "True" ? '修改成功' : '修改失敗');
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        //$("#EditDept_Ddl_PType").jqxDropDownList(JqxDdlSetting);
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+
+        //$("#EditDept_Ddl_PType").jqxDropDownList(GetJqxDdlSetting(DeptList, "DeptID", "DeptName"));
+        //$("#EditDept_Ddl_PType").jqxDropDownList('insertAt', { label: "最上層", value: -1 }, 0);//塞入最上層
+        //$("#EditDept_Ddl_PType").jqxDropDownList('selectItem', PType);
+    });
+</script>

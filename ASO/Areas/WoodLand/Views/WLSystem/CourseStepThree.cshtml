@@ -1,0 +1,189 @@
+﻿<div class="SystemContent_layout_row">
+    <div id="grid_files"></div>
+</div>
+<div class="SystemContent_layout_row">
+    <div class="SystemContent_layout_row_title" style="width:60px;">單元名稱</div>
+    <input type="text" id="unitname" />
+    <br/>
+    <div class="SystemContent_layout_row_title" style="width:60px;">選擇檔案</div>
+    <input type="file" id="handouts" style="width:500px;" multiple />
+    <input id="EditSave" type="button" value="儲存" onclick="EditSave();" />
+    <br />
+    <span style="color:#ba4343">(※有檔案即可「新增題庫/編輯測驗」)</span>
+    <table>
+        <tr>
+            <td>
+                <div style="width:300px;border-style:solid;border-width:1px;border-radius:5px;">
+                    <div id="progress_bar" style="width:0%;height:10px;background-color:#4da6c8;text-align:center;"></div>
+                </div>
+            </td>
+            <td><span id="progress_Num">0</span>%</td>
+            <td><span id="progress_State"></span></td>
+        </tr>
+    </table>
+</div>
+
+<div class="SystemContent_layout_row" style="width:490px;margin:0 auto;margin-top:40px;">
+    <div id="backStep" class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="ChangeStep(2);">上一步</div>
+    <div id="StepFour" class="BTN" style="width:180px;float:left;margin-right:15px;display:none;" onclick="StepFour();">新增題庫/編輯測驗</div>
+    <div class="BTN" style="width:140px;float:left;margin-right:15px;" onclick="EditCancel();">返回訓練教室編輯</div>
+</div>
+
+<script>
+    var i = 1;
+    var combieFiles = courseFiles.concat(uploadFiles);
+
+    $(function () {
+
+        var _show = courseData.Handouts;
+        if (_show !== undefined && _show !== null && _show.length > 0) {
+            $('#StepFour').show();
+        }
+
+        var _delIndex = [];
+        $.each(combieFiles, function (i, d) {
+            _delIndex.push(i);
+        });
+
+        $('#EditSave').jqxButton({ width: 80, height: 30 });
+        $('#step_three').addClass('StepRow_OneStep_active');
+        var source = {
+            localdata: combieFiles,
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'name', type: 'string' },
+                { name: 'size', type: 'int' },
+                { name: 'type', type: 'int' },
+                { name: 'uname', type: 'string' },
+
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+
+        $("#grid_files").jqxGrid({
+            width: '100%',
+            source: dataAdapter,
+            columns: [
+                {
+                    text: '', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () {
+                        return "刪除";
+                    },
+                    buttonclick: function (row) {
+                        var tmp = $('#grid_files').jqxGrid('getrowdata', row);
+                        if (confirm('確定刪除此檔案?')) {
+
+                            var _delRow = _delIndex[row];
+
+                            if (tmp.type === 0) {
+                                if (DelHandouts(tmp.id, _delRow)) {
+                                    _delIndex.splice(row, 1);
+                                }
+                            }
+                            else {
+                                $('#grid_files').jqxGrid('deleterow', _delRow);
+                                delete uploadFiles[tmp.id];
+                                _delIndex.splice(row, 1);
+                            }
+                        }
+                    }
+                },
+                { text: '檔案名稱', datafield: 'name', align: 'center' },
+                { text: '檔案大小', datafield: 'size', cellsalign: 'right', align: 'center' },
+                { text: '單元名稱', datafield: 'uname', cellsalign: 'left', align: 'center' },
+
+                {
+                    text: '上傳狀態', datafield: 'type', cellsalign: 'center', align: 'center',
+                    cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                        return '<div class="jqx-grid-cell-middle-align" style="margin-top: 6px;">' + (value === 0 ? '已上傳' : '未上傳') + '</div>';
+                    }
+                }
+            ]
+        });
+        $('#handouts').on('change', function (event) {
+
+            var MsgTrig = false;
+            var $msg = "";
+            var $docName = '';
+            var tmpFiles = event.target.files;
+            for (i = 0; i < tmpFiles.length; i++) {
+
+                var tmp = tmpFiles[i];
+
+                if (tmp.type === "application/pdf" || tmp.type === "application/vnd.oasis.opendocument.text") {
+                    var $size = Math.round(tmp.size * 100 / (1024 * 1024)) / 100;
+
+                    if ($size > 50) {
+                        MsgTrig = true;
+                        $docName += tmp.name + "\n";
+                    } else {
+                        tmpFiles[i].id = fileNum;
+                        uploadFiles[fileNum] = tmpFiles[i];
+                        $("#grid_files").jqxGrid('addrow', null, { id: fileNum, name: tmpFiles[i].name, size: tmpFiles[i].size, type: 1, uname: $('#unitname').val() });
+                        fileNum += 1;
+                    }
+                } else {
+                    MsgTrig = true;
+                    $docName += tmp.name + "\n";
+                }
+            }
+
+            if (MsgTrig) {
+                $msg = $docName + "檔案格式不正確或檔案過大。這些檔案不會上傳";
+                alert($msg);
+            }
+        });
+    });
+
+    function StepFour() {
+
+        if (currentID === 0 || quizData === null) {
+            var _sure = confirm("測驗題庫無題目，是否新增?");
+
+            if (_sure) {
+
+                if (currentID === 0) {
+
+                    $data = null;
+                    $.ajax({
+                        url: "@Url.Action("getMaxCourseID", "WLSystem")",
+                        type: "POST",
+                        data: $data,
+                        async: false,
+                        success: function (data) {
+                            currentID = data;
+                        }
+                    });
+                }
+                window.location = "@Url.Action("QuestionList", "WLSystem")" + "?CID=" + currentID;
+            }
+        } else {
+            ChangeStep(4);
+        }
+    }
+
+    function DelHandouts(id, row) {
+
+        var _state = false;
+        $.ajax({
+            url: '@Url.Content("~/WLSystem/DelHandouts")',
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: { ID: id },
+            success: function (result) {
+                if (result) {
+                    $('#grid_files').jqxGrid('deleterow', row);
+                    _state = true;
+                }
+                else {
+                    alert('刪除失敗。');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+        return _state;
+    }
+</script>

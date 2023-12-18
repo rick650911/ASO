@@ -1,0 +1,90 @@
+﻿@using ASO.Areas.WoodLand.Models;
+@model List<SpeciesIntro>
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">航照查詢種類敘述管理編輯</div>
+    <div class="download_content_layout">
+        <div class="download_content_document_title_layout">
+            <div class="download_content_document_title" style="margin-bottom:10px;">
+                <div class="download_content_document_title_subject">
+                    標題：@Model[0].Title
+                    <input id="btnImageLink" type="button" value="取得圖檔連結" class="btn_jqxbutton" />
+
+                </div>
+            </div>
+            @*<div class="download_content_document_title" style="width:900px;">
+                    <div class="download_content_document_title_subject">
+                        <div style="float:left;">檔案選擇：</div>
+                        @using (Html.BeginForm("Upload", "WLSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            <input type="file" name="file" />
+                            <input type="text" name="id" hidden />
+                            <input type="submit" id="btn_submit" hidden />
+                        }
+                    </div>
+                </div>*@
+        </div>
+        <div class="clear"></div>
+        <div class="download_content_SeparateLine"></div>
+        <div class="download_content_text">
+            <textarea id="ta_editor">@Model[0].Content</textarea>
+        </div>
+        <div class="download_content_SeparateLine"></div>
+        <div style="margin-top:10px;text-align:center">
+            <button id="btn_save" class="btn_jqxbutton">儲存</button>
+            <button id="btn_cancel" class="btn_jqxbutton">取消</button>
+        </div>
+    </div>
+</div>
+<script>
+    var data = @Html.Raw(Json.Encode(Model[0]));
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_system']");
+        $(".menu_options_text[class*='Menu_system']").addClass("menu_active");
+        $('button').jqxButton();
+        //$('#tb_date').jqxDateTimeInput({ width: '150px', height: '25px', formatString: 'yyyy/MM/dd' });
+        $('#ta_editor').jqxEditor({ height: "400px", width: '100%' });
+
+        $('#btn_save').on('click', function(){
+            WLBSave();
+        });
+
+        $('#btn_cancel').on('click', function(){
+            location.href = '@Url.Action("IpccMgn", "WLSystem")';
+        });
+    });
+
+    function WLBSave() {
+        var _id = @ViewBag.ID;
+
+        if (_id !== null && typeof (_id) !== 'undefined') {
+            $data = {
+                ID: _id,
+                Content: $('#ta_editor').val()
+            };
+            $.ajax({
+                url: "@Url.Action("IpccUpdate", "WLSystem")",
+                type: "POST",
+                data: 'text', // 因為有HTML字串POST 要用這個。
+                data: $data,
+                async: false,
+                success: function (data) {
+                    if (data) {
+                        alert('資料更新成功');
+                    } else {
+                        alert('資料更新失敗');
+                    }
+                },error: function (xhr, ajaxOptions, thrownError) {
+                    alert('error:' + xhr.status + thrownError);
+                    return false;
+                }
+            });
+        }
+    }
+            $('#btnImageLink').click(function () {
+            open("@Url.Action("AboutEditImage", "WLSystem")");
+        });
+</script>

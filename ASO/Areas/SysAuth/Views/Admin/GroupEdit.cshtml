@@ -1,0 +1,406 @@
+﻿@{
+    ViewBag.Title = "修改角色群組";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">群組編輯</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>群組編碼</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="GroupEdit_Txt_GID" value="@Model.RoleNo" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>群組名稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="GroupEdit_Txt_GName" value="@Model.Name" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>上層分類</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="GroupEdit_Ddl_PType"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>啟用時間</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="GroupEdit_Txt_SDate"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>截止時間</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="GroupEdit_Txt_EDate"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>群組狀態</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="Status" id="GroupEdit_Rd_Status1" @(Model.Status == Wei.SysAuth.enSysRoleStatus.ENABLE ? "checked" : "") />啟用
+            <input type="radio" name="Status" id="GroupEdit_Rd_Status0" @(Model.Status == Wei.SysAuth.enSysRoleStatus.DISABLE ? "checked" : "") />停用
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 347px">
+        <div>群組成員</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 347px">
+        <div>
+            <div id="GroupEdit_LB_GroupList" style="margin-bottom:5px"></div>
+            <input type="button" id="GroupEdit_Btn_AddEP" value="加入員工成員" />
+            <input type="button" id="GroupEdit_Btn_DelGMember" value="移除群組成員" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft" style="height: 90px">
+        <div>群組說明</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="height: 90px">
+        <div>
+            <textarea id="GroupEdit_Txt_GRemark" cols="59" rows="5">@Model.Comment</textarea>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="GroupEdit_Btn_Submit" value="儲存" onclick="SaveEditGroup()" />
+        <input type="button" id="GroupEdit_Btn_Cancel" value="取消" onclick="Disable()" />
+        <input type="button" id="GroupEdit_btn_Edit" value="編輯" onclick="Able()" />
+        <input type="button" id="GroupEdit_btn_Del" value="刪除" onclick="DelGroup()" />
+        <input type="button" id="GroupEdit_btn_Back" value="回上頁" onclick="location.href = '@Url.Action("Index","Admin")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<!--加入員工成員-->
+<div id="PV_AddEP_Window">
+    <div>
+        加入員工成員
+    </div>
+    <div>
+    </div>
+</div>
+
+<!--加入部門成員-->
+<div id="PV_AddDep_Window">
+    <div>
+        加入部門成員
+    </div>
+    <div>
+    </div>
+</div>
+
+<!--加入其他成員-->
+<div id="PV_AddElse_Window">
+    <div>
+        加入其他成員
+    </div>
+    <div>
+    </div>
+</div>
+
+<style>
+    input[type=button] {
+        font-size: 12px !important;
+    }
+</style>
+
+<script>
+    //#region 變數宣告區
+    var AddEPUrl = '@Url.Action("AddEP","Partial")';
+    var AddDepUrl = '@Url.Action("AddDep","Partial")';
+    var AddElseUrl = '@Url.Action("AddElse","Partial")';
+    var SaveGroupEditUrl = '@Url.Action("SaveGroupEdit", "Admin")';
+    var SaveGroupAddUrl = '@Url.Action("SaveGroupAdd", "Admin")';
+    var GetRoleGroupMngUrl = '@Url.Action("GetRoleGroupMng", "Admin")';
+    var RoleGroupMngUrl = '@Url.Action("Index", "Admin")';
+    var GroupList = {};
+    var SysRoleList = {};
+    var DelGroupUrl = '@Url.Action("DelGroup","admin")';
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var Dept =[];
+    var SysUserList = @Html.Raw(Json.Encode(ViewData["SysUserList"]));
+    var SysUserNum = SysUserList == null ? 0 : SysUserList.length; //如果大於0 提醒使用者 必須先移除角色 才可以刪除
+    var ParentNum = '@ViewBag.ParentNum'; //如果大於0 提醒使用者 必須先移除子角色
+    var DelUserList = {};
+    var UserTitleList = @Html.Raw(Json.Encode(ViewData["UserTitleList"]));
+    var Title =[];
+    var SDate = @Html.Raw(Json.Encode(Model.StartDate));
+    var EDate = @Html.Raw(Json.Encode(Model.EndDate));
+    var DropSelectVal = '@Model.RolePID';
+    var RoleID = '@Model.RoleID';
+    //#endregion
+
+    function objInit() {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        $('[type=button]').jqxButton(JqxBtnSetting);
+        $('[type=text]').jqxInput(JqxInputSetting);
+        $("#GroupEdit_Txt_SDate").jqxDateTimeInput(JqxDateSetting);
+        $('#GroupEdit_Txt_SDate ').jqxDateTimeInput('setDate', new Date(SDate == null ? '' : DateTojqxDateTimeInput(SDate)));
+        $("#GroupEdit_Txt_EDate").jqxDateTimeInput(JqxDateSetting);
+        $('#GroupEdit_Txt_EDate ').jqxDateTimeInput('setDate', new Date(EDate == null ? '' : DateTojqxDateTimeInput(EDate)));
+        $.ajax({
+            type: 'POST', dataType: 'JSON', url: GetRoleGroupMngUrl, async: false,
+            success: function (data) {
+                SysRoleList = data;
+            }
+        })
+        $("#GroupEdit_Ddl_PType").jqxDropDownList(GetJqxDdlSetting(SysRoleList, "RoleID", "Name"));
+        $("#GroupEdit_Ddl_PType").jqxDropDownList('insertAt', { label: "最上層", value: "-1" }, 0);//塞入最上層
+
+        //#region 員工
+        $("#PV_AddEP_Window").jqxWindow(JqxWindowSetting);
+
+        $('#GroupEdit_Btn_AddEP').click(function () {
+            $('#PV_AddEP_Window').jqxWindow('open');
+        });
+
+        $("#PV_AddEP_Window").on("open", function () {
+            PartialViewPopLoad("PV_AddEP_Window", AddEPUrl, false);
+        });
+        //#endregion
+
+        //#region部門
+        $("#PV_AddDep_Window").jqxWindow(JqxWindowSetting);
+        $('#GroupEdit_Btn_AddDep').click(function () {
+            $('#PV_AddDep_Window').jqxWindow('open');
+        });
+        $("#PV_AddDep_Window").on("open", function () {
+            PartialViewPopLoad("PV_AddDep_Window", AddDepUrl, false);
+        });
+        //#endregion
+
+        //#region其他
+        $("#PV_AddElse_Window").jqxWindow(JqxWindowSetting);
+        $('#GroupEdit_Btn_AddElse').click(function () {
+            $('#PV_AddElse_Window').jqxWindow('open');
+        });
+        $("#PV_AddElse_Window").on("open", function () {
+            PartialViewPopLoad("PV_AddElse_Window", AddElseUrl, false);
+        });
+        //#endregion
+
+        //#region移除
+        $("#GroupEdit_Btn_DelGMember").click(function () {
+            var item = $("#GroupEdit_LB_GroupList").jqxListBox('getSelectedItem');
+            var ID = item.value;
+            if (!DelUserList.hasOwnProperty(ID))
+                DelUserList[ID]=ID;
+            $("#GroupEdit_LB_GroupList").jqxListBox('removeAt', item.index);
+            delete GroupList[ID];
+        });
+        //#endregion
+    }
+
+    function dataInit() {
+        for (var i = 0; i < DeptList.length; i++) {
+            var D = {};
+            D.DeptNo = DeptList[i].DeptNo;
+            D.Name = DeptList[i].DeptName;
+            Dept[DeptList[i].DeptID] = D;
+            debugger;
+        }
+
+        for (var i = 0; i < UserTitleList.length; i++) {
+            var T = {};
+            T.TitNo = UserTitleList[i].TitNo;
+            T.Name = UserTitleList[i].TilName;
+            Title[UserTitleList[i].TitID] = T;
+        }
+
+        $("#GroupEdit_LB_GroupList").jqxListBox({
+            height: 300,
+            width: '98%',
+            theme: 'energyblue',
+            valueMember: 'ID',
+            displayMember: 'Content',
+            selectedIndex: 0
+        });
+
+        $("#GroupEdit_Ddl_PType").jqxDropDownList('selectItem', DropSelectVal);
+        if(SysUserList.length != 0)
+            InSysUserList();
+    }
+
+    //#region 程式集
+    function InSysUserList()    {
+        if(SysUserList.length>0)        {
+            for(var i=0;i<SysUserList.length;i++)            {
+                if (!GroupList.hasOwnProperty(SysUserList[i].ID)) {
+                    var StaffArray = {};
+                    StaffArray.ID = SysUserList[i].UserID;
+                    StaffArray.Type = "1";
+                    var Content = "﹝部門:" +( Dept.hasOwnProperty(SysUserList[i].DeptID) ?Dept[SysUserList[i].DeptID].Name :"" )+ "﹞ ﹝員工編號:" + SysUserList[i].UserNo + "﹞" + "﹝姓名:" + SysUserList[i].Name + "﹞﹝職稱:" + (Title.hasOwnProperty(SysUserList[i].TitID) ? Title[SysUserList[i].TitID].Name : "") + "﹞";
+                    StaffArray.Content = Content;
+                    GroupList[SysUserList[i].UserID] = StaffArray;
+                }
+            }
+        }
+        AddGroup();
+    }
+
+    function AddGroup() {
+        $("#GroupEdit_LB_GroupList").jqxListBox({ source: GroupList, selectedIndex: 0 });
+    };
+
+    function SaveEditGroup() {
+        if( $("#GroupEdit_Txt_GID").val()=="")
+            alert("請輸入群組編碼!");
+        else if( $("#GroupEdit_Txt_GName").val()=="")
+            alert("請輸入群組名稱!");
+        else {
+            var dataList = [];
+            for (var i in GroupList) {
+                dataList.push(i);
+            }
+            var DelList = [];
+            for (var i in DelUserList) {
+                DelList.push(i);
+            }
+            var SysRole = {};
+            SysRole.RoleID = RoleID;
+            SysRole.RoleNo = $("#GroupEdit_Txt_GID").val();
+            SysRole.Name = $("#GroupEdit_Txt_GName").val();
+            SysRole.RolePID = $("#GroupEdit_Ddl_PType").val();
+            SysRole.Comment = $("#GroupEdit_Txt_GRemark").val();
+            SysRole.StartDate = $("#GroupEdit_Txt_SDate").val();
+            SysRole.EndDate = $("#GroupEdit_Txt_EDate").val();
+            SysRole.Status = $("#GroupEdit_Rd_Status1").prop("checked") ? 1 : 0;
+            if(RoleID != "0"){
+                $.ajax({
+                    url: SaveGroupEditUrl,
+                    type: "POST",
+                    dataType: "text",
+                    data: { iddata: JSON.stringify(dataList), roledata: JSON.stringify(SysRole), deliddata: JSON.stringify(DelList) },
+                    success: function (data) {
+                        if (data == "True") {
+                            alert("修改成功!");
+                            location.reload();
+                        }
+                        else {
+                            alert("修改失敗!");
+                        }
+                    },
+                    error: function (e) {
+                        alert("Error");
+                    }
+                });
+            }
+            else if (RoleID == "0"){
+                $.ajax({
+                    url: SaveGroupAddUrl,
+                    type: "POST",
+                    dataType: "text",
+                    data: { iddata: JSON.stringify(dataList), roledata : JSON.stringify(SysRole)},
+                    success: function (data) {
+                        if (data == "True") {
+                            alert("新增成功!");
+                            history.go(-1);
+                        }
+                        else
+                            alert("新增失敗!");
+                    },
+                    error: function (e) {
+                        alert("Error");
+                    }
+                });
+            }
+        }
+    }
+
+    function Disable() {
+        $("#GroupEdit_Btn_AddEP, #GroupEdit_Btn_DelGMember, #GroupEdit_Btn_Submit, #GroupEdit_Btn_Cancel").jqxButton({disabled: true });
+        $("#GroupEdit_Txt_GID,#GroupEdit_Txt_GName,#GroupEdit_Txt_GEName,#GroupEdit_Txt_GMember").attr("disabled", true);
+        $("#GroupEdit_Txt_GRemark").attr("disabled", true);
+        $("#GroupEdit_Rd_Status1,#GroupEdit_Rd_Status0").attr("disabled", true);
+        $("#GroupEdit_Ddl_PType").jqxDropDownList({ disabled: true});
+        $("#GroupEdit_LB_GroupList").jqxListBox({ disabled: true});
+        $("#GroupEdit_Txt_SDate, #GroupEdit_Txt_EDate").jqxDateTimeInput({ disabled: true});
+    }
+
+    function Able() {
+        $("#GroupEdit_Btn_AddEP, #GroupEdit_Btn_DelGMember, #GroupEdit_Btn_Submit, #GroupEdit_Btn_Cancel").jqxButton({disabled: false });
+        $("#GroupEdit_Txt_GID,#GroupEdit_Txt_GName,#GroupEdit_Txt_GEName,#GroupEdit_Txt_GMember").removeAttr("disabled");
+        $("#GroupEdit_Txt_GRemark").removeAttr("disabled");
+        $("#GroupEdit_Rd_Status1,#GroupEdit_Rd_Status0").removeAttr("disabled");
+        $("#GroupEdit_Ddl_PType").jqxDropDownList({ disabled: false});
+        $("#GroupEdit_tr_Btn").show();
+        $("#GroupEdit_LB_GroupList").jqxListBox({ disabled: false});
+        $("#GroupEdit_Txt_SDate, #GroupEdit_Txt_EDate").jqxDateTimeInput({ disabled: false});
+    }
+
+    function DelGroup() {
+        if(ParentNum > 0) {
+            alert("請先刪除子角色群組!");
+            return false;
+        }
+        if(SysUserNum > 0) {
+            alert("請先移除角色群組成員!");
+            return false;
+        }
+        if (confirm("確定刪除角色群組資料?")) {
+            var SysRole = {};
+            SysRole.RoleID = RoleID;
+            $.ajax({
+                url: DelGroupUrl,
+                type: "POST", dataType: "text",
+                data: { SysRole: SysRole },
+                success: function (data) {
+                    if (data == "True") {
+                        alert("角色群組刪除完成!");
+                        location.href = RoleGroupMngUrl;
+                    }
+                    else {
+                        alert("角色群組刪除失敗!");
+                    }
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+    //#endregion
+
+    $(document).ready(function () {
+        objInit();
+        dataInit();
+        Disable();
+    })
+
+</script>

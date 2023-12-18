@@ -1,0 +1,199 @@
+﻿@model Wei.SysAuth.SysUser
+@{
+    ViewBag.Title = "新增帳號資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">新增帳號資料</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>帳號</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_AccountID" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>密碼</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_Password" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+@*<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>使用者編號</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_UserNo" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>*@
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>暱稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_UserName" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>單位名稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="AddUser_Ddl_PType"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+@*<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>權限</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="AddUser_Ddl_Title"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>*@
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>註記說明</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_Comment" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>電子信箱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddUser_Txt_Email" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+@*<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>性別</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="Gender" id="AddUser_Rd_Gender1" checked />男
+            &nbsp;
+            <input type="radio" name="Gender" id="AddUser_Rd_Gender0" />女
+        </div>
+    </div>
+</div>*@
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>啟用狀態</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="Status" id="AddUser_Rd_Status1" checked />啟用
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="btn_edit" value="確認" onclick="SaveAdd()" />&nbsp;
+        <input type="button" id="btn_cancel" value="取消" onclick="location.href='@Url.Action("UserSearch", "Organization")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+
+<script>
+    //#region 變數宣告區
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var UserTitleList = @Html.Raw(Json.Encode(ViewData["UserTitleList"]));
+    var SaveUserUrl = '@Url.Action("SaveUser", "Organization")';
+    var GoUserSearchUrl = '@Url.Action("UserSearch", "Organization")';
+    //#ednregion
+
+    //#region 程式集
+    function SaveAdd() {
+        if( $("#AddUser_Txt_AccountID").val()=="") {
+            alert("請輸入員工帳號!");
+            $("#AddUser_Txt_AccountID").focus();
+        }
+        else if( $("#AddUser_Txt_Password").val()=="") {
+            alert("請輸入員工密碼!");
+            $("#AddUser_Txt_Password").focus();
+        }
+        //else if( $("#AddUser_Txt_UserNo").val()=="") {
+        //    alert("請輸入員工編碼!");
+        //    $("#AddUser_Txt_UserNo").focus();
+        //}
+        else if( $("#AddUser_Txt_UserName").val()=="") {
+            alert("請輸入員工名稱!");
+            $("#AddUser_Txt_UserName").focus();
+        }
+        else {
+            var User={};
+            User.AccountID = $("#AddUser_Txt_AccountID").val();
+            User.Password = $("#AddUser_Txt_Password").val();
+            //User.UserNo = $("#AddUser_Txt_UserNo").val();
+            User.Name = $("#AddUser_Txt_UserName").val();
+            User.Comment = $("#AddUser_Txt_Comment").val();
+            User.DeptID = $("#AddUser_Ddl_PType").val();
+            User.TitID = 1;
+            User.Email = $("#AddUser_Txt_Email").val();
+            User.Status = 1;
+            User.Gender = $("#AddUser_Rd_Gender0").prop("checked") ? 0 : 1;
+            $.ajax({
+                url: SaveUserUrl,
+                type: "POST", dataType: "text",
+                data: {data: JSON.stringify(User), Type: 'Add' },
+                success: function (data) {
+                    if (data == "True") {
+                        alert("新增成功!");
+                        location.href=GoUserSearchUrl;
+                    }
+                    else {
+                        alert("新增失敗!");
+                    }
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        $("#AddUser_Ddl_PType").jqxDropDownList(JqxDdlSetting);
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+        $("#AddUser_Ddl_PType").jqxDropDownList(GetJqxDdlSetting(DeptList, "DeptID", "DeptName"));
+        $("#AddUser_Ddl_PType").jqxDropDownList('insertAt', { label: "最上層", value: -1 }, 0);
+        $("#AddUser_Ddl_Title").jqxDropDownList(GetJqxDdlSetting(UserTitleList, "TitID", "TilName"));
+        $("#AddUser_Ddl_Title").jqxDropDownList('insertAt', { label: "請選擇", value: -1 }, 0);
+    });
+</script>

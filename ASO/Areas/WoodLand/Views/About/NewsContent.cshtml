@@ -1,0 +1,31 @@
+﻿@using ASO.Areas.WoodLand.Models;
+@model NewSBulletin
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <table>
+        <tr>
+            <td style="width:100%"><div class="contnet_title_layout content_title">@Model.Title</div></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="about_content_coulmn_layout">
+                    <div class="about_content_coulmnRight_layout about_content_coulmnRight about_Height" id="content" style="overflow-y:scroll;word-wrap: break-word">
+                        <div>
+                            @Html.Raw(Model.Content)
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="clear"></div>
+</div>
+<script>
+    $(function () {
+    $('#content').height($(window).height()*0.7)  
+    })
+
+</script>

@@ -1,0 +1,105 @@
+﻿@model Wei.SysAuth.UserTitle
+@{
+    ViewBag.Title = "新增角色資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">新增權限資料</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>權限代號</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddTitle_Txt_TitleNo" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>權限名稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddTitle_Txt_TitleName" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>權限說明</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="AddTitle_Txt_Comment" />
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>啟用狀態</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="Status" id="AddTitle_Rd_Status1" checked />啟用
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="AddTitle_Btn_Edit" value="確認" onclick="SaveAdd();" />&nbsp;
+        <input type="button" id="AddTitle_Btn_Cancel" value="取消" onclick="location.href='@Url.Action("TitleSearch", "Organization")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<script>
+    //#region 變數宣告區
+    var TitleList = @Html.Raw(Json.Encode(ViewData["TitleList"]));
+    var SavTitleUrl = '@Url.Action("SaveTitle", "Organization")';
+    var GoTitleListUrl = '@Url.Action("TitleSearch", "Organization")';
+    //#ednregion
+
+    //#region 程式集
+    function SaveAdd() {
+        if( $("#EditTitle_Txt_TitleNo").val()=="")
+            alert("請輸入角色編碼!");
+        else if( $("#EditTitle_Txt_TitleName").val()=="")
+            alert("請輸入角色名稱!");
+        else {
+            var Title={};
+            Title.TitNo = $("#AddTitle_Txt_TitleNo").val();
+            Title.TilName = $("#AddTitle_Txt_TitleName").val();
+            Title.Comment = $("#AddTitle_Txt_Comment").val();
+            Title.RowStatus = 1;
+            $.ajax({
+                url: SavTitleUrl,
+                type: "POST", dataType: "text",
+                data: {data: JSON.stringify(Title),Type:"Add" },
+                success: function (data) {
+                    if (data == "True") {
+                        alert("新增成功!");
+                        location.href=GoTitleListUrl;
+                    }
+                    else 
+                        alert("新增失敗!");                    
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+    });
+</script>

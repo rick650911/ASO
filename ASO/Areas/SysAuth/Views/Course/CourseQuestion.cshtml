@@ -1,0 +1,138 @@
+﻿@model List<ASO.Models.WLQuestion>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery-ui.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.mousewheel.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.gzoom.js' charset="utf-8"></script>
+    <script type="text/javascript" src="~/Scripts/fontawesome-all.min.js"></script>
+
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.gzoom.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.metro.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.energyblue.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.office.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div class="Train2_content_Test_layout">
+            <div class="Train2_content_Test_coulmnRIGHT_question_layout">
+                <div class="Train2_content_Test_coulmnRIGHT_question_text">
+                    題號<span class="CurrentNum"></span> :
+                    <span id="QuestionDesc"></span>
+                </div>
+                <div id="ImageArea" style="visibility:hidden;">
+                    @{
+                        Html.RenderAction("SolidPhoto", "Search", new { area = "WoodLand" });
+                    }
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+            <div class="Train2_content_Test_coulmnRIGHT_answer_layout">
+                <div class="Train2_content_Test_coulmnRIGHT_answer_text">選項</div>
+                <div id="QuestionArea"></div>
+            </div>
+            <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+            <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_layout">
+                <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_text">作答:</div>
+                <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_layout">
+                    <div id="AnswerArea"></div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="clear"></div>
+    </div>
+    <style>
+        .Train2_content_Test_coulmnRIGHT_question_text,
+        .Train2_content_Test_coulmnRIGHT_answer_text,
+        .Train2_content_Test_coulmnRIGHT_ALLanswerBTN_text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        //initMenu = $(".menu_options_text[class*='Menu_train']");
+        var Question = @Html.Raw(Json.Encode(Model)); //題目
+        var CurrentNum = @ViewBag.QNum;
+        var MaxNum = Question.length;
+        var Exam = []; //作答
+        $(function () {
+            $(".menu_options_text[class*='Menu_train']").addClass("menu_active");
+            //$('.btn_jqxbutton').jqxButton();
+
+            $('.CurrentNum').html(@ViewBag.QNum); //題號
+            $('#QuestionDesc').html(Question[0].QuestionDesc); //題目
+
+            for (i = 0; i < Question.length; i++) {
+                Exam[Exam.length] = {QNO : Question[i].NO, Answer : -1};
+            }
+            solidInit();
+            ShowQuestion(1);
+        });
+
+
+        function ShowQuestion(num){
+            if (num < 1) num = 1;
+            else if (num > MaxNum) num = MaxNum;
+            CurrentNum = num;
+            $('.CurrentNum').html(@ViewBag.QNum);
+            $('#QuestionDesc').html(Question[0].QuestionDesc);
+
+            $('#QuestionArea, #AnswerArea').html('');
+            if (Question[CurrentNum - 1].CID == 3 && Question[CurrentNum - 1].ImagePath != '') {
+                $('#ImageArea').css({'visibility':'visible'});
+                $('#img_l')[0].src = Question[0].ImagePathLeft.replace('~','');
+                $('#img_r')[0].src = Question[0].ImagePathRight.replace('~','');
+
+            }
+
+            // 題目 :
+            var QuestionStr = '', AnswerStr = '';
+            var OptionList = Question[0].OptionList;
+            for (i = 0; i < OptionList.length; i++) {
+                QuestionStr += '<div class="Train2_content_Test_coulmnRIGHT_answer_option_layout Train2_content_Test_coulmnRIGHT_answer_option">';
+                QuestionStr += '<div>'+ (i + 1) +'.</div>';
+                QuestionStr += '<div style="padding-left:5px">'+ OptionList[i].OptionDesc+'</div>';
+                if (OptionList[i].ImagePath != ''){
+                    QuestionStr += '<div class="clear"></div>';
+                    QuestionStr += '<div>&nbsp;&nbsp;&nbsp;&nbsp;<img src="' + OptionList[i].ImagePath + '" /></div>';
+                }
+                QuestionStr += '</div>';
+                QuestionStr += '<div class="clear"></div>';
+
+                //作答
+                AnswerStr += '<div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_layout Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options';
+                if (Exam[0].Answer == OptionList[i].OptionID){
+                    AnswerStr += ' Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active';
+                }
+                AnswerStr += '" data-choosemainid="'+ (i + 1) +'" >' + (i + 1) + '</div>';
+            }
+            $('#QuestionArea').html(QuestionStr);
+            $('#AnswerArea').html(AnswerStr);
+
+            var _choose = @ViewBag.Answer;
+
+            $('#AnswerArea').find('div').removeClass('Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active');
+            $('[data-choosemainid="' + _choose + '"]').addClass('Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active');
+            $('[data-choosemainid="' + _choose + '"]').css('color', 'red');
+
+        }
+    </script>
+</body>
+</html>

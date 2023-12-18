@@ -1,0 +1,274 @@
+﻿@model List<ASO.Models.WLIPCC>
+    @{
+        ViewBag.Title = "立體像片對查詢";
+    }
+    <style>
+        .DDDphoto_content_ipcc_text {
+            color: #666666;
+            font-size: 15px;
+            font-family: "Arial","微軟正黑體";
+            height: 30px;
+            cursor: pointer;
+        }
+
+            .DDDphoto_content_ipcc_text div:last-child:hover {
+                color: #48a3c5;
+            }
+
+        .DDDphoto_content_ipccsub_text {
+            color: #666666;
+            font-size: 15px;
+            font-family: "Arial","微軟正黑體";
+            cursor: pointer;
+        }
+
+            .DDDphoto_content_ipccsub_text div {
+                padding-left: 30px;
+            }
+
+                .DDDphoto_content_ipccsub_text div:last-child:hover {
+                    color: #48a3c5;
+                }
+
+        input[type=text].jqx-input, input[type=password].jqx-input {
+            padding-left: 0px !important;
+        }
+
+        .PhotoSearch1_contentRIGHT_ALLinfo_layout {
+            margin-top: 0px;
+        }
+
+        .orderArrow {
+            cursor: pointer;
+        }
+
+        #accordion .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+            background-color: #57b9dc;
+        }
+        #accordion li{
+            cursor:pointer;
+        }
+            #accordion li:hover {
+                color: #57b9dc;
+            }
+
+            .allprogess{
+                cursor:progress;
+            }
+
+    </style>
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div style="width:100%">
+            <div class="contnet_title_layout content_title">
+                立體像片對總覽
+                <input id="tb_IPCCSearch" type="text" style="border-radius:10px;margin-left:40px;" />
+                <input id="btn_FuzzySearch" type="button" value="查詢" />
+            </div>
+            <a href="@Url.Content("~/WoodLand/OperatingInstructions?Item=2")" class="deep-blue-button" target="_blank">操作指引</a>
+        </div>
+        <div class="DDDphoto_content_second_title_layout DDDphoto_content_second_title">* 點選項目可直接查詢 *</div>
+        <div class="DDDphoto_contnet_ALLinfo_layout">
+            <div class="DDDphoto_content_info_title">
+                @*<div>IPCC</div>(原本，可能要改名字)*@
+                <div></div>
+                <div>查詢結果</div>
+            </div>
+            <div class="clear"></div>
+            <div class="DDDphoto_content_info_SeparateLine" style="margin-top:5px;"></div>
+            <table style="width:100%">
+                <tr>
+                    @*<td style="width:145px; vertical-align:top">*@
+                    <td style="width:200px; vertical-align:top">
+                        @*<ul id="list" data-role="listmenu">
+
+                            @if (Model != null)
+                            {
+                                int i = 0;
+                                foreach (var tmp in Model)
+                                {
+                                    i++;
+                                    <li id="IPCC_@i">
+                                        @tmp.IPCC
+                                        <ol data-role="listmenu">
+                                            @foreach (var sub in tmp.SubList)
+                                            {
+                                                <li id="sub_@sub.IPCCsubID" value="@sub.IPCCsubID">@sub.IPCCsub</li>
+                                            }
+                                        </ol>
+                                    </li>
+                                }
+                            }
+                        </ul>*@
+
+                        <div id="accordion">
+
+                            @if (Model != null)
+                            {
+                                int i = 0;
+
+                                foreach (var tmp in Model)
+                                {
+                                    <h3 id="IPCC_@i">@tmp.IPCC</h3>
+                                    <div>
+                                        <ul>
+                                            @foreach (var sub in tmp.SubList)
+                                            {
+                                                <li id="sub_@sub.IPCCsubID" value="@sub.IPCCsubID">@sub.IPCCsub</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </td>
+                    <td style="vertical-align:top" id="divSubList"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="win_data"></div>
+    <input id="SubDataHd" type="hidden" />
+    <script>
+        var solidinited = false;
+        $(function () {
+            initMenu = $(".menu_options_text[class*='Menu_search']");
+            $(".menu_options_text[class*='Menu_search']").addClass("menu_active");
+            $("#accordion").accordion({
+                active: 1000
+            });
+
+            $('[id^=sub_]').on('click', function () {
+                var _val = this.value;
+                Query(_val);
+                $("#SubDataHd").val(_val);
+            });
+
+            QueryDescription("IPCC");
+            $('[id^=IPCC_]').click(function () {
+                var _this = $(this);
+                var _title = _this.text().trim();
+                QueryDescription(_title);
+            });
+
+            //GetSubList(0);
+            IPCCFuzzySearch();
+        });
+
+        // 地物種類查詢 :
+        function IPCCFuzzySearch() {
+            var _tb_IPCCSearchData = [];
+
+            $("#tb_IPCCSearch").jqxInput({
+                placeHolder: "地物種類查詢",
+                height: 25,
+                width: 120,
+                minLength: 1,
+                source: _tb_IPCCSearchData
+            });
+
+            $("#btn_FuzzySearch").jqxButton({ width: 60, height: 30 });
+
+            $("#btn_FuzzySearch").click(function () {
+                var $tb_IPCCSearch = $("#tb_IPCCSearch").val();
+
+                if ($tb_IPCCSearch != "") {
+                    var species = {
+                        IPCCsubID: 0,
+                    };
+
+                    var $url = "@Url.Action("QueryListWithFuzzy")";
+                    var $data = {
+                        species: species,
+                        Nonfuzzy: false,
+                        fuzzyData: $tb_IPCCSearch
+                    };
+                    $.post($url, $data, function (data) {
+                        $("#divSubList").html(data);
+                    });
+                }
+            });
+
+            var _tipHtml =  "<b>系統提示</b><br/><b>此查詢是對地物種類、資源調查分類.、科名與學名進行關鍵字模糊查詢</b><br/>"
+            
+            $("#tb_IPCCSearch").jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+            $("#btn_FuzzySearch").jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        }
+
+        function GetSubList(IPCCID) {
+            $('#divSubList').html('');
+            var str = '';
+            $.ajax({
+                type: "POST",
+                cache: false,
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Content("~/Search/IPCCsubList")',
+                data: JSON.stringify({ IPCCID: IPCCID }),
+                success: function (data) {
+                    $.each(data, function (i, obj) {
+                        str += '<div class="DDDphoto_content_ipccsub_text">';
+                        str += '<a href="@Url.Content("~/Search/Index")' + '?isLoadList=true&IPCCID=' + obj.IPCCID + '&IPCCsubID=' + obj.IPCCsubID + '">';
+                        str += '<div>' + obj.IPCCsub + '</div>';
+                        str += '</a>';
+                        str += '</div>';
+                        str += '<div class="DDDphoto_content_info_SeparateLine2"></div>';
+                        str += '<div class="clear"></div>';
+                    });
+                    $('#divSubList').html(str);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('error:' + xhr.status + thrownError);
+                    return false;
+                }
+            });
+        }
+
+        function QueryDescription(titleName) {
+            $data = {
+                Title: titleName
+            };
+            $.ajax({
+                url: "@Url.Action("IpccContentHtml", "Search")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    //console.log(data);
+                    $("#divSubList").html(data);
+                }
+            });
+        }
+
+        function Query(subID) {
+            var species = {
+                IPCCsubID: subID,
+            };
+            $.ajax({
+                type: 'POST',
+                cache: false,
+                async: false,
+                url: '@Url.Content("~/Search/QueryList")',
+                data: JSON.stringify({ Species: species}),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#divSubList").html(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+            });
+
+        }
+
+        function OpenData(ID,title) {
+            @*var _url = "@Url.Action("OpenData", "Search")";*@
+            var url = "@Url.Action("SolidPhotoInfo", "Search")"
+            url += "?SID=";
+            url += ID;
+            window.open(url)
+
+            //window.open(`${url}?SID=${ID}`)
+            //window.open(`${_url}/${ID}?title=${title}`);
+            //window.open("" + "/" + ID);
+        }
+    </script>

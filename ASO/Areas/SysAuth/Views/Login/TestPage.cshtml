@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+@model List<Wei.SysAuth.Department>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <div>
+        <p>帳號 : <input id="tbAc" type="text" /></p>
+        <input id="btn1" type="button" value="部門資料" style="display:none;"/>
+        <input id="btn2" type="button" value="帳號的密碼" />
+        <input id="btn3" type="button" value="測試" style="display:none;"/>
+        @ViewBag.test
+        <div id="depData"></div>
+    </div>
+    <script>
+        $(function () {
+
+            test();
+            Dept();
+            Passwordrelated();
+
+        });
+
+        function test() {
+
+            $("#btn3").click(function () {
+                var _url = "@Url.Action("DBChangeFunc")";
+                var _data = null;
+                $.post(_url, _data, function (data) {
+                    console.log(data);
+                });
+            });
+        }
+
+        function Dept() {
+            $("#btn1").click(function () {
+                var _url = "@Url.Action("showDept")";
+                $.post(_url, null, function (data) {
+                    $("#depData").html(data);
+                });
+            });
+        }
+
+        function Passwordrelated() {
+            $("#btn2").click(function () {
+                var _url = "@Url.Action("showpassword")";
+                var _data = {
+                    _account: $("#tbAc").val()
+                }
+                $.post(_url, _data, function (data) {
+                    console.log(data);
+                }).fail(function () {
+                    console.log("無此帳號!!");
+                });
+            });
+        }
+    </script>
+</body>
+</html>

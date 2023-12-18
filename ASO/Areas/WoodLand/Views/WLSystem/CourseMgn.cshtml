@@ -1,0 +1,222 @@
+﻿@model List<ASO.Models.Course>
+@{
+    ViewBag.Title = "CourseMgn";
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">
+        訓練教室編輯
+        <input id="btn_order" type="button" value="訓練教室資料排序" class="btn_jqxbutton"/>
+        <input id="btn_impOrderSave" style="display:none;" type="button" class="btn_jqxbutton" value="儲存排序" />
+    </div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <table style="width:100%;">
+            <tr>
+                <td colspan="3">
+                    <div id="grid_course"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div id="pnl_order" style="display:none;">
+                        <div class="clear"></div>
+                        <div class="system_contentRIGHT_ALLnews_layout">
+                            <div class="PhotoSearch1_contentRIGHT_info_title">
+                                <div style="width:50px;padding-left:10px;">&nbsp;</div>
+                                <div style="width:150px;padding-left:10px;">主題名稱</div>
+                                <div style="width:150px;padding-left:10px;">敘述說明</div>
+                                <div style="width:150px;padding-left:10px;">新增時間</div>
+                                <div style="width:150px;padding-left:10px;">有無考題</div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="system_contentRIGHT_SeparateLine" style="width:700px;"></div>
+                            <div id="sortOrder">
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_new">新增</div></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+    var delIndex = [];
+        $(function () {
+            var data = @Html.Raw(Json.Encode(Model));
+            $.each(data, function (i, d) {
+                delIndex.push(i);
+            });
+            var activeOption = $(".system_contentLEFT_option_layout[class*='left_course']");
+            activeOption.addClass("system_contentLEFT_option_active");
+
+            if ($('input').hasClass('btn_jqxbutton')) {
+                $('.btn_jqxbutton').jqxButton({width:'150px'});
+            }
+            order_click(data);
+
+            var gridSource = {
+                localdata: data,
+                datatype: "JSON",
+                datafields: [
+                    { name: 'ID', type: 'int' },
+                    { name: 'Title', type: 'string' },
+                    { name: 'Description', type: 'string' },
+                    { name: 'AddTime', type: 'string',},
+                    { name: 'Qexist', type: 'string' }
+                ]
+            };
+            var dataAdapter = new $.jqx.dataAdapter(gridSource);
+            var setting = {
+                source: dataAdapter,
+                height: 320,
+                columnsresize: true,
+                filterable: true,
+                sortable: true,
+                pageable: true,
+                localization: getLocalization(),
+                showfilterrow: true,
+                columns: [
+                    {
+                        text: '', width: 80, align: 'center', columntype: 'button',
+                        cellsrenderer: function () {
+                            return "編輯";
+                        },
+                        buttonclick: function (row) {
+                            var tmp = $('#grid_course').jqxGrid('getrowdata', row)
+                            window.location.href = '../WLSystem/CourseAdmin/' + tmp.ID;
+                        }
+                    },
+                    {
+                        text: '', width: 80, align: 'center', columntype: 'button',
+                        cellsrenderer: function () {
+                            return "刪除";
+                        },
+                        buttonclick: function (row) {
+                            var tmp = $('#grid_course').jqxGrid('getrowdata', row);
+                            var ID = tmp.ID;
+                            var delRow = delIndex[row];
+                            if (confirm('是否要刪除資料?')) {
+                                if (delCourse(ID, delRow)) {
+                                    delIndex.splice(row, 1);
+                                }
+                            }
+                        }
+                    },
+                    { text: '主題名稱', datafield: 'Title', align: 'center', cellsalign: 'center' },
+                    { text: '敘述說明', datafield: 'Description', align: 'center' },
+                    { text: '新增時間', datafield: 'AddTime', align: 'center', cellsalign: 'center'},
+                    { text: '有無考題', datafield: 'Qexist', align: 'center', cellsalign: 'center'},
+                ]
+            };
+            $("#grid_course").jqxGrid(GetJqxGvSetting(setting));
+
+            $('#btn_new').on('click', function () {
+                window.location.href = '../WLSystem/CourseAdmin/0';
+            });
+        })
+
+        function order_click(_data) {
+            $.each(_data, function (i, d) {
+                var _html = "";
+                _html += ' <div> ';
+                _html += ' <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text"> ';
+                _html += ' <div style="width:50px;padding-left:10px;" class="mainorderJs" >' + d["ID"] + '</div> ';
+                _html += ' <div style="width:150px;padding-left:10px;">' + d["Title"] + '</div> ';
+                _html += ' <div style="width:150px;padding-left:10px;">' + d["Description"] + '</div> ';
+                _html += ' <div style="width:150px;padding-left:10px;">' + d["AddTime"] + '</div> ';
+                _html += ' <div style="width:150px;padding-left:10px;">' + d["Qexist"] + '</div> ';
+                _html += ' </div> ';
+                _html += ' <div class="clear"></div> ';
+                _html += ' <div class="system_contentRIGHT_SeparateLine" style="width:650px;"></div> ';
+                _html += ' </div> ';
+
+                $('#sortOrder').append(_html);
+            });
+
+        $("#sortOrder").jqxSortable();
+
+        $("#sortOrder").change(function () {
+            $('#btn_impOrderSave').show();
+        });
+
+        $("#btn_impOrderSave").click(function () {
+
+            var _tmpArr = [];
+
+            $('.mainorderJs').each(function (i, d) {
+                var _this = $(this);
+                var _text = _this.text();
+                _tmpArr.push(_text);
+            });
+
+            $('#btn_impOrderSave').hide();
+
+            $data = {
+                Order: _tmpArr
+            };
+            $.ajax({
+                url: "@Url.Action("CourseMgnOrder", "WLSystem")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    if (data) {
+                        alert('排序更新成功');
+                        location = "@Url.Action("CourseMgn", "WLSystem")";
+                    }
+                }
+            });
+
+        });
+
+        $("#btn_order").click(function () {
+            var _this = $(this);
+
+            if (_this.val() === "訓練教室資料排序") {
+                $('#grid_course').hide();
+                $('#btn_new').hide();
+                $('#pnl_order').show();
+                _this.val("返回");
+            } else {
+                $('#grid_course').show();
+                $('#btn_new').show();
+                $('#pnl_order').hide();
+                _this.val("訓練教室資料排序");
+            }
+        });
+    }
+    function delCourse(ID, row) {
+
+        var _state = false;
+            $data = {
+                ID:ID
+            };
+            $.ajax({
+                url: "@Url.Action("DelCourse", "WLSystem")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    if (data) {
+                        $('#grid_course').jqxGrid('deleterow', row);
+                        _state = true;
+                        alert('刪除成功');
+                    } else {
+                        alert('刪除失敗');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+        });
+
+        return _state;
+     }
+</script>

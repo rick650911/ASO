@@ -1,0 +1,189 @@
+﻿@{
+    ViewBag.Title = "帳號資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+<div class="contnet_title_layout content_title">帳號資料</div>
+<div>
+    <table cellpadding="2" cellspacing="1" border="0" style="margin-bottom:5px">
+        <tr>
+            <td style="padding-left:30px">帳號：</td>
+            <td><input type="text" id="tb_acid" /></td>
+            <td style="padding-left:10px">暱稱：</td>
+            <td><input type="text" id="tb_username" /></td>
+            </tr>
+        <tr>
+            <td style="padding-left:30px">單位名稱：</td>
+            <td><div id="ddl_dept"></div></td>
+            @*<td style="padding-left:10px">權限：</td>
+        <td><div id="ddl_title"></div></td>*@
+            <td></td>
+            <td></td>
+            <td style="padding-left:10px">
+                <input type="button" id="btn_Query" value="查詢" onclick="Query()" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="grid_userlist" style="margin-bottom:10px;"></div>
+
+<script>
+    //#region 宣告變數
+    var DeptList = @Html.Raw(Json.Encode(Model[0]));
+    var UserTitleList = @Html.Raw(Json.Encode(Model[1]));
+    var source = null;
+    var UsetList = {};
+    var Dept =[];
+    var Title =[];
+    var GetUserListUrl = '@Url.Action("GetUserList", "Organization")';
+    var EditUserUrl = '@Url.Action("EditUser", "Organization")';
+    var AddUserUrl = '@Url.Action("AddUser", "Organization")';
+    var ExportUserUrl = '@Url.Action("ExportUser", "Organization")';
+    //#endregion
+
+    //#region 事件處理
+    function GetUserList() {
+        source = {
+            localdata: UsetList,
+            datatype: "JSON",
+            datafields: [
+                { name: 'UserID', type: 'int' },
+                { name: 'DeptID', type: 'int' },
+                { name: 'AccountID', type: 'string' },
+                { name: 'DeptNO', type: 'string' },
+                { name: 'DeptName', type: 'string' },
+                { name: 'TitID', type: 'int' },
+                { name: 'UserNo', type: 'string' },
+                { name: 'Name', type: 'string' },
+                { name: 'Status', type: 'int' },
+                //{ name: 'Gender', type: 'byte' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        debugger;
+        var setting = {
+            source: dataAdapter,
+            height: 305,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              {
+                  text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button',
+                  cellsrenderer: function () {
+                      return "檢視";
+                  },
+                  buttonclick: function (row) {
+                      var ID = $("#grid_userlist").jqxGrid('getcellvalue', row, "UserID");
+                      location.href = EditUserUrl+ "/" + ID;
+                  }
+              },
+              { text: '帳號', datafield: 'AccountID', cellsalign:'center', align: 'center', width: '100px' },
+              { text: '暱稱', datafield: 'Name', align: 'center', width: '150px' },
+              {
+                  text: '單位編號', datafield: 'DeptNO', cellsalign: 'right', align: 'center', width: '150px',
+                  cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#grid_userlist").jqxGrid('getrowdata', row).DeptID;
+                      return Dept.hasOwnProperty(DeptID) ? '<div style="overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].DeptNo + '</div>' : '';
+                  }
+              },
+              {
+                  text: '單位名稱', datafield: 'DeptName', align: 'center', width: '250px', cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#grid_userlist").jqxGrid('getrowdata', row).DeptID;
+                      return Dept.hasOwnProperty(DeptID) ? '<div style="overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].Name + '</div>' : '';
+                  }
+              },
+              //{
+              //    text: '權限', datafield: 'TiName', align: 'center', cellsrenderer: function (row, column, value) {
+              //        var TitID = $("#grid_userlist").jqxGrid('getrowdata', row).TitID;
+              //        return Title.hasOwnProperty(TitID) ? '<div style="overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Title[TitID].Name + '</div>' : '';
+              //    }
+              //},
+              //{
+              //    text: '性別', datafield: 'Gender', align: 'center',cellsrenderer: function (row, column, value) {
+              //        var gender = value == 1 ? '男' : '女';
+              //        return '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;"><img src="../../Content/Images/使用者(' + gender + ')icon.png" width="20px"/></div>';
+              //    }
+              //},
+              {
+                  text: '狀態', datafield: 'Status', align: 'center', cellsrenderer: function (row, column, value) {
+                      return '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + (value == 1 ? "啟用" : "停用") + '</div>';
+                  }
+              }
+            ],
+            showstatusbar: true,
+            renderstatusbar: function (statusbar) {
+                var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                var addButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>新增</span></div>");
+                var exportButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>匯出</span></div>");
+                container.append(addButton);
+                container.append(exportButton);
+                statusbar.append(container);
+                addButton.jqxButton({ width: 60, height: 15 });
+                exportButton.jqxButton({ width: 60, height: 15 });
+
+                addButton.click(function (event) {
+                    location.href = AddUserUrl;
+                });
+
+                exportButton.click(function (event) {
+                    //location.href = ExportUserUrl;
+                    window.open(ExportUserUrl, "_blank", null, null);
+                });
+            }
+        };
+        $("#grid_userlist").jqxGrid(GetJqxGvSetting(setting));
+    }
+
+    function Query() {
+        var usr = {};
+        usr.AccountID = $("#tb_acid").val();
+        usr.Name = $("#tb_username").val();
+        usr.DeptID = $("#ddl_dept").val();
+        usr.TitID = 1;
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetUserListUrl,
+            async: false,
+            data:{data: JSON.stringify(usr)},
+            success: function (data) {
+                updateJqxGrid('grid_userlist', data);
+            }
+        })
+    }
+    //#endregion
+
+    //#region 頁面初始
+    function dataInit() {
+        for (var i = 0; i < DeptList.length; i++) {
+            var D = {};
+            D.DeptNo = DeptList[i].DeptNo;
+            D.Name = DeptList[i].DeptName;
+            Dept[DeptList[i].DeptID] = D;
+        }
+
+        for (var i = 0; i < UserTitleList.length; i++) {
+            var T = {};
+            T.TitNo = UserTitleList[i].TitNo;
+            T.Name = UserTitleList[i].TilName;
+            Title[UserTitleList[i].TitID] = T;
+        }
+
+        $("#ddl_dept").jqxDropDownList(GetJqxDdlSetting(DeptList, "DeptID", "DeptName"));
+        $("#ddl_dept").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+
+        //$("#ddl_title").jqxDropDownList(GetJqxDdlSetting(UserTitleList, "TitID", "TilName"));
+        //$("#ddl_title").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+    };
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+        dataInit();
+        GetUserList();
+    })
+</script>

@@ -1,0 +1,237 @@
+﻿@model List<ASO.Models.WLQuestion>
+    @{
+        ViewBag.Title = "訓練教室";
+    }
+
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div class="contnet_title_layout content_title">訓練教室：@ViewBag.TrainingType</div>
+        <div class="Train2_content_Test_layout">
+            <div class="Train2_content_Test_coulmnLEFT_layout Train2_content_Test_coulmnLEFT">
+                <div class="Train2_content_Test_columnLEFT_Question_layout Train2_content_Test_columnLEFT_Question">
+                    <div>目前題數</div>
+                    <div class="Train2_content_Test_coulmnLEFT_Question_now">第<span class="CurrentNum">1</span>題</div>
+                </div>
+                <div class="Train2_contnet_Test_coulmnLEFT_Question_numbers">
+                    <div>
+                        @for (int i = 1; i <= Model.Count(); i++)
+                        {
+                            <span id="Qnum_@i" onclick="ShowQuestion(@i)" @(i == 1 ? "class=Train2_contnet_Test_coulmnLEFT_Question_numbers_active" : "")>@(i.ToString().PadLeft(2, '0'))</span>
+                        }
+                    </div>
+                </div>
+                <div class="Train2_content_Test_coulmnLEFT_Time_layout Train2_content_Test_coulmnLEFT_Time">
+                    <div>經過時間</div>
+                    <div class="Train2_content_Test_coulmnLEFT_Time_countdown" id="ExamTime"></div>
+                </div>
+                <div class="Train2_content_Test_coulmnLEFT_Time_layout Train2_content_Test_coulmnLEFT_Time">
+                    <div style="text-align:center; padding-top:20px;">
+                        <input id="btnSubmit" type="button" class="btn_jqxbutton" value="提交考卷" />
+                    </div>
+                </div>
+            </div>
+            <div class="Train2_content_Test_coulmnRIGHT_layout Train2_content_Test_coulmnRIGHT">
+                <div class="Train2_content_Test_coulmnRIGHT_question_layout">
+                    <div class="Train2_content_Test_coulmnRIGHT_question_text">
+                        題號<span class="CurrentNum"></span> :
+                        <span id="QuestionDesc"></span>
+                    </div>
+                    <div id="ImageArea" style="display:none;">
+                        @{
+                            Html.RenderAction("SolidPhoto", "Search");
+                        }
+                    </div>
+                    <div id="singleImgArea" style="height:400px"><img id="singelImg"  height="400px" /></div>
+                    <div class="clear"></div>
+                </div>
+                <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+                <div class="Train2_content_Test_coulmnRIGHT_answer_layout">
+                    <div class="Train2_content_Test_coulmnRIGHT_answer_text">選項</div>
+                    <div id="QuestionArea"></div>
+                </div>
+                <div class="Train2_content_Test_coulmnRIGHT_question_SeparateLine"></div>
+                <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_layout">
+                    <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_text">作答:</div>
+                    <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_layout">
+                        <div id="AnswerArea"></div>
+                        <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_FrontNextBTN_layout Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_FrontNextBTN" id="PreQuestion" onclick="ShowQuestion(CurrentNum-1)">上一題</div>
+                        <div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_FrontNextBTN_layout Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_FrontNextBTN" id="NextQuestion" onclick="ShowQuestion(CurrentNum+1,'btn')">下一題</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <style>
+        .Train2_content_Test_coulmnRIGHT_question_text,
+        .Train2_content_Test_coulmnRIGHT_answer_text,
+        .Train2_content_Test_coulmnRIGHT_ALLanswerBTN_text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        initMenu = $(".menu_options_text[class*='Menu_train']");
+        var Question = @Html.Raw(Json.Encode(Model)); //題目
+        var CurrentNum = 1;
+        var NowNum = 1;
+        var MaxNum = Question.length;
+        var ExamTime = 0; //作答時間(秒)
+        var Exam = []; //作答
+        var btn;
+        $(function () {
+            $('#btnAnaglyph').css({ 'visibility': 'hidden' });
+            $('#callinfo').css({ 'visibility': 'hidden' });
+            //$('#div_left').css({ 'width': 'unset', 'height': 'unset' });
+            $(".menu_options_text[class*='Menu_train']").addClass("menu_active");
+            $('.btn_jqxbutton').jqxButton();
+            $('#btnSubmit').click(Submit);
+
+            $('.CurrentNum').html(CurrentNum); //題號
+            $('#QuestionDesc').html(Question[CurrentNum - 1].QuestionDesc); //題目
+
+            for (i = 0; i < Question.length; i++) {
+                Exam[Exam.length] = {QNO : Question[i].NO, Answer : -1};
+            }
+            solidInit();
+            ShowQuestion(1);
+
+
+            setInterval(Timer, 1000);
+        });
+
+        function Timer(){
+            ExamTime += 1; //秒
+            $('#ExamTime').html(padLeft(parseInt(ExamTime / 60).toString(), '0', 2) + ':' + padLeft((ExamTime % 60).toString(), '0', 2));
+        }
+
+        function ShowQuestion(num, btn) {
+            NowNum = num;
+            if (num < 1) num = 1;
+            else if (num > MaxNum) num = MaxNum;
+            CurrentNum = num;
+            $('.CurrentNum').html(CurrentNum);
+            $('#QuestionDesc').html(Question[CurrentNum - 1].QuestionDesc);
+            $('.Train2_contnet_Test_coulmnLEFT_Question_numbers_active').removeClass('Train2_contnet_Test_coulmnLEFT_Question_numbers_active');
+            $('#Qnum_' + num).addClass('Train2_contnet_Test_coulmnLEFT_Question_numbers_active');
+
+            $('#QuestionArea, #AnswerArea').html('');
+
+            $('#ImageArea').css({ 'display': 'none' });
+            $('#singleImgArea').css({ 'display': 'none' });
+            if (Question[CurrentNum - 1].ImagePathLeft != '' || Question[CurrentNum - 1].ImagePathRight != '') {
+                //$('#ImageArea').html('<div style="height:400px"><img src="' + Question[CurrentNum - 1].ImagePath + '" height="400px" /></div>');
+                $('#ImageArea').css({ 'display': 'block' });
+
+                //$('#div_left').css('height', 'unset');
+                //$('#div_right').css('height', 'unset');
+                //$('#img_l').css('height', 'unset');
+                //$('#img_r').css('height', 'unset');
+
+            }
+            else if (Question[CurrentNum - 1].ImagePath != '') {
+                $('#singleImgArea').css({ 'display': 'block' });
+            }
+            if (Question[CurrentNum - 1].ImagePathLeft != '') {
+                $('#img_l')[0].src = unifyPathFormat(Question[CurrentNum - 1].ImagePathLeft);
+            }
+            if (Question[CurrentNum - 1].ImagePathRight != '') {
+                $('#img_r')[0].src = unifyPathFormat(Question[CurrentNum - 1].ImagePathRight);
+            }
+            if (Question[CurrentNum - 1].ImagePath != ''){
+                $('#singelImg')[0].src = unifyPathFormat(Question[CurrentNum - 1].ImagePath);
+            }
+
+            var QuestionStr = '', AnswerStr = '';
+            var OptionList = Question[num - 1].OptionList;
+            for (i = 0; i < OptionList.length; i++) {
+                QuestionStr += '<div class="Train2_content_Test_coulmnRIGHT_answer_option_layout Train2_content_Test_coulmnRIGHT_answer_option">';
+                QuestionStr += '<div>'+ (i + 1) +'.</div>';
+                QuestionStr += '<div style="padding-left:5px">'+ OptionList[i].OptionDesc+'</div>';
+                if (OptionList[i].ImagePath != ''){
+                    QuestionStr += '<div class="clear"></div>';
+                    QuestionStr += '<div>&nbsp;&nbsp;&nbsp;&nbsp;<img width="250px" src="' + unifyPathFormat(OptionList[i].ImagePath) + '" /></div>';
+                }
+                if (OptionList[i].ImagePath2 != '') {
+                    QuestionStr += '<div>&nbsp;&nbsp;&nbsp;&nbsp;<img width="250px" src="' + unifyPathFormat(OptionList[i].ImagePath2) + '" /></div>';
+
+                }
+                QuestionStr += '</div>';
+                QuestionStr += '<div class="clear"></div>';
+
+                //作答
+
+                AnswerStr += '<div class="Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_layout Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options';
+                if (Exam[num - 1].Answer == OptionList[i].OptionID){
+                    AnswerStr += ' Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active';
+                }
+                AnswerStr += '" onclick="SetAnswer(' + num + ',' + OptionList[i].OptionID +',this)">' + (i + 1) + '</div>';
+            }
+            $('#QuestionArea').html(QuestionStr);
+            $('#AnswerArea').html(AnswerStr);
+            //$('#img_l').css('height', 'unset');
+            //$('#img_r').css('height', 'unset');
+            $('#NextQuestion').text('下一題');
+            if (NowNum == MaxNum) {
+                $('#NextQuestion').text('提交考卷');
+            }
+            if (NowNum - 1 == MaxNum && btn == 'btn') {
+                $('#NextQuestion').text('提交考卷');
+                Submit();
+            }
+        }
+
+        function unifyPathFormat(path) {
+            path = path.replace(/\\/g, "/");
+            path = path.replace(/~\//g, "../../");
+            return path;
+        }
+
+        function SetAnswer(num,answer,obj){
+            Exam[num-1].Answer = answer;
+            $('#AnswerArea').find('div').removeClass('Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active');
+            $(obj).addClass('Train2_content_Test_coulmnRIGHT_ALLanswerBTN_btns_options_active');
+        }
+
+        function Submit(){
+            var msg='';
+            for (i = 0; i < Exam.length; i++) {
+                if (Exam[i].Answer == -1){
+                    msg+= '題數' + (i + 1) + '未作答\n';
+                }
+            }
+
+            console.log(Exam);
+            if (msg != ''){
+                msg = msg += '是否仍要送出?';
+            }else{
+                msg = '確認要送出?';
+            }
+            if (confirm(msg)){
+                var data = {
+                    CID: '@ViewBag.CID',
+                    ExamTime: ExamTime,
+                    Level: 1, //暫時寫入1
+                    ExamList : Exam
+                };
+
+                $.ajax({
+                    url: '@Url.Action("SaveExam", "Training")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    data: JSON.stringify({ wb: data }),
+                    success: function (result) {
+                        if (result != '0') {
+                            //alert('送出成功');
+                            window.location.href = '@Url.Action("ExamResult", "Training")' + '/' + result;
+                        } else
+                            alert('送出失敗');
+                    },
+                    error: function (e) {
+                        alert('錯誤')
+                    }
+                });
+            }
+        }
+    </script>

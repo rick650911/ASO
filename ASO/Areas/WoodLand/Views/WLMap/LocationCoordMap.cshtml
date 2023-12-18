@@ -1,0 +1,84 @@
+﻿@using ASO.Models
+@{
+    Layout = null;
+    ViewBag.Title = "地圖定位";
+}
+@*<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">*@
+<script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+
+
+<body class="claro">
+    <div>
+        @Html.Action("Map", "Home", new { area = "Maps" })
+    </div>
+    <img id="layerswitch" src="~/Content/Images/topography.jpg" style="left:10px;bottom:10px;position:absolute" />
+</body>
+
+<script>
+    var point = @Html.Raw(Json.Encode(Model));
+    //debugger;
+    var mapInitconfig = {
+        domDiv: 'map',
+        defExtent:{ minx: 275509.2695315677, miny: 2751645.1634475225, maxx: 346755.2810787978, maxy: 2787368.3745819633, wkid: 102443 },
+        optionFuns: [
+        //{ fun: "proxy", param: "http://210.242.163.56/proxy/proxy.ashx" },
+        //{ fun: "proxy", param: "http://10.51.231.55/photo-interpretation/proxy.ashx" },
+        { fun: "geometryService", param: "http://210.242.163.58/ArcGIS/rest/services/Geometry/GeometryServer" },
+        { fun: "printTask", param: "http://192.168.1.56/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task" },
+        { fun: "userLocateBtn", param: null },
+        { fun: "fenceToShp", param: "http://wa.e-land.gov.tw/arcgis/rest/services/HDST/ExtractZionData/GPServer/ExtractZionData" }
+        ]
+    };
+
+    $(function () {
+        mapInit();;
+    });
+
+    function mapInit() {
+        whenAvailable(function (t) {
+            arc = new MapCtrl(mapInitconfig);
+            wmtslayer = new LayerCtrl({
+                url: '',
+                layertype: OpLayerType.tgos97,
+                id: 'wmts',
+                visible: true
+            });
+             wmtslayer2 = new LayerCtrl({
+                url: '',
+                layertype: EMAP3826_OPENDATA,
+                id: 'nlscwmts',
+                visible: true
+            });
+             wmtslayer3 = new LayerCtrl({
+                url: '',
+                layertype: PHOTO3826,
+                id: 'nlscwmts2',
+                visible: true
+             });
+            //arc.addLayer(wmtslayer);
+            arc.addLayer(wmtslayer3);
+            arc.addLayer(wmtslayer2);
+
+
+
+            arc.setDrawPointIcon('@Url.Content("~/Content/Images/PointIcon_32.png")', 34, 34);
+            //debugger;
+            setTimeout(function(){ arc.locationCoord(point.x, point.y, 5000);}, 3000);
+
+        });
+    }
+    $('#layerswitch').click(function () {
+        if ($('#map_nlscwmts').css('display') != "none") {
+           $('#layerswitch').attr('src',"/ASO/Content/Images/topography.jpg" );
+            $('#map_nlscwmts').hide();
+            $('#map_nlscwmts2').show();
+        }
+        else {
+            $('#layerswitch').attr('src', "/ASO/Content/Images/picture.jpg");
+            $('#map_nlscwmts').show();
+            $('#map_nlscwmts2').hide();
+        }
+        });
+</script>
+
+@Html.PageScripts()

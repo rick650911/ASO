@@ -1,0 +1,333 @@
+﻿@using ASO.Models
+@{
+    string UserName = SysTool.GetUserName();
+    string CourseTimeID = Session["tableID"] != null ? Session["tableID"].ToString():"0";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>航照判釋知識教育推廣平台</title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery-ui.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.mousewheel.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.gzoom.js' charset="utf-8"></script>
+    <script type="text/javascript" src="~/Scripts/fontawesome-all.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.gzoom.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.metro.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.energyblue.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.office.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <script type="text/javascript">
+        var initMenu = '';
+        $(document).ready(function () {
+
+            //瀏覽器內容寬度
+            var intBrowserW = 0;
+            //瀏覽器內容高度
+            var intBrowserH = 0;
+            //取得瀏覽器內容寬度/高度
+            if (document.documentElement) {
+                intBrowserW = document.documentElement.clientWidth;
+                intBrowserH = document.documentElement.clientHeight;
+            } else {
+                intBrowserW = document.body.clientWidth;
+                intBrowserH = document.body.clientHeight;
+            }
+            //下拉式選單控制
+
+            //關閉所有dropdown
+            function DropdownClose() {
+                $("#main").css({ "display": "none", "z-index": "-1" });
+                $("#about").css({ "display": "none", "z-index": "-1" });
+                $("#search").css({ "display": "none", "z-index": "-1" });
+                $("#train").css({ "display": "none", "z-index": "-1" });
+                $("#map").css({ "display": "none", "z-index": "-1" });
+                $("#board").css({ "display": "none", "z-index": "-1" });
+                $("#pwdmgn").css({ "display": "none", "z-index": "-1" });
+                $("#system").css({ "display": "none", "z-index": "-1" });
+
+
+                if (typeof ($('#map')[0]) !== 'undefined') {
+                    $('#map')[0].style.display = 'block';
+                    $('#map')[0].style.zIndex = 9999;
+                }
+            };
+
+            //移除所有Menu底線
+            //function UnderlineRemove() {
+            //    $(".menu_options_text").removeClass("menu_active");
+            //}
+
+            $('.menu_option_dropdown').on('mouseover', DropdownClose());
+
+            $(document).on('hover', '.menu_options_text', function () {
+                var _this = $(this);
+                const className = 'menu_active';
+                $('.menu_options_text').removeClass(className);
+                _this.addClass(className)
+            });
+
+
+            //先偵測滑鼠點擊目標的class，再依照所點的按鈕打開dropdown list，若都不是點按鈕則關閉所有dropdown list
+            //$('.menu').on('mouseover', function (event) {
+            //    var showDropdown, activeMenu;
+            //    var isMain = $(event.target).hasClass("Menu_Main");
+            //    var isAbout = $(event.target).hasClass("Menu_about");
+            //    var isSearch = $(event.target).hasClass("Menu_search");
+            //    var isTrain = $(event.target).hasClass("Menu_train");
+            //    var isMap = $(event.target).hasClass("Menu_map");
+            //    var isBoard = $(event.target).hasClass("Menu_board");
+            //    var isPwdMgn = $(event.target).hasClass("Menu_pwdmgn")
+            //    var isSystem = $(event.target).hasClass("Menu_system");
+            //    UnderlineRemove();
+
+            //    if (isMain == true) {
+            //        DropdownClose();
+            //        showDropdown = $("#main");
+            //        activeMenu = $(".menu_options_text[class*='Menu_Main']");
+            //    } else if (isAbout == true) {
+            //        DropdownClose();
+            //        showDropdown = $("#about");
+            //        activeMenu = $(".menu_options_text[class*='Menu_about']");
+            //    } else if (isSearch == true) {
+            //        DropdownClose();
+            //        showDropdown = $("#search");
+            //        activeMenu = $(".menu_options_text[class*='Menu_search']");
+            //    } else if (isTrain == true) {
+            //        showDropdown = $("#train")
+            //        activeMenu = $(".menu_options_text[class*='Menu_train']");
+            //    } else if (isMap == true) {
+            //        showDropdown = $("#map");
+            //        activeMenu = $(".menu_options_text[class*='Menu_map']");
+            //    } else if (isBoard == true) {
+            //        showDropdown = $("#board");
+            //        activeMenu = $(".menu_options_text[class*='Menu_board']");
+            //    } else if (isPwdMgn == true) {
+            //        showDropdown = $("#pwdmgn");
+            //        activeMenu = $(".menu_options_text[class*='Menu_pwdmgn']");
+            //    } else if (isSystem == true) {
+            //        showDropdown = $("#system");
+            //        activeMenu = $(".menu_options_text[class*='Menu_system']");
+            //    } else {
+            //        activeMenu = initMenu;
+            //    }
+
+            //    if (typeof showDropdown != 'undefined')
+            //        showDropdown.css({ "display": "block", "z-index": "9999" });
+            //    activeMenu.addClass("menu_active");
+            //});
+            var _txt = "@SysTool.GetUserName()";
+            if (_txt == "") {
+                $("#btnLogin").click(function () {
+                    $('#LoginSection').jqxWindow("open");
+
+                    // ===== 點選登入時清掉 Cookie 
+                    $('#urlShared').val(location.href);
+
+                    $.ajax({
+                        url: "@Url.Action("ClearCookie","Login")",
+                        type: "POST",
+                        //data: $data,
+                        async: false,
+                        success: function (data) {
+                            console.log(data);
+                        }
+                    });
+                });
+
+                $('#LoginSection').jqxWindow({
+                    width: 700,
+                    height: 2000,
+                    resizable: false,
+                    isModal: true,
+                    autoOpen: false,
+                    draggable: false,
+                    resizable: false
+                });
+            } else {
+                var _CourseView = location.href.indexOf("CourseView");
+                if (_CourseView == -1) {
+                    var _obj = null;
+                    $.ajax({
+                        url: "@Url.Action("StopclacCourseTime", "Training")",
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            _obj = data;
+                            //console.log("OKOK");
+                        }
+                    });
+                }
+                $.ajax({
+                    url: "@Url.Action("VerifyPassword", "Organization", new { Area = "SysAuth" })",
+                    type: "POST",
+                    success: function (data) {
+                        if (data == "True") {
+                            $('#jqxwin_editpwd').jqxWindow('open');
+                        }
+                    }
+                });
+            }
+
+            $('#LoginOperatingInstructions').jqxWindow({
+                width: 700,
+                height: 2000,
+                resizable: false,
+                isModal: true,
+                autoOpen: false,
+                draggable: false,
+                resizable: false
+            });
+        });
+    </script>
+</head>
+<body class="claro">
+    <!--設置陰影用div-->
+    <div>
+        <!--TOP區塊 start-->
+        <div class="top_layout top_bg">
+            <div class="top_logo_layout top_logo"></div>
+            @if (UserName != "")
+            {
+                <div class="top_BTNlogin_layout top_BTNlogin">
+                    <a href="~/SysAuth/Login/Logout" onclick="return confirm('確定登出?')">登出</a>
+                </div>
+                <div id="PersonalName" class="top_welcomeText_layout topwelcomeText">
+                    @UserName
+                </div>
+                <input id="courseTimeHd" type="hidden" value="0" />
+            }
+            else
+            {
+                <div class="top_BTNlogin_layout top_BTNlogin">
+                    @*<a href="~/SysAuth/Login/" >登入</a>*@
+                    <a id="btnLogin" href="javascript:void(0)">登入</a>
+                </div>
+            }
+        </div>
+        <div class="clear"></div>
+        <!--TOP區塊 end-->
+        <!--menu區塊 start-->
+        <div class="menu_bg_layout menu_bg">
+            <div class="menu">
+                <div class="menu_options Menu_Main">
+                    <div class="menu_options_text Menu_Main"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.平台介紹)">平台首頁</a></div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_about">
+                    <div class="menu_options_text Menu_about"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.航照特性)">基本介紹</a></div>
+                    @*<div class="menu_options_text Menu_about">基本介紹</div>*@
+                    @*<div class="menu_option_dropdown" id="about">
+                            <ul>
+                                <li><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.平台介紹)">平台介紹</a></li>
+                                <li><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.航照特性)">航照特性</a></li>
+                                <li><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.立體觀測原理)">立體觀測原理</a></li>
+                                <li><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.航照判釋)">航照判釋</a></li>
+                                <li><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.立體判釋特徵)">立體判釋特徵</a></li>
+                            </ul>
+                        </div>*@
+                </div>
+                <span></span>
+                <div class="menu_options Menu_search">
+                    <div class="menu_options_text Menu_search">@Html.ActionLink("航照立體像片對查詢", "IPCCQuery", "Search")</div>
+                    @*<div class="menu_option_dropdown" id="search">
+                            <ul>
+                                <li><a href="@Url.Content("~/Search/Index")">像片對查詢</a></li>
+                                <li><a href="@Url.Content("~/Search/IPCCQuery")">像片對總覽</a></li>
+                            </ul>
+                        </div>*@
+                </div>
+                <span></span>
+                <div class="menu_options Menu_train">
+                    <div class="menu_options_text Menu_train">@Html.ActionLink("訓練教室", "Index", "Training")</div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_casereference">
+                    <div class="menu_options_text Menu_casereference">@Html.ActionLink("案例參考", "Index", "CaseReference")</div>
+                </div>
+                @*<span></span>*@
+                @*<div class="menu_options Menu_board">
+                        <div class="menu_options_text Menu_board">@Html.ActionLink("網路資源", "Index", "Bulletin")</div>
+                    </div>*@
+                <span></span>
+                <div class="menu_options Menu_map">
+                    <div class="menu_options_text Menu_map">@Html.ActionLink("地圖瀏覽", "Index", "WLMap")</div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_map">
+                    <div class="menu_options_text Menu_operatinginstructions">@Html.ActionLink("操作指引", "Index", "OperatingInstructions")</div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_map">
+                    <div class="menu_options_text Menu_operationmanual">@Html.ActionLink("操作手冊", "Index", "OperationManual")</div>
+                </div>
+                @if (UserName != "")
+                {
+                    <span></span>
+                    <div class="menu_options Menu_pwdmgn">
+                        <div class="menu_options_text Menu_pwdmgn">@Html.ActionLink("個人帳號管理", "PwdMgn", "WLSystem")</div>
+                    </div>
+                }
+                @if (ASO.Models.SysTool.GetWLSysMgn())
+                {
+                    <span></span>
+                    <div class="menu_options Menu_system">
+                        <div class="menu_options_text Menu_system">@Html.ActionLink("系統管理", "BulletinMgn", "WLSystem")</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="clear"></div>
+        <!--menu區塊 end-->
+        <!--content區塊-->
+        <div class="content_bg_layout content_bg">
+            @RenderBody()
+            <div class="copyright_layout copyright">
+                Copyright © 農業部林業及自然保育署航測及遙測分署. All rights reserved
+            </div>
+        </div>
+        <!--content區塊 end-->
+    </div>
+    <!--設置陰影用div-->
+    <div id="LoginOperatingInstructions">
+        <div>系統登入</div>
+        <div style="overflow:hidden;">
+            @{
+                @Html.Action("LoginOperatingInstructions", "Login");
+            }
+        </div>
+    </div>
+    @if (UserName == "")
+    {
+        <div id="LoginSection">
+            <div>系統登入</div>
+            <div style="overflow:hidden;">
+                @{
+                    @Html.Action("Login", "Login");
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div id="LoginSection">
+            <div>系統登入</div>
+            <div style="overflow:hidden;">
+                @{
+                    @Html.Action("LoginPwd", "Login");
+                }
+            </div>
+        </div>
+    }
+</body>
+</html>
+@Html.PageScripts()

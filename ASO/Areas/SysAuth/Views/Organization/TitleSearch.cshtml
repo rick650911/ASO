@@ -1,0 +1,79 @@
+﻿@model List<Wei.SysAuth.UserTitle>
+@{
+    ViewBag.Title = "角色資料";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+<div class="contnet_title_layout content_title">權限資料</div>
+<div id="grid_title" style="margin-bottom:10px;"></div>
+
+<script>
+    //#region 變數宣告
+    var TitleList = @Html.Raw(Json.Encode(Model));
+    var AddTitleUrl='@Url.Action("AddTitle", "Organization")';
+    var EditTitleUrl='@Url.Action("EditTitle", "Organization")';
+    //#endregion
+
+    //#region Grid
+    function dataInit() {
+        var source = {
+            localdata: TitleList,
+            datatype: "JSON",
+            datafields: [
+                { name: 'TitID', type: 'int' },
+                { name: 'TitNo', type: 'string' },
+                { name: 'TilName', type: 'string' },
+                { name: 'RowStatus', type: 'int' },
+                { name: 'Comment', type: 'string' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            height: 305,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+                {
+                    text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button',
+                    cellsrenderer: function () { return "檢視"; },
+                    buttonclick: function (row) {
+                        var ID = $("#grid_title").jqxGrid('getcellvalue', row, "TitID");
+                        location.href = EditTitleUrl + "/" + ID;
+                    }
+                },
+                { text: '權限代號', datafield: 'TitID', width: 120, align: 'center', hidden: true },
+                { text: '權限代號', datafield: 'TitNo', width: 120, cellsalign: 'center',  align: 'center' },
+                { text: '權限名稱', datafield: 'TilName', width: 200, align: 'center' },
+                { text: '權限說明', datafield: 'Comment', align: 'center' },
+                {
+                    text: '狀態', datafield: 'RowStatus', width: 120, align: 'center',
+                    cellsrenderer: function (row, column, value) {
+                        return '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + (value == 1 ? "啟用" : "停用") + '</div>'
+                    }
+                }
+            ],
+            showstatusbar: true,
+            renderstatusbar: function (statusbar) {
+                var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                var addButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>新增</span></div>");
+                container.append(addButton);
+                statusbar.append(container);
+                addButton.jqxButton({ width: 60, height: 15 });
+                addButton.click(function (event) {
+                    location.href = AddTitleUrl;
+                });
+            }
+        };
+        $("#grid_title").jqxGrid(GetJqxGvSetting(setting));
+    }
+    //#endregion
+
+    $(document).ready(function () {
+        initMenu = $(".menu_options_text[class*='Menu_org']");
+        $(".menu_options_text[class*='Menu_org']").addClass("menu_active");
+        dataInit();
+    })
+</script>

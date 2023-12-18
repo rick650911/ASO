@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>系統權限管理</title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset=" utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset=" utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset=" utf-8"></script>
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <script type="text/javascript">
+        var initMenu = '';
+        $(document).ready(function () {
+            //瀏覽器內容寬度
+            var intBrowserW = 0;
+            //瀏覽器內容高度
+            var intBrowserH = 0;
+            //取得瀏覽器內容寬度/高度
+            if (document.documentElement) {
+                intBrowserW = document.documentElement.clientWidth;
+                intBrowserH = document.documentElement.clientHeight;
+            } else {
+                intBrowserW = document.body.clientWidth;
+                intBrowserH = document.body.clientHeight;
+            }
+            //下拉式選單控制
+
+            //關閉所有dropdown
+            function DropdownClose() {
+                $(".menu_option_dropdown").css({ "display": "none", "z-index": "-1" });
+                //$("#org").css({ "display": "none", "z-index": "-1" });
+                //$("#org").css({ "display": "none", "z-index": "-1" });
+            };
+
+            //移除所有Menu底線
+            function UnderlineRemove() {
+                $(".menu_options_text").removeClass("menu_active");
+            }
+
+            //先偵測滑鼠點擊目標的class，再依照所點的按鈕打開dropdown list，若都不是點按鈕則關閉所有dropdown list
+            $(window).click(function (event) {
+                var showDropdown, activeMenu;
+                var isAdmin = $(event.target).hasClass("Menu_admin");
+                var isOrg = $(event.target).hasClass("Menu_org");
+                var isArea = $(event.target).hasClass("Menu_area");
+                DropdownClose();
+                UnderlineRemove();
+                if (isAdmin == true) {
+                    showDropdown = $("#admin");
+                    activeMenu = $(".menu_options_text[class*='Menu_admin']");
+                } else if (isOrg == true) {
+                    showDropdown = $("#org");
+                    activeMenu = $(".menu_options_text[class*='Menu_org']");
+                }
+                else if (isArea == true) {
+                    showDropdown = $("#area");
+                    activeMenu = $(".menu_options_text[class*='Menu_area']");
+                }
+                else
+                    activeMenu = initMenu;
+                if (typeof showDropdown != 'undefined')
+                    showDropdown.css({ "display": "block", "z-index": "9999" });
+                activeMenu.addClass("menu_active");
+            });
+        });
+    </script>
+    <style>
+        .content_whiteBG_layout {
+            padding-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <!--設置陰影用div-->
+    <div>
+        <!--TOP區塊 start-->
+        <div class="top_layout top_bg">
+            <div class="top_logo_layout top_logo"></div>
+            <div class="top_BTNlogin_layout top_BTNlogin">
+                <a href="~/SysAuth/Login/Logout">登出</a>
+            </div>
+            <div class="top_welcomeText_layout topwelcomeText">
+                @ASO.Models.SysTool.GetUserName()
+            </div>
+        </div>
+        <div class="clear"></div>
+        <!--TOP區塊 end-->
+        <!--menu區塊 start-->
+        <div class="menu_bg_layout menu_bg">
+            <div class="menu">
+                <div class="menu_options Menu_admin">
+                    <div class="menu_options_text Menu_admin">權限管理</div>
+                    <div class="menu_option_dropdown" id="admin">
+                        <ul>
+                            <li>@Html.ActionLink("群組管理", "Index", "Admin")</li>
+                            <li>@Html.ActionLink("群組權限", "Index", "SysRoleFunc")</li>
+                            <li>@Html.ActionLink("圖層權限", "RoleLayers", "SysRoleFunc")</li>
+                            @*<li>@Html.ActionLink("個人權限", "UserFunction", "SysRoleFunc")</li>*@
+                        </ul>
+                    </div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_org">
+                    <div class="menu_options_text Menu_org">帳號管理</div>
+                    <div class="menu_option_dropdown" id="org">
+                        <ul>
+                            <li>@Html.ActionLink("帳號資料", "UserSearch", "Organization")</li>
+                            @*<li>@Html.ActionLink("權限資料", "TitleSearch", "Organization")</li>*@
+                            <li>@Html.ActionLink("單位資料", "Index", "Organization")</li>
+                            @*<li>@Html.ActionLink("帳號申請審核", "UserMgn", "Organization")</li>
+                            <li>@Html.ActionLink("帳號申請設定", "RegMgn", "Organization")</li>*@
+                        </ul>
+                    </div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_CourseTime">
+                    <div class="menu_options_text Menu_area">
+                        @Html.ActionLink("上課時數", "CourseTime", "Course")
+                    </div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_CourseTime">
+                    <div class="menu_options_text Menu_area">
+                        @Html.ActionLink("測驗結果", "CourseResult", "Course")
+                    </div>
+                </div>
+                <span></span>
+                <div class="menu_options Menu_org">
+                    <div class="menu_options_text Menu_area">
+                        <a href="@Url.Action("BulletinMgn", "WLSystem", new { area = "WoodLand" })">回系統管理</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <!--menu區塊 end-->
+        <!--content區塊-->
+        <div class="content_bg_layout content_bg">
+            <div class="content_whiteBG_layout content_whiteBG">
+                @RenderBody()
+            </div>
+            <div class="copyright_layout copyright">
+                Copyright © 農業部林業及自然保育署航測及遙測分署. All rights reserved
+            </div>
+        </div>
+        <!--content區塊 end-->
+    </div>
+    <!--設置陰影用div-->
+</body>
+</html>

@@ -1,0 +1,324 @@
+﻿@model ASO.Models.WLTree
+@{
+    Layout = null;
+}
+<script>
+    $(function () {
+        $('#tab').jqxTabs({ theme: 'energyblue', height: '100%', width: '100%' });
+        if ($('input').hasClass('btn_jqxbutton')) {
+            $('.btn_jqxbutton').jqxButton();
+        }
+
+        var $url = "@Url.Action("QueryAllStereoscopicImage")";
+        var $data = {
+            _SID: @ViewBag.ID,
+        };
+        $.post($url, $data, function (data) {
+            var $html = "";
+            var $data_html = "";
+            $.each(data, function (i, d) {
+                i++;
+                $html += '<tr><td><div id="SteroData_' + i + '" ';
+                $html += ' class="SteroImage_Select" ';
+                $html += ' data-StePairL="' + d.StePairL + '" ';
+                $html += ' data-StePairR="' + d.StePairR + '" ' ;
+                $html += ' data-StePair="' + d.StePair + '" ' ;
+                $html += ' data-ScePic="' + d.ScePic + '" ' ;
+                $html += ' data-locx1="' + d.LocX1 + '" ' ;
+                $html += ' data-locy1="' + d.LocY1 + '" ';
+                $html += ' data-shtime="' + d.ShTime + '" ' ;
+                $html += ' data-locate="' + d.Locate + '" ' ;
+                $html += ' data-altmin="' + d.AltMin + '" ' ;
+                $html += ' data-altmax="' + d.AltMax + '" ';
+                $html += ' data-ID="' + d.ID + '" ';
+                $html += ' data-SortID="' + d.SortID + '" ';
+
+                if (d.IntroName != "" && d.IntroName != null) {
+                    $html += '>' + d.IntroName +'</div ></td ></tr > ';
+                } else {
+                    $html += '>'+ d.ComName + i + '</div ></td ></tr > ';
+                }
+            });
+            $("#grid_stero").html($html);
+        });
+
+        $(document).on("click", "[id^='SteroData_']", function () {
+            var $this = $(this);
+            var $SortId = $this.data("sortid");
+
+            var _obj = "";
+            $data = {
+                    SID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+            $.ajax({
+                url: "@Url.Action("checkSolid_NewTab")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    _obj = data
+                }
+            });
+
+            if (_obj == "false") {
+                alert("相片對沒有齊全。請管理員對此資料進行新增/修改");
+                return;
+            }
+
+            var $StePairL = $this.data("StePairL".toLowerCase());
+            var $StePairR = $this.data("StePairR".toLowerCase());
+            var $StePair = $this.data("StePair".toLowerCase());
+            var $ScePic = $this.data("ScePic".toLowerCase());
+            var $LocX1 = $this.data("locx1");
+            var $LocY1 = $this.data("locy1");
+            var $ShTime = $this.data("shtime");
+            var $Locate = $this.data("locate");
+            var $AltMin = $this.data("altmin");
+            var $AltMax = $this.data("altmax");
+
+            if ($ShTime !== null) {
+
+                var $ShTime = $ShTime.replace(new RegExp('/', 'g'), "").replace("Date(", "").replace(")", "");
+                $ShTime = new Date(parseInt($ShTime));
+
+                var _yyyy = $ShTime.getFullYear().toString();
+                var _MM = ($ShTime.getMonth() + 1).toString();
+                var _dd = $ShTime.getDate().toString();
+                var hh = $ShTime.getHours();
+                var mm = $ShTime.getMinutes();
+                $ShTime = _yyyy + "/" + _MM + "/" + _dd + " " + hh + ":" + mm;
+
+                $('#image_ShTime').text($ShTime);
+            } else {
+                $('#image_ShTime').text('');
+            }
+
+            if ($Locate !== null) {
+                $('#image_Locate').text($Locate);
+            } else {
+                $('#image_Locate').text('');
+            }
+
+            if ($AltMin !== null) {
+                $('#image_AltMin').text($AltMin);
+            } else {
+                $('#image_AltMin').text('');
+            }
+
+            if ($AltMax !== null) {
+                $('#image_AltMax').text($AltMax);
+            } else {
+                $('#image_AltMax').text('');
+            }
+
+            if ($StePairL != "") {
+                $("#StePairL_Stero").show();
+                $("#btnPhotoPair").show();
+                $("#StePairL_Stero").attr("src", $StePairL);
+                if ($SortId != "0") {
+                    $("#btnPhotoPair").data("sortid", $SortId);
+                }
+            } else {
+                $("#StePairL_Stero").hide();
+                $("#btnPhotoPair").hide();
+            }
+            if ($StePairL != "") {
+                $("#StePairL_Stero").show();
+                $("#btnAnaglyph").show();
+                $("#StePairL_Stero").attr("src", $StePairL);
+                if ($SortId != "0") {
+                    $("#btnAnaglyph").data("sortid", $SortId);
+                }
+            } else {
+                $("#StePairL_Stero").hide();
+                $("#btnAnaglyph").hide();
+            }
+            if ($StePairR != "") {
+                $("#StePairR_Stero").show();
+                $("#StePairR_Stero").attr("src", $StePairR);
+            } else {
+                $("#StePairR_Stero").hide();
+            }
+            if ($StePair != "") {
+                $("#StePair_Stero").show();
+                $("#StePair_Stero").attr("src", $StePair);
+            } else {
+                $("#StePair_Stero").hide();
+            }
+
+            if ($ScePic != "") {
+                $("#ScePic_Stero").show();
+                $("#ScePic_Stero").attr("src", $ScePic);
+            } else {
+                $("#ScePic_Stero").hide();
+            }
+            
+            if ($LocX1 != "0" && $LocY1 != "0") {
+                $("#btnLoc").show();
+                $("#btnLoc").attr("onclick", "Loc('" + $LocX1 + "','" + $LocY1 + "')");
+            } else {
+                $("#btnLoc").hide();
+            }
+            if ($LocX1 != "0" && $LocY1 != "0") {
+                $("#btnGoogleMap").show();
+                $("#btnGoogleMap").attr("onclick", "GoogleMap('" + $LocX1 + "','" + $LocY1 + "')");
+            } else {
+                $("#btnGoogleMap").hide();
+            }
+        });
+
+        var $btnPhotoPair = $("#btnPhotoPair");
+        if ($btnPhotoPair.length > 0) {
+            $btnPhotoPair.click(function () {
+                var $url = "@Url.Action("checkSolid_NewTab","Search")";
+                var $this = $(this);
+                var $SortId = $this.data("sortid");
+
+                var _obj = "";
+                $data = {
+                    SID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        _obj = data
+                    }
+                });
+
+                if (_obj == "true") {
+
+                    $url = "@Url.Content("~/Search/SolidPhoto_NewTab")";
+                    $url += "?SID=@ViewBag.ID";
+                    $url += "&SortID=" + $SortId;
+                    window.open($url);
+
+                } else {
+                    alert("無完整相片對。")
+                }
+            });
+        }
+
+        var btnAnaglyph = $("#btnAnaglyph");
+        if (btnAnaglyph.length > 0) {
+            btnAnaglyph.click(function () {
+                var $url = "@Url.Action("checkSolid_NewTab","Search")";
+                var $this = $(this);
+                var $SortId = $this.data("sortid");
+
+                var _obj = "";
+                $data = {
+                    SID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        _obj = data
+                    }
+                });
+
+                if (_obj == "true") {
+
+                    $url = "@Url.Content("~/Search/StereoPhoto_NewTab")";
+                    $url += "?SID=@ViewBag.ID";
+                    //$url += "&locx=" + $(this).data("locx1");
+                    //$url += "&locy=" + $(this).data("locy1");
+                    $url += "&SortID=" + $SortId;
+
+                    window.open($url);
+
+                } else {
+                    alert("無完整相片對。")
+                }
+            });
+        }
+        //測試像對合併
+        var btnAnaglyphtest = $("#btnPhotoPairtest");
+        if (btnAnaglyphtest.length > 0) {
+            btnAnaglyphtest.click(function () {
+                var $url = "@Url.Action("checkSolid_NewTab","Search")";
+                var $this = $(this);
+                var $SortId = $this.data("sortid");
+
+                var _obj = "";
+                $data = {
+                    SID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        _obj = data
+                    }
+                });
+
+                if (_obj == "true") {
+
+                    $url = "@Url.Content("~/Search/SolidPhotoInfo")";
+                    $url += "?SID=@ViewBag.ID";
+                    //$url += "&locx=" + $(this).data("locx1");
+                    //$url += "&locy=" + $(this).data("locy1");
+                    $url += "&SortID=" + $SortId;
+
+                    window.open($url);
+
+                } else {
+                    alert("無完整相片對。")
+                }
+            });
+        }
+
+        // 易混淆地物。
+
+        var _IDComp = $('#compareHref');
+        if (_IDComp.length > 0) {
+
+            var _winOpen = "@Url.Content("~/Search/TreeDetail?ID=")";
+            var _obj = null;
+            $data = {
+                IDCluster: _IDComp.data("idcomp")
+            };
+            $.ajax({
+                url: "@Url.Action("getIDCompName","Search")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    var it = JSON.parse(data);
+                    var _html = "";
+                    $.each(it, function (i, d) {
+                        _html += '<a href="@Url.Content("~/Search/TreeDetail?ID=")'+ d.ID +'" target="_blank">' + d.ComName+'</a>,';
+                    });
+                    $('#compareHref').html(_html);
+                }
+            });
+        }
+    });
+</script>
+<script>
+
+</script>
+
+<div id="tab">
+    <ul style="margin-left: 30px;">
+        <li>基本資訊</li>
+        <li>像片對及現場狀況</li>
+    </ul>
+    <div>
+        @Html.Action("TreeBaseData", "Search", new { ID = ViewBag.ID })
+    </div>
+    <div id="StereoscopicImageDataTab">
+        @Html.Action("StereoscopicImageData", "Search", new { ID = ViewBag.ID })
+    </div>
+</div>

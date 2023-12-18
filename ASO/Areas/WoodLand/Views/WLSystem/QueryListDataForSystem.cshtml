@@ -1,0 +1,33 @@
+﻿@model List<ASO.Models.Species>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <div class="PhotoSearch1_contentRIGHT_info_SeparateLine"></div>
+        <div class="PhotoSearch1_contentRIGHT_info" style="cursor:default;">
+
+            <div class="PhotoSearch1_contentRIGHT_info_Number">
+                <span onclick="ExistImgSelect(@item.ID)">@item.ID</span>
+            </div>
+            <div class="PhotoSearch1_contentRIGHT_info_ComName"onclick="ExistImgSelect(@item.ID)">@item.ComName</div>
+            <div class="PhotoSearch1_contentRIGHT_info_IPCCsub"onclick="ExistImgSelect(@item.ID)">@item.IPCCsub</div>
+            <div class="PhotoSearch1_contentRIGHT_info_SciName"onclick="ExistImgSelect(@item.ID)">@item.Family</div>
+            <div class="PhotoSearch1_contentRIGHT_info_Family"onclick="ExistImgSelect(@item.ID)">
+                <i>@item.SciName</i>
+                @if (!string.IsNullOrEmpty(item.SciSubName))
+                {
+                    <br />
+                    <span>var.&nbsp;<i>@item.SciSubName</i></span>
+                }
+            </div>
+        </div>
+        <div class="clear"></div>
+    }
+}
+
+@*<script>
+    $(function () {
+        console.log(@Html.Raw(Json.Encode(Model)));
+    });
+</script>*@

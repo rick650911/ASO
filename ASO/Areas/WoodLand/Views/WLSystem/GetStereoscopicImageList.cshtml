@@ -1,0 +1,36 @@
+﻿@model List<ASO.Models.StereoscopicImage>
+
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+            <input type="radio" name="sltfile" value="@item.SortID" />
+            <img id="StePairL_@item.SortID" src="~/Photos/@Url.Content(item.StePairL)" width="20%" />
+            <img id="StePairR_@item.SortID" src="~/Photos/@Url.Content(item.StePairR)" width="20%" />
+            <input id="Hidden1" value="@item." type="hidden" />
+            <br />
+            <br />
+        }
+    }
+    <input type="button" value="像對選取" onclick="returnSteImg()"/>
+@*<script>
+    function returnSteImg() {
+        var checked = $('input[name=sltfile]:checked').val(); $('[type=radio] checked').val();
+        var pathL = $("#StePairL_" + checked).attr("src");
+        var pathR = $("#StePairR_" + checked).attr("src");
+
+        var filenameL;
+        var filenameR;
+
+        if (pathL.indexOf("\\") > 0)
+        {
+            filenameL = pathL.substring(pathL.lastIndexOf("\\") + 1, pathL.length);
+            filenameR = pathR.substring(pathR.lastIndexOf("\\") + 1, pathR.length);
+        }
+        else {
+            filenameL = pathL;
+            filenameR = pathR;
+        }
+
+    }
+</script>*@

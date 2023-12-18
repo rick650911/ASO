@@ -1,0 +1,517 @@
+﻿
+
+<style>
+    .content_whiteBG_layoutLogin {
+        width: 600px;
+        margin-top: 0px;
+        padding-bottom: 0px;
+    }
+
+    .contnet_title_layoutLogin {
+        height: 40px;
+        width: 100%;
+        margin: 0;
+        background-color: #EEEEEE;
+        line-height: 40px;
+    }
+
+    .about_content_coulmnRight_authLogin {
+        height: 37px;
+        width: 585px;
+        text-align: left;
+    }
+
+        .about_content_coulmnRight_authLogin div {
+            font-size: 15px;
+            font-family: Arial, 微軟正黑體;
+            color: rgb(102, 102, 102);
+            padding-left: 10px;
+            margin-top: 5px;
+            line-height: 15px;
+        }
+
+    .about_content_coulmn_layoutLogin {
+        margin: 0;
+    }
+
+    .about_content_coulmnLeft_authLogin {
+        float: left;
+        line-height: 27px;
+        height: 37px;
+        width: 150px;
+        margin-top: 5px;
+    }
+
+        .about_content_coulmnLeft_authLogin div {
+            color: rgb(255, 255, 255);
+            height: 18px;
+            font-size: 15px;
+            font-family: Arial, 微軟正黑體;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    .about_content_coulmnLeftLogin {
+        background-color: #314851;
+        border: 1px solid #314851;
+        text-align: center;
+    }
+
+    .about_content_coulmnRightA {
+        border: 1px solid #8f9197;
+    }
+</style>
+
+<script>
+    var depList = JSON.parse('@Html.Raw(Model[0])');
+    var isAllowOther = '@Html.Raw(Model[1])' == 'True';
+    var regUrl = '@Url.Action("Registered", "Login")';
+    var pwdUrl = '@Url.Action("RePwd", "Login")';
+    var exiUrl = '@Url.Action("AccountExisted", "Login")';
+    $(function () {
+        var msg = '@TempData["ErrorMsg"]';
+        if (msg != '') {
+            alert(msg);
+        }
+        objInit();
+        objAction();
+        var _tipHtml = '<b>提示:</b><br />';
+
+        _tipHtml += '<b>使用者如未正常登入之自行排除方法</b><br/>';
+        _tipHtml += '<b>1.請用無痕方式開啟此平台</b><br/>';
+        _tipHtml += '<b>2.請清除網頁之快取。</b>';
+        $('#hint').jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+    });
+
+    function objInit() {
+        $('#logform').jqxValidator({
+            rules: [
+                { input: '#tb_acc', message: '請輸入帳號', action: 'keyup, blur', rule: 'required' },
+                { input: '#tb_pwd', message: '請輸入密碼', action: 'keyup, blur', rule: 'required' },
+            ]
+        });
+
+        $('#winBody').jqxValidator({
+            rules: [
+                { input: '#reg_name', message: '請輸入姓名', action: 'keyup, blur', rule: 'required' },
+                { input: '#reg_acc', message: '請輸入帳號', action: 'keyup, blur', rule: 'required' },
+                {
+                    input: '#reg_pwd', message: '密碼強度不符合', action: 'keyup, blur',
+                    rule: function (input, commit) {
+                        return pwdconfirm(input.val());
+                    }
+                },
+                {
+                    input: '#reg_confirmpwd', message: '密碼不符合', action: 'keyup, focus',
+                    rule: function (input, commit) {
+                        return input.val() === $('#reg_pwd').val();
+                    }
+                },
+                {
+                    input: '#reg_mail', message: '請輸入信箱', action: 'keyup, focus',
+                    rule: function (input, commit) {
+                        return emailconfirm(input.val());
+                    }
+                },
+                { input: '#reg_desc', message: '請輸入申請說明', action: 'keyup, blur'},
+            ]
+        });
+        $('#pwdBody').jqxValidator({
+            rules: [
+                { input: '#pwd_acc', message: '請輸入帳號', action: 'keyup, blur', rule: 'required' },
+                {
+                    input: '#pwd_mail', message: '請確認信箱', action: 'keyup, focus',
+                    rule: function (input, commit) {
+                        return emailconfirm(input.val());
+                    }
+                },
+            ]
+        });
+        $('#jqxwin_reg').jqxWindow({
+            width: 610,
+            height: 550,
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            initContent: function () {
+                $('#reg_name, #reg_acc, #reg_mail').jqxInput({ width: '200', height: '25' });
+                $('#reg_desc').jqxInput({ width: '400', height: '25' });
+                $('#reg_pwd, #reg_confirmpwd').jqxPasswordInput({ width: '200', height: '25' });
+                $('#reg_unit').jqxDropDownList({ source: depList, displayMember: 'Name', valueMember: 'DeptID', width: '200', height: '25', selectedIndex: 0 });
+                $('#btn_reg, #btn_cancel,#acc_existed').jqxButton({ width: '100', height: '25' });
+            }
+        });
+        $('#jqxwin_repwd').jqxWindow({
+            width: 610,
+            height: 200,
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            initContent: function () {
+                $('#pwd_acc, #pwd_mail').jqxInput({ width: '200', height: '25' });
+                $('#btn_pwdsent, #btn_pwdcancel').jqxButton({ width: '100', height: '25' });
+            }
+        });
+    }
+    function objAction() {
+        $('#btn_login').on('click', function () {
+            if ($('#tb_acc').val() == '') {
+                alert('請輸入帳號');
+            }
+            else if ($('#tb_pwd').val() == '') {
+                alert('請輸入密碼');
+            }
+            else {
+                // 帳密驗證 : 因為帳密處理被壓成 BIN 檔，所以另外處理。
+                var _obj = "";
+                $data = {
+                    _account: $('#tb_acc').val(),
+                    _password: $('#tb_pwd').val(),
+                };
+                $.ajax({
+                    url: "@Url.Action("showpassword")",
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        _obj = data;
+                    }
+                });
+
+                if (_obj == "OK") {
+
+                    document.getElementById('logform').submit();
+                } 
+                else if (_obj == "Lock") {
+                    alert('登入錯誤次數已達三次，帳號鎖定15分鐘。')
+                }
+                else {
+                    alert('帳號或密碼錯誤。')
+                }
+            }
+        });
+        $('#acc_existed').click(function () {
+            var acc = $('#reg_acc').val();
+            var patt = /^\d{2}_\d{4}$/g;
+            var res = acc.match(patt);
+            console.log(res);
+            if (res != null) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'TEXT',
+                    url: exiUrl,
+                    async: false,
+                    data: { acc: acc },
+                    success: function (data) {
+                        if (data == 'Existed')
+                            alert('帳號已存在 !');
+                        else
+                            alert('此帳號可使用 !');
+                    }
+                });
+            }
+            else
+                alert('帳號不符合格式，帳號格式請見下方說明 !');
+        });
+        $('#registered').on('click', function () {
+            $('#jqxwin_reg').jqxWindow('open');
+            $('#LoginSection').jqxWindow("close");
+        });
+
+        $('#getpwd').on('click', function () {
+            $('#jqxwin_repwd').jqxWindow('open');
+            $('#LoginSection').jqxWindow("close");
+        });
+
+        $('#btn_reg').on('click', function () {
+            $('#winBody').jqxValidator('validate');
+        });
+
+        $('#btn_cancel').on('click', function () {
+            $('#jqxwin_reg').jqxWindow('close');
+            $('#LoginSection').jqxWindow("open");
+        });
+
+        $('#btn_pwdsent').on('click', function () {
+            $('#pwdBody').jqxValidator('validate');
+        });
+
+        $('#btn_pwdcancel').on('click', function () {
+            $('#jqxwin_repwd').jqxWindow('close');
+            $('#LoginSection').jqxWindow("open");
+        });
+
+        $('#winBody')
+            .on('validationSuccess', function (event) {
+                registered();
+            })
+            .on('validationError', function (event) {
+                alert('請確認註冊資料是否有誤')
+            });
+
+        $('#pwdBody')
+            .on('validationSuccess', function (event) {
+                repwd();
+            })
+            .on('validationError', function (event) {
+                alert('請確認輸入的資料是否有誤')
+            });
+
+        $('#jqxwin_reg, #jqxwin_repwd')
+            .on('open', function (event) {
+                $('#logform').jqxValidator('hide');
+            })
+            .on('close', function (event) {
+                $('#winBody, #pwdBody').jqxValidator('hide');
+            });
+    }
+
+    function registered() {
+        usrData = {};
+        usrData.AccountID = $('#reg_acc').val();
+        usrData.Password = $('#reg_pwd').val();
+        usrData.Name = $('#reg_name').val();
+        usrData.DeptID = $('#reg_unit').val();
+        usrData.EMail = $('#reg_mail').val();
+        usrData.Comment = $('#reg_desc').val();
+
+        var patt = /^\d{2}_\d{4}$/g;
+        var res = usrData.AccountID.match(patt);
+
+        if (res != null || (isAllowOther && usrData.EMail == usrData.AccountID)) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'TEXT',
+                url: regUrl,
+                async: false,
+                data: { user: usrData },
+                success: function (data) {
+                    if (data == "OK") {
+                        if (res != null) {
+                            alert('註冊完成，可直接登入。');
+                            $('#jqxwin_reg').jqxWindow('close');
+                        }
+                        else {
+                            alert('註冊完成，待管理員認證。')
+                            $('#jqxwin_reg').jqxWindow('close');
+                        }
+                    }
+                    else if (data == "Existed")
+                        alert('該帳號已存在 !');
+                    else
+                        alert('註冊失敗，請聯絡管理者。');
+                }
+            });
+        } else
+            alert('帳號格式不符合，請確認帳號格式。');
+
+
+    }
+    function repwd() {
+        var acc = $('#pwd_acc').val();
+        var email = $('#pwd_mail').val();
+        $.ajax({
+            type: 'POST',
+            dataType: 'TEXT',
+            url: pwdUrl,
+            async: false,
+            data: { acc: acc, email: email },
+            success: function (data) {
+                if (data == 'OK')
+                    alert('已將新的密碼寄至信箱，請至信箱查詢，謝謝。');
+                else
+                    alert(data);
+            }
+        });
+        $('#jqxwin_repwd').jqxWindow('close');
+    }
+
+</script>
+
+<div class="index_content_layout index_content_bg" style="margin-left:-5px;margin-top:-5px;">
+    <!--半透明白底區塊-->
+    <div class="content_login_layout content_identity_bg" style="margin-left:11%">
+        @using (Html.BeginForm("ValidateLogin", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "logform", autocomplete = "off" }))
+        {
+            <div class="content_logininfo_layout">
+                <div class="content_logininfo">
+                    <div>帳號</div>
+                    <div>
+                        @Html.Hidden("urlShared")
+                        @Html.TextBox("acc", "", new { id = "tb_acc", @class = "content_logininfo_input" })
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="content_logininfo">
+                    <div>密碼</div>
+                    <div>
+                        @Html.Password("pwd", "", new { id = "tb_pwd", @class = "content_logininfo_input" })
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div id="btn_login" class="content_BTNlogin_layout content_BTNlogin">
+                    <div>登入</div>
+                </div>
+                <div class="clear"></div>
+                <div class="content_logininfo" style="width:100%">
+                    <div id="registered" style="margin-top:0px;width:50%;cursor:pointer">
+                        @*帳號申請*@
+                        &nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div id="getpwd" style="margin-left:0px;cursor:pointer;">
+                        忘記密碼
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div id="hint" style="text-align:right;margin-top:15px;margin-right:10px"><i class="fas fa-info-circle fa-lg"></i></div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--帳號註冊div-->
+<div id="jqxwin_reg" style="overflow-x:hidden">
+    <div id="winHead">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="contnet_title_layoutLogin content_title">
+                帳號申請
+            </div>
+        </div>
+    </div>
+    <div id="winBody">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*帳號</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="reg_acc" />
+                        <input type="button" id="acc_existed" value="帳號驗證" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*密碼</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="password" id="reg_pwd" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*密碼確認</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="password" id="reg_confirmpwd" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*暱稱</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="reg_name" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*單位名稱</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <div id="reg_unit"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>*電子信箱</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="reg_mail" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>申請說明</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="reg_desc" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin" style="margin-top:10px;">
+                <span>●所內員工帳號請填寫員工編號</span><br />
+                <span>●密碼須包含大小寫英文字母、特殊符號及數字，至少8碼</span><br />
+                <span>●帳號格式XX_XXXXX(前兩碼為區域碼，後數字為員工號碼)</span><br/>
+                <span>●標註有*者為必填欄位</span>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin" style="margin-top:10px;">
+                <input type="button" id="btn_reg" value="送出" />
+                <input type="button" id="btn_cancel" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+<!--帳號註冊div-->
+<!--忘記密碼div-->
+<div id="jqxwin_repwd">
+    <div id="pwdHead">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="contnet_title_layoutLogin content_title">
+                忘記密碼
+            </div>
+        </div>
+    </div>
+    <div id="pwdBody">
+        <div class="content_whiteBG_layoutLogin content_whiteBG">
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>帳號</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="pwd_acc" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin">
+                <div class="about_content_coulmnLeft_authLogin about_content_coulmnLeftLogin ">
+                    <div>電子信箱</div>
+                </div>
+                <div class="about_content_coulmnRight_authLogin about_content_coulmnRightA">
+                    <div>
+                        <input type="text" id="pwd_mail" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="about_content_coulmn_layoutLogin" style="margin-top:10px;">
+                <input type="button" id="btn_pwdsent" value="送出" />
+                <input type="button" id="btn_pwdcancel" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+<!--忘記密碼div-->

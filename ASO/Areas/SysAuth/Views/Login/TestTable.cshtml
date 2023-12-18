@@ -1,0 +1,17 @@
+﻿@model List<Wei.SysAuth.Department>
+
+<table id="testTb" border="1" style="border-collapse:collapse">
+    <tr>
+        <th>DeptID</th>
+        <th>DeptNo</th>
+        <th>Name</th>
+    </tr>
+    @foreach (var it in Model)
+    {
+        <tr>
+            <td>@it.DeptID</td>
+            <td>@it.DeptNo</td>
+            <td>@it.DeptName</td>
+        </tr>
+    }
+</table>

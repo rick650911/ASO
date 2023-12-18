@@ -1,0 +1,80 @@
+﻿@{
+    Layout = null;
+}
+
+<div id="AddDep_GV_Main"></div>
+<input id="AddDep_Btn_Define" type="button" value="確定" />
+
+<script>
+
+    //#region 頁面初始
+    function AddDep_objInit() {
+        $("#AddDep_Btn_Define").jqxButton(JqxBtnSetting);
+        $("#AddDep_Btn_Define").on('click', function () {
+            var StaffArray = new Array()
+            var SelectRows = $('#AddDep_GV_Main').jqxGrid('getselectedrowindexes');
+            if (SelectRows.length > 0) {
+                for (var i = 0 ; i < SelectRows.length; i++) {
+                    var SelectedRowData = $('#AddDep_GV_Main').jqxGrid('getrowdata', SelectRows[i]);
+                    var row = {};
+                    row.ID = SelectedRowData.DeptID;
+                    row.Type = "2";//2表示部門
+                    var Content = "【部門】 ﹝部門編號:" + SelectedRowData.DeptNO + "﹞" + "﹝部門名稱:" + SelectedRowData.DeptNmae + "﹞";
+                    row.Content = Content;
+                    StaffArray[i] = row;
+                }
+            }
+
+            var L = GroupList.length;
+            var con = "";
+            if (StaffArray.length > 0) {
+                for (var i = 0; i < StaffArray.length; i++) {
+                    var n = L + i;
+                    GroupList[n] = StaffArray[i];
+                    con += StaffArray[i].Content + '<br>';
+                }
+            }
+            AddGroup();//需要用到加入部門的頁面都要寫這個function
+            $('#PV_AddDep_Window').jqxWindow('close');
+        })
+    }
+    function AddDep_dataInit() {
+        var data = new Array();
+        for (var i = 0; i < 200; i++) {
+            var row = {};
+            row["DeptID"] = i;
+            row["DeptNO"] = "部門編號" + i;
+            row["DeptNmae"] = "部門名稱" + i;
+            data[i] = row;
+        }
+
+        var source = {
+            localdata: data,
+            datatype: "JSON",
+            datafields: [
+                { name: 'DeptID', type: 'string' },
+                { name: 'DeptNO', type: 'string' },
+                { name: 'DeptNmae', type: 'string' }
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#AddDep_GV_Main").jqxGrid({
+            source: dataAdapter,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            selectionmode: 'checkbox',
+            columns: [
+              { text: '部門編號', datafield: 'DeptNO', cellsalign: 'right', align: 'center', width: '100px' },
+              { text: '部門名稱', datafield: 'DeptNmae', align: 'center', width: '100px' },
+            ]
+        });
+        $("#AddDep_GV_Main").jqxGrid(JqxGvSetting600);
+    }
+    //#endregion
+
+    $(function () {
+        AddDep_objInit();
+        AddDep_dataInit();
+    });
+</script>

@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "帳號申請設定";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">帳號申請設定</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>外部申請狀態</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="radio" name="status" id="chk_open" @(Model.Item1 ? "checked" : "") />啟用
+            &nbsp;
+            <input type="radio" name="status" id="chk_close" @(!Model.Item1 ? "checked" : "") />停用
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>通知信箱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <input type="text" id="txt_mailstr" value="@Model.Item2" />
+            (若需副本多人信箱，請用分號區隔)
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" name="Status" id="btn_confirm" value="確認" onclick="SaveRegMgn();" />&nbsp;
+    </div>
+</div>
+<div class="clear"></div>
+
+<script>
+    var SaveRegMgnUrl = '@Url.Action("EditRegMgn", "Organization")';
+    initMenu = $(".menu_options_text[class*='Menu_org']");
+
+    $(document).ready(function () {
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=button]").jqxButton(JqxBtnSetting);
+        $('#txt_mailstr').jqxInput({ width: 250 });
+    })
+
+    function SaveRegMgn() {
+        var status = $("#chk_open").prop("checked") ? 1 : 0;
+        var mailstr = $("#txt_mailstr").val();
+
+        var errorMailStr = '';
+        var chkMail = true;
+        var mailArray = mailstr.split(';');
+        for (i = 0; i < mailArray.length; i++) {
+            var tmp = mailArray[i];
+            if (!emailconfirm(tmp)) {
+                chkMail = false;
+                alert('Email格式錯誤：' + tmp);
+                break;
+            }
+        }
+
+        if (chkMail) {
+            $.ajax({
+                url: SaveRegMgnUrl,
+                type: "POST",
+                dataType: "text",
+                data: { status: status, mailstr: mailstr },
+                success: function (data) {
+                    alert(data == "True" ? '修改成功' : '修改失敗');
+                },
+                error: function (e) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+</script>

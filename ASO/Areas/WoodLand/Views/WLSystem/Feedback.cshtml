@@ -1,0 +1,50 @@
+﻿
+@{
+    Layout = null;
+}
+ <div style="padding:20px;">
+    <textarea type="text" id="Content" rows="10" style="width:99%;height:460px;"></textarea>
+    <div style="text-align:center; padding:20px;">
+        <input id="btnFeedbackSave" type="button" class="btn_jqxbutton" value="送出" />
+        <input id="btnFeedbackClose" type="button" class="btn_jqxbutton" value="取消" />
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.btn_jqxbutton').jqxButton();
+
+        $('#btnFeedbackClose').click(function () {
+            $('#jqx_win').jqxWindow('destroy');
+        });
+
+        $('#btnFeedbackSave').click(function () {
+            if ($.trim($('#Content').val()) == '') {
+                alert('請填寫意見');
+                return false;
+            } else {
+                var data = {
+                    ID: '@ViewBag.ID',
+                    Content: $('#Content').val()
+                };
+                $.ajax({
+                    url: '@Url.Action("SaveFeedback", "WLSystem")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    data: JSON.stringify({ wb: data }),
+                    success: function (result) {
+                        if (result == 'OK' || !isNaN(parseInt(result))) {
+                            alert('送出成功');
+                            $('#jqx_win').jqxWindow('destroy');
+                        } else
+                            alert(result);
+                    },
+                    error: function (e) {
+                        alert('錯誤出現，但錯誤不說。')
+                    }
+                });
+            }
+        });
+    });
+</script>

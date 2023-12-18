@@ -1,0 +1,100 @@
+﻿@using ASO.Models
+<style>
+    #popChange {
+        z-index: 999999;
+    }
+
+    #popLock {
+        z-index: 999999;
+    }
+
+    #ImgrightClick {
+        width: 80px;
+        height: 28px;
+        background: #ccc;
+        border-radius: 4px;
+        position: absolute;
+        left: 10px;
+        top: 20px;
+        z-index: 999999;
+        text-align: center;
+        padding: 10px;
+    }
+</style>
+<script src="~/Scripts/Print.js"></script>
+<div class="solid_content_table">
+    <div class="solid_content_tablerow">
+        <span id="lb_image" style="color:white;font-size:25px;font-weight:bold;">正立體</span>
+        <br />
+        <br />
+        <input id="btnstereoswitch" type="button" class="btn_jqxbutton btnstereoswitch" value="切換相對" style="display:none;border-radius:7px" />
+        <input id="btnGoogleMap" type="button" class="btn_jqxbutton" value="Google實景" style="display:none;width: 170px;border-radius:7px" />
+        <br />
+        <br />
+        @*<div id="typeswitcher" style="text-align:left;display:inline-block;margin-left:5%">
+            <span id="lb_image" style="color:white;font-size:20px;font-weight:bold;"><input type="button" class="btn_jqxbutton" id="btnAnaglyph" value="紅藍立體"></span>
+        </div>*@
+
+        <div id="imageTwoPic">
+            <div id="stereoswitch">
+                <table id="grid_stero"></table>
+            </div>
+            <div id="div_left" class="zoom">
+                <img id="img_l" src="~/Content/Images/blank-img.jpg" width="350" ondragstart="return false;" />
+            </div>
+            <div id="div_right" class="zoom">
+                <img id="img_r" src="~/Content/Images/blank-img.jpg" width="350" ondragstart="return false;" />
+            </div>
+        </div>
+    </div>
+    <div class="solid_content_tablerow">
+        <div class="solid_content_button">
+            <img src="~/Content/Images/exchange.png" id="btn_exchange" />
+            <img src="~/Content/Images/unlock.png" id="btn_lock" />
+            <img src="~/Content/Images/plus.png" id="btn_zoomin" />
+            <img src="~/Content/Images/minus.png" id="btn_zoomout" />
+            <img src="~/Content/Images/enlarge.png" id="btn_enlarge" />
+            <img src="~/Content/Images/shrink.png" id="btn_shrink" />
+            <img src="~/Content/Images/Print.png" id="btn_print" style="display:none" data-url="@Url.Action("QueryPrint","Search")" data-id="" />
+            <img src="~/Content/Images/Print.png" id="print" />
+            <span class="solid_content_span">眼距<input id="tb_Lengtheye" type="text" style="width:36px;height:20px;" />公分</span>
+            <img src="~/Content/Images/save.png" id="btn_save" data-url="@Url.Action("ImageSettingSave","Search")" data-auth="@SysTool.GetUserName()" />
+            <input id="imageSettingActionHd" type="hidden" value="@Url.Action("ImageSettingGet","Search")" />
+            <div id="compare"></div>
+            <br />
+            @*<div id="callinfo" style="color:white"><i class="fas fa-info fa-lg"></i>　開啟像對說明</div>*@
+
+        </div>
+    </div>
+
+</div>
+
+<div id="popChange" style="display:none">
+    <div><input id="btnPosition" type="button" value="左右對調" /></div>
+    <div><input id="btnRotate" type="button" value="轉180度" /></div>
+</div>
+
+<div id="popLock" style="display:none">
+    <div><input id="btnLockL" type="button" value="鎖定左邊" /></div>
+    <div><input id="btnLockR" type="button" value="鎖定右邊" /></div>
+</div>
+<div id="_printDiv" style="display:none"></div>
+<script>
+    $('#print').click(function () {
+        var $url = "@Url.Action("GetPrint")";
+        var getUrlString = location.href;
+        var url = new URL(getUrlString);        
+        var $data = {
+            SID: url.searchParams.get('SID'),
+            SortId: url.searchParams.get('SortID'),
+            margin: $('#div_right').css('margin-left'),
+            img1: $('#img_l').attr('src'),
+            img2: $('#img_r').attr('src'),
+            width:$('#img_r').css('width'),
+            height:$('#img_r').css('height'),
+        };
+        $.post($url, $data, function (result) {
+            printScreen(result)
+        });
+    })
+</script>

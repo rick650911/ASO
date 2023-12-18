@@ -1,0 +1,309 @@
+﻿
+@{
+    ViewBag.Title = "像片對查詢";
+}
+<style>
+    .menu_bg_layout {
+        z-index: 0 !important;
+    }
+</style>
+<div class="PhotoSearch1_content_whiteBG_layout PhotoSearch1_content_whiteBG">
+    <div class="PhotoSearch1_contentLEFT_layout PhotoSearch1_contentLEFT">
+        <div class="PhotoSearch1_contentLEFT_Classfily_title_layout">
+            <div class="PhotoSearch1_contentLEFT_Classfily_title">分類查詢</div>
+            <div class="PhotoSearch1_contentLEFT_extendBTN PhotoSearch1_contentLEFT_extendCLOSE" id="ClassfilySearch">
+                <span class="PhotoSearch1_contentLEFT_extendBTN_text" id="ClassfilySearch_Text"><img id="ClassfilySearch_Img" src="@Url.Content("~/Content/Images/Expand.svg")" /></span>
+                <span class="PhotoSearch1_contentLEFT_extendBTN_slidedown" id="ClassfilySearch_Icon"></span>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            <input type="text" id="ID" class="posint" />
+            <div>樹種編號</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            <input type="text" id="ComName" />
+            <div>樹種中文名稱</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("IPCCID", (SelectList)ViewBag.IPCC, "")
+            <div>IPCC分類</div>
+        </div>
+        <div class="PhotoSearch1_contentLEFT_ClassSearch_hide">
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @if (ViewBag.IPCCsub != null) {
+                    @Html.DropDownList("IPCCsubID", (SelectList)ViewBag.IPCCsub, "")
+                }
+                else {
+                    <select id="IPCCsubID">
+                        <option value="-1"></option>
+                    </select>
+                }
+                <div>資源調查分類</div>
+            </div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                <input type="text" id="Family" />
+                <div>科名</div>
+            </div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                <input type="text" id="SciName" />
+                <div>學名</div>
+            </div>
+        </div>
+        <div class="PhotoSearch1_contentLEFT_Classfily_title_layout">
+            <div class="PhotoSearch1_contentLEFT_Classfily_title">特徵查詢</div>
+            <div class="PhotoSearch1_contentLEFT_extendBTN PhotoSearch1_contentLEFT_extendCLOSE" id="FeatureSearch">
+                <span class="PhotoSearch1_contentLEFT_extendBTN_text" id="FeatureSearch_Text"><img id="FeatureSearch_Img" src="@Url.Content("~/Content/Images/Expand.svg")" /></span>
+                <span class="PhotoSearch1_contentLEFT_extendBTN_slidedown" id="FeatureSearch_Icon"></span>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("crown6", (SelectList)ViewBag.Crown6Sel)
+            <div>冠層樹梢</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("crown7", (SelectList)ViewBag.Crown7Sel)
+            <div>冠層深度</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("crown8", (SelectList)ViewBag.Crown8Sel)
+            <div>冠層層次</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("crown9", (SelectList)ViewBag.Crown9Sel)
+            <div>冠層通透</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_SearchInfo">
+            @Html.DropDownList("texture", (SelectList)ViewBag.TextureSel)
+            <div>冠層質地</div>
+        </div>
+        <div class="clear"></div>
+        <div class="PhotoSearch1_contentLEFT_FeatureSearch_hide">
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("lightness", (SelectList)ViewBag.LightnessSel)
+                <div>明度</div>
+            </div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("saturation", (SelectList)ViewBag.SaturationSel)
+                <div>彩度</div>
+            </div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("hue", (SelectList)ViewBag.HueSel, "")
+                <div>色調</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("pattern", (SelectList)ViewBag.PatternSel)
+                <div>組織興圖案</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("crown2", (SelectList)ViewBag.Crown2Sel)
+                <div>樹冠邊緣</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("crown3", (SelectList)ViewBag.Crown3Sel)
+                <div>樹冠表面</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("crown4", (SelectList)ViewBag.Crown4Sel)
+                <div>樹冠數量</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("crown5", (SelectList)ViewBag.Crown5Sel)
+                <div>樹冠尺寸</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                @Html.DropDownList("crown1", (SelectList)ViewBag.Crown1Sel)
+                <div>樹冠輪廓</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                <input type="text" id="AltMax" class="posnum" />
+                <div>最高海拔</div>
+            </div>
+            <div class="clear"></div>
+            <div class="PhotoSearch1_contentLEFT_SearchInfo">
+                <input type="text" id="AltMin" class="posnum" />
+                <div>最低海拔</div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div style="margin-top:10px;text-align:center; padding-bottom:10px;">
+            <input id="btn_query" type="button" class="btn_jqxbutton" value="查詢" />
+        </div>
+    </div>
+    <div class="PhotoSearch1_contentRIGHT_layout" id="div_list"></div>
+    <div class="clear"></div>
+</div>
+<div id="win_data"></div>
+
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_search']");
+        $(".menu_options_text[class*='Menu_search']").addClass("menu_active");
+
+        $('.btn_jqxbutton').jqxButton();
+
+        $(".posint").keyup(function () { //正整數(給需要千分位的用)
+            var tmptxt = $(this).val();
+            $(this).val(tmptxt.replace(/\D|^/g, ''));
+        }).bind("paste", function () {
+            var tmptxt = $(this).val();
+            $(this).val(tmptxt.replace(/\D|^/g, ''));
+        }).css("ime-mode", "disabled");
+
+        $(".posnum").keyup(function () { //正數值
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).bind("paste", function () {
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).css("ime-mode", "disabled");
+
+        //分類查詢展開收合功能
+        $("#ClassfilySearch").click(function () {
+            var isClose = $("#ClassfilySearch").hasClass("PhotoSearch1_contentLEFT_extendCLOSE");
+            if (isClose == true) {
+                //$("#ClassfilySearch_Text").text("收合");
+                $('#ClassfilySearch_Img').attr('src', '@Url.Content("~/Content/Images/Collapse.svg")');
+                $("#ClassfilySearch_Icon").addClass("PhotoSearch1_contentLEFT_extendBTN_slideup");
+                $("#ClassfilySearch").removeClass("PhotoSearch1_contentLEFT_extendCLOSE");
+                $(".PhotoSearch1_contentLEFT_ClassSearch_hide").slideDown();
+            } else {
+                //$("#ClassfilySearch_Text").text("展開全部");
+                $('#ClassfilySearch_Img').attr('src', '@Url.Content("~/Content/Images/Expand.svg")');
+                $("#ClassfilySearch_Icon").removeClass("PhotoSearch1_contentLEFT_extendBTN_slideup");
+                $("#ClassfilySearch").addClass("PhotoSearch1_contentLEFT_extendCLOSE");
+                $(".PhotoSearch1_contentLEFT_ClassSearch_hide").slideUp();
+            }
+        });
+
+        $("#FeatureSearch").click(function () {
+            var isClose = $("#FeatureSearch").hasClass("PhotoSearch1_contentLEFT_extendCLOSE");
+            if (isClose == true) {
+                //$("#FeatureSearch_Text").text("收合");
+                $('#FeatureSearch_Img').attr('src', '@Url.Content("~/Content/Images/Collapse.svg")');
+                $("#FeatureSearch_Icon").addClass("PhotoSearch1_contentLEFT_extendBTN_slideup");
+                $("#FeatureSearch").removeClass("PhotoSearch1_contentLEFT_extendCLOSE");
+                $(".PhotoSearch1_contentLEFT_FeatureSearch_hide").slideDown();
+            } else {
+                //$("#FeatureSearch_Text").text("展開全部");
+                $('#FeatureSearch_Img').attr('src', '@Url.Content("~/Content/Images/Expand.svg")');
+                $("#FeatureSearch_Icon").removeClass("PhotoSearch1_contentLEFT_extendBTN_slideup");
+                $("#FeatureSearch").addClass("PhotoSearch1_contentLEFT_extendCLOSE");
+                $(".PhotoSearch1_contentLEFT_FeatureSearch_hide").slideUp();
+            }
+        });
+
+        $('#IPCCID').bind("change", function () {
+            $('#IPCCsubID').empty().append($("<option/>").val('-1').text(""));
+            if ($('#IPCCID').val() != '') {
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Content("~/Search/IPCCsubList")',
+                    data: JSON.stringify({ IPCCID: $('#IPCCID').val() }),
+                    success: function (data) {
+                        $.each(data, function (i, obj) {
+                            $('#IPCCsubID').append($("<option/>").val(obj.IPCCsubID).text(obj.IPCCsub));
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('error:' + xhr.status + thrownError);
+                        return false;
+                    }
+                });
+            }
+        });
+
+        $('#btn_query').click(function () {
+            Query();
+        });
+
+        if ('@ViewBag.isLoadList' == 'True') {
+            Query();
+        }
+    });
+
+    function Query() {
+        var tree = {
+            ID: $.trim($('#ID').val()),
+            ComName: $.trim($('#ComName').val()),
+            IPCCID: $('#IPCCID').val() == '' ? '-1' : $('#IPCCID').val(),
+            IPCCsubID: $('#IPCCsubID').val() == '' ? '-1' : $('#IPCCsubID').val(),
+            Family: $.trim($('#Family').val()),
+            SciName: $.trim($('#SciName').val())
+        };
+        var features = {
+            crown6: $('#crown6').val(),
+            crown7: $('#crown7').val(),
+            crown8: $('#crown8').val(),
+            crown9: $('#crown9').val(),
+            texture: $('#texture').val(),
+            lightness: $('#lightness').val(),
+            saturation: $('#saturation').val(),
+            hue: $('#hue').val(),
+            pattern: $('#pattern').val(),
+            crown2: $('#crown2').val(),
+            crown3: $('#crown3').val(),
+            crown4: $('#crown4').val(),
+            crown5: $('#crown5').val(),
+            crown1: $('#crown1').val(),
+            AltMax: $.trim($('#AltMax').val()),
+            AltMin: $.trim($('#AltMin').val())
+        };
+
+        $.ajax({
+            type: 'POST',
+            cache: false,
+            async: false,
+            url: '@Url.Content("~/Search/QueryList")',
+            data: JSON.stringify({ tree: tree, features: features }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {                
+                $("#div_list").html(data);
+                $('.PhotoSearch1_contentLEFT_layout').height($(document).height());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+
+    function OpenData(ID) {
+        var x1 = ($(window).width() - 1000) / 2 + $(window).scrollLeft();
+        var y1 = ($(window).height() - 600) / 2 + $(window).scrollTop();
+        $('#win_data').append('<div id="jqx_win"><div id="winheader"></div><div id="wincontent"></div></div>');
+        $('#wincontent').load('@Url.Action("QueryResult", "Search")' + '/?ID=' + ID);
+        $('#jqx_win').jqxWindow({
+            theme: 'energyblue',
+            position: { x: x1, y: y1 },
+            showCollapseButton: false,
+            closeButtonAction: 'close',
+            height: 600, width: 1000, maxWidth: 1000,
+            isModal: true
+        });
+        $("#jqx_win").jqxWindow({ title: "像片對查詢" });
+        $('#jqx_win').jqxWindow('open');
+    }
+
+    function Loc(locx, locy) {
+        window.open('@Url.Action("LocationCoordMap", "WLMap")' + '/?locx=' + locx + '&locy=' + locy);
+    }
+    @*function Loc(Ymax, Xmin, Ymin, Xmax) {
+        window.open('@Url.Action("extentMap", "WLMap")' + '/?minx=' + Xmin + '&miny=' + Ymin + '&maxx=' + Xmax + '&maxy=' + Ymax);
+    }*@
+</script>
+

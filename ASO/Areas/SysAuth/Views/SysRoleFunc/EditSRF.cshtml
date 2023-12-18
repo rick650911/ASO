@@ -1,0 +1,277 @@
+﻿@model Wei.SysAuth.SysRole
+@{
+    ViewBag.Title = "EditSRF";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="contnet_title_layout content_title">群組權限編輯</div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>群組編號</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            @Model.RoleNo
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>群組名稱</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            @Model.Name
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+        <div>複製功能權限</div>
+    </div>
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+        <div>
+            <div id="EditSRF_Ddl_Role"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px; height:415px">
+        <div>
+            <div id="EditSRF_GV_UserList" style="float:left;margin-left:10px"></div>
+            <div id="EditSRF_GV_SRF" style="float:left"></div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="about_content_coulmn_layout">
+    <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 2px;">
+        <input type="button" id="EditSRF_btn_Save" onclick="SaveFuns()" value="確定" />
+        <input type="button" id="EditSRF_btn_Cancel" value="取消" onclick="Disable()" />
+        <input type="button" id="EditSRF_btn_Edit" value="修改" onclick="Able()" />
+        <input type="button" id="EditSRF_btn_Back" value="回上頁" onclick="location.href = '@Url.Action("Index","SysRoleFunc")'" />
+    </div>
+</div>
+<div class="clear"></div>
+
+<style>
+    .content_whiteBG_layout {
+        padding-bottom: 0px;
+    }
+</style>
+<script>
+    //#region 變數宣告
+    var GetFunsUrl = '@Url.Action("GetFuns", "SysRoleFunc")';
+    var RoleFuns = {};
+    var SelectFuns = {};
+    var DelFuns = {};
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var Dept =[];
+    var SysUserList = @Html.Raw(Json.Encode(ViewData["SysUserList"]));
+    var GroupList=[];
+    var FunList = @Html.Raw(Json.Encode(ViewData["FunList"]));
+    var GetRoleGroupMngUrl = '@Url.Action("GetRoleGroupMng", "Admin")';
+    var RoleID = '@Model.RoleID';
+    var SaveRoleFunUrl = '@Url.Action("SaveRoleFun", "SysRoleFunc")';
+    //#endregion
+
+    //#region 事件處理
+    function GetFuns(ID, MinNum, MaxMun) {
+        SelectFuns = {};
+        DelFuns = {};
+        var source = {
+            localdata: FunList,
+            datatype: "array",
+            datafields: [
+                 { name: 'FunID', type: 'string' },
+                 { name: 'FunPID', type: 'string' },
+                 { name: 'Name', type: 'string' },
+            ],
+            hierarchy: {
+                keyDataField: { name: 'FunID' },
+                parentDataField: { name: 'FunPID' }
+            },
+            id: 'FunID'
+        }
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#EditSRF_GV_SRF").jqxTreeGrid({
+            source: dataAdapter,
+            altRows: true,
+            width: 560,
+            height: 400,
+            checkboxes: true,
+            hierarchicalCheckboxes: true,
+            columns: [
+              { text: "FunID", align: "center", dataField: "FunID", hidden: true },
+              {
+                  text: "選取", columntype: 'checkbox', cellsAlign: "center", align: "center", dataField: "Ch", width: 100,
+                  cellsrenderer: function () { return "" }
+              },
+              { text: "航照判釋知識教育推廣平台", dataField: "Name", cellsAlign: "center", align: "center" }
+            ]
+        });
+        var rows = $('#EditSRF_GV_SRF').jqxTreeGrid('getRows');
+        var traverseTree = function(rows) {
+            for(var i = 0; i < rows.length; i++) {
+                if (rows[i].records) {
+                    idValue = rows[i][idColumn];
+                    $('#EditSRF_GV_SRF').jqxTreeGrid('expandRow',idValue);
+                    traverseTree(rows[i].records);
+                }
+            }
+        };
+        var idColumn = $('#EditSRF_GV_SRF').jqxTreeGrid('source')._source.id;
+        traverseTree(rows);
+        $.ajax({
+            type: 'POST', dataType: 'JSON',
+            url: GetFunsUrl,
+            async: false,
+            data:{ ID:ID, MinNum:1000, MaxNum:3000 },
+            success: function (data) {
+                RoleFuns = data;
+            }
+        });
+        if (RoleFuns.length > 0) {
+            for (var i = 0; i < RoleFuns.length; i++) {
+                $("#EditSRF_GV_SRF").jqxTreeGrid('checkRow', RoleFuns[i])
+            }
+        }
+    };
+
+    function SaveFuns() {
+        var SelList = [];
+        for (var i in SelectFuns) {
+            SelList.push(i);
+        }
+        var DelList = [];
+        for (var i in DelFuns) {
+            DelList.push(i);
+        }
+        var SysRole = {};
+        SysRole.RoleID = RoleID;
+        $.ajax({
+            url: SaveRoleFunUrl,
+            type: "POST",
+            dataType: "text",
+            data: { selfunc:JSON.stringify(SelList), delfunc: JSON.stringify(DelList), roledata: JSON.stringify(SysRole) },
+            success: function (data) {
+                if (data == "True") {
+                    alert("功能權限設定完成!");
+                    location.reload();
+                }
+                else
+                    alert("功能權限設定失敗!");
+            },
+            error: function (e) {
+                alert("Error");
+            }
+        });
+
+    };
+
+    function InSysUserList() {
+        for(var i =0;i<DeptList.length;i++) {
+            var D = {};
+            D.DeptNo =DeptList[i].DeptNo;
+            D.Name =DeptList[i].Name;
+            Dept[DeptList[i].DeptID] =D;
+        }
+        if(SysUserList.length>0) {
+            for(var i=0;i<SysUserList.length;i++) {
+                var StaffArray = {};
+                StaffArray.ID = SysUserList[i].UserID;
+                StaffArray.Type = "1";
+                var Content = " ﹝部門:" +( Dept.hasOwnProperty(SysUserList[i].DeptID) ?Dept[SysUserList[i].DeptID].Name :"" )+ "﹞ ﹝員工編號:" + SysUserList[i].UserNo + "﹞" + "﹝姓名:" + SysUserList[i].Name + "﹞";
+                StaffArray.Content = Content;
+                GroupList[i] = StaffArray;
+            }
+        }
+        UserList();
+    }
+
+    function UserList() {
+        var source = {
+            localdata: GroupList,
+            datatype: "array",
+            datafields: [
+                 { name: 'ID', type: 'string' },
+                 { name: 'Content', type: 'string' },
+            ],
+            id: 'ID'
+        }
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#EditSRF_GV_UserList").jqxTreeGrid({
+            source: dataAdapter,
+            altRows: true,
+            width: 360,
+            height: 400,
+            columns: [
+              { text: "群組成員", dataField: "Content", align: "center" }
+            ]
+        });
+    };
+
+    function Disable() {
+        $("#EditSRF_GV_SRF").jqxTreeGrid({disabled:true});
+        $("#EditSRF_Ddl_Role").jqxDropDownList({disabled:true});
+        $("#EditSRF_btn_Save, #EditSRF_btn_Cancel").jqxButton({disabled:true});
+    }
+
+    function Able() {
+        $("#EditSRF_GV_SRF").jqxTreeGrid({disabled:false});
+        $("#EditSRF_Ddl_Role").jqxDropDownList({disabled:false});
+        $("#EditSRF_btn_Save, #EditSRF_btn_Cancel").jqxButton({disabled:false});
+    }
+    //#endregion
+
+    //#region 頁面初始
+    function dataInit() {
+        GetFuns(RoleID);
+        $('#EditSRF_GV_SRF').on('rowCheck',
+            function (event) {
+                var ID =  event.args.row.FunID;
+                delete DelFuns[ID];
+                if (!SelectFuns.hasOwnProperty(ID))
+                    SelectFuns[ID] = ID;
+            });
+
+        $('#EditSRF_GV_SRF').on('rowUncheck',
+            function (event) {
+                var ID = event.args.row.FunID;
+                delete SelectFuns[ID];
+                if (!DelFuns.hasOwnProperty(ID))
+                    DelFuns[ID] = ID;
+            });
+
+        InSysUserList();
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetRoleGroupMngUrl,
+            async: false,
+            success: function (data) {
+                SysRoleList = data;
+            }
+        })
+        $("#EditSRF_Ddl_Role").jqxDropDownList(GetJqxDdlSetting(SysRoleList, "RoleID", "Name"));
+        $("#EditSRF_Ddl_Role").jqxDropDownList('insertAt', { label: "最上層", value: "" }, 0);//塞入最上層
+        $('#EditSRF_Ddl_Role').on('select', function (event) {
+            var args = event.args;
+            if (args && args.item.value != '')
+                GetFuns(args.item.value);
+        });
+    }
+    //#endregion
+
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        $("[type=button]").jqxButton(JqxBtnSetting);
+        Disable();
+        dataInit();
+    });
+</script>

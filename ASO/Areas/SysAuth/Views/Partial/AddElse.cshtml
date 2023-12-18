@@ -1,0 +1,106 @@
+﻿@{
+    Layout = null;
+}
+
+<div id="AddElse_GV_Main"></div>
+<input id="AddElse_Btn_Define" type="button" value="確定" />
+
+<script>
+
+    //#region 變數宣告
+    //#endregion
+
+    //#region 事件處理
+    //#endregion
+
+    //#region 頁面初始
+    function AddElse_objInit() {
+        $("#AddElse_Btn_Define").jqxButton(JqxBtnSetting);
+        $("#AddElse_Btn_Define").on('click', function () {
+            var StaffArray = new Array()
+            var SelectRows = $('#AddElse_GV_Main').jqxGrid('getselectedrowindexes');
+            if (SelectRows.length > 0) {
+                for (var i = 0 ; i < SelectRows.length; i++) {
+                    var SelectedRowData = $('#AddElse_GV_Main').jqxGrid('getrowdata', SelectRows[i]);
+                    var row = {};
+                    row.ID = SelectedRowData.DeptID;
+                    row.Type = "1";
+                    var Content = "【承商】 ﹝承商編號:" + SelectedRowData.RoleNo + "﹞" + "﹝承商名稱:" + SelectedRowData.RoleName + "﹞";
+                    row.Content = Content;
+                    StaffArray[i] = row;
+                }
+            }
+
+            var L = GroupList.length;
+            var con = "";
+            if (StaffArray.length > 0) {
+                for (var i = 0; i < StaffArray.length; i++) {
+                    var n = L + i;
+                    GroupList[n] = StaffArray[i];
+                    con += StaffArray[i].Content + '<br>';
+                }
+            }
+            AddGroup();//需要用到加入其他的頁面都要寫這個function
+            $('#PV_AddElse_Window').jqxWindow('close');
+        })
+    }
+
+
+    function AddElse_dataInit() {
+        var data = new Array();
+
+        for (var i = 0; i < 200; i++) {
+            var row = {};
+            row["DeptID"] = i;
+            row["DeptNO"] = "承商種類" + i;
+            row["DeptNmae"] = "承商所在" + i;
+            row["RoleNo"] = "承商編碼" + i;
+            row["RoleName"] = "承商名稱" + i;
+            row["TiName"] = "聯絡人" + i;
+            data[i] = row;
+        }
+
+        var source =
+        {
+            localdata: data,
+            datatype: "JSON",
+            datafields:
+            [
+                { name: 'DeptID', type: 'string' },
+                { name: 'DeptNO', type: 'string' },
+                { name: 'DeptNmae', type: 'string' },
+                { name: 'TiName', type: 'string' },
+                { name: 'RoleNo', type: 'string' },
+                { name: 'RoleName', type: 'string' },
+
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#AddElse_GV_Main").jqxGrid(
+        {
+
+            source: dataAdapter,
+            //  autoheight: true,
+            filterable: true,
+            sortable: true,
+
+            pageable: true,
+            selectionmode: 'checkbox',
+            columns: [
+              { text: '部門ID', datafield: 'DeptID', cellsalign: 'right', align: 'center', width: '100px', hidden: true },
+              { text: '承商種類', datafield: 'DeptNO', cellsalign: 'right', align: 'center', width: '100px' },
+              { text: '承商所在', datafield: 'DeptNmae', align: 'center', width: '100px' },
+              { text: '承商編碼', datafield: 'RoleNo', align: 'center', width: '100px' },
+              { text: '承商名稱', datafield: 'RoleName', align: 'center', width: '100px' },
+              { text: '聯絡人', datafield: 'TiName', align: 'center', width: '100px' },
+            ]
+        });
+        $("#AddElse_GV_Main").jqxGrid(JqxGvSetting600);
+
+    }
+    //#endregion
+    $(function () {
+        AddElse_objInit();
+        AddElse_dataInit();
+    });
+</script>

@@ -1,0 +1,26 @@
+﻿@model List<ASO.Models.WLAbout>
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        @foreach (var b in Model)
+        {
+            <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text">
+                <a href="@Url.Action("AboutEdit", "WLSystem", new { Item = b.Item })">
+                    <div class="system_contentRIGHT_news_date" style="width:130px;">@b.Item</div>
+                </a>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        }
+    </div>
+</div>
+<script>
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_about']");
+        activeOption.addClass("system_contentLEFT_option_active");
+    });
+</script>

@@ -1,0 +1,98 @@
+﻿@model List<ASO.Models.WLBulletinBoard>
+    @{
+        Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+    }
+    <div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+        <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">系統公告</div>
+        <div class="system_contentRIGHT_ALLnews_layout">
+            <div class="system_contentRIGHT_news_title_layout system_contentRIGHT_news_title">
+                <div class="system_contentRIGHT_news_check">選取</div>
+                <div class="system_contentRIGHT_news_date">發布日期</div>
+                <div class="system_contentRIGHT_news_subject">主旨</div>
+                <div class="system_contentRIGHT_news_unit">發布單位</div>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+            @if ( Model != null ) {
+                foreach ( var b in Model.Where(s => s.File == null) ) {
+                    <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text">
+                        <div class="system_contentRIGHT_news_check">
+                            <input type="checkbox" id="@b.ID" />
+                        </div>
+                        <a href="@Url.Action("BulletinEdit", "WLSystem", new { ID = b.ID })">
+                            <div class="system_contentRIGHT_news_date">@b.AddTime.ToString("yyyy-MM-dd")</div>
+                            <div class="system_contentRIGHT_news_subject">@b.Title</div>
+                            <div class="system_contentRIGHT_news_unit">@b.Dept</div>
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="system_contentRIGHT_SeparateLine"></div>
+                }
+            }
+        </div>
+        <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">參考文件</div>
+        <div class="system_contentRIGHT_ALLnews_layout">
+            <div class="system_contentRIGHT_news_title_layout system_contentRIGHT_news_title">
+                <div class="system_contentRIGHT_news_check">選取</div>
+                <div class="system_contentRIGHT_news_date">發布日期</div>
+                <div class="system_contentRIGHT_news_subject">主旨</div>
+                <div class="system_contentRIGHT_news_unit">發布單位</div>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+            @if ( Model != null ) {
+                foreach ( var b in Model.Where(s => s.File != null) ) {
+                    <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text">
+                        <div class="system_contentRIGHT_news_check">
+                            <input type="checkbox" id="@b.ID" />
+                        </div>
+                        <a href="@Url.Action("BulletinEdit", "WLSystem", new { ID = b.ID })">
+                            <div class="system_contentRIGHT_news_date">@b.AddTime.ToString("yyyy-MM-dd")</div>
+                            <div class="system_contentRIGHT_news_subject">@b.Title</div>
+                            <div class="system_contentRIGHT_news_unit">@b.Dept</div>
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="system_contentRIGHT_SeparateLine"></div>
+                }
+            }
+
+            <div class="system_contentRIGHT_ALLbtns_layout">
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_new">新增</div>
+                <div class="system_contentRIGHT_BTN_layout system_contentRIGHT_BTN" id="btn_del">刪除</div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <script>
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_bulletin']");
+        activeOption.addClass("system_contentLEFT_option_active");
+
+        $('#btn_new').on('click', function () {
+            location.href = '@Url.Action("BulletinEdit", "WLSystem", new { ID = 0 })';
+        });
+
+        $('#btn_del').on('click', function () {
+            var ids = [];
+            $('[type=checkbox]').each(function () {
+                if (this.checked)
+                    ids.push(this.id)
+            });
+
+            $.ajax({
+                url: '@Url.Action("DelBulletin", "WLSystem")',
+                type: 'POST',
+                async: false,
+                data: { data: JSON.stringify(ids) },
+                success: function (data) {
+                    // wlsysreload();
+                    window.location.reload();
+                },
+                error: function (e) {
+                    alert('錯誤出現。');
+                }
+            });
+        });
+    });
+    </script>

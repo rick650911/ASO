@@ -1,0 +1,640 @@
+﻿@using ASO.Models;
+@using System.Linq;
+@using System.Collections.Generic;
+@model ASO.Models.WLQuestion
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+@{string type = "Q";}
+<link href="~/Content/lightbox.css" rel="stylesheet" />
+<script src="~/Scripts/lightbox.js"></script>
+<script src="~/Scripts/lightbox.min.js"></script>
+
+<style>
+    .menu_bg_layout {
+        z-index: 0 !important;
+    }
+
+    .system_title {
+        width: 100px;
+    }
+
+    .system_content {
+        width: 600px;
+    }
+
+    textarea {
+        padding-left: 3px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    .textbox {
+        padding-left: 3px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        height: 20px;
+    }
+</style>
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">
+        @ViewBag.TrainingType
+    </div>
+    <div class="clear"></div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">*題型</div>
+            <div class="system_content">
+                @Html.DropDownList("QuestionType", (SelectList)ViewBag.QuestionTypeSel)
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">*題目</div>
+            <div class="system_content">
+                <textarea type="text" id="QuestionDesc" rows="3" style="width:99%">@Model.QuestionDesc</textarea>
+                <div class="system_content">
+                    &nbsp;&nbsp;&nbsp;&nbsp;圖檔：<input type="file" id="QuestionFile" size="40" class="file" multiple />
+                    <input type="button" onclick="ExistImgList('Q')" value="立體像對選取" />
+                    <p id="isExistQuestionImg"></p>
+                    <input type="hidden" id="ExistQuestionFileL" value="" />
+                    <input type="hidden" id="ExistQuestionFileR" value="" />
+
+                    @if (!string.IsNullOrEmpty(Model.ImagePath) && Model.CID != 3)
+                    {
+                        <a href="@Url.Content(Model.ImagePath)" class="example-image-link" data-lightbox="example-0" data-title="">
+                            <img src="@Url.Content(Model.ImagePath)" style="height:50px" />
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">*選項</div>
+            <div class="system_content">
+                <div id="DivQuestionType_0" @(Model.QuestionType == enQuestionType.選擇題 ? "style=display:none" : "" )>
+                    <div style="width:100%;padding-bottom:5px">
+                        <input type="radio" name="Answer" value="1" @(Model.Answer == 1 ? "checked" : "" ) /> <span option-id="1">O</span>
+                        <div class="system_content">
+                            &nbsp;&nbsp;&nbsp;&nbsp;圖檔：<input type="file" id="0Option1File" size="40" class="file" />
+                            <input type="button" onclick="ExistImgList('O1')" value="立體像對選取" />
+                            <p id="is0ExistOption1Img"></p>
+                            <input type="hidden" class="hidden1" id="0ExistOption1FileL" value="" />
+                            <input type="hidden" class="hidden2" id="0ExistOption1FileR" value="" />
+                            @{
+                                List<WLQuestionOption>
+                                    optionlist = Model.OptionList;
+                            }
+                            @if (Model.QuestionType == enQuestionType.是非題)
+                            {
+                                if (optionlist != null && optionlist.Count() > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(optionlist.Where(o => o.OptionID == 1).FirstOrDefault().ImagePath))
+                                    {
+                                        string img = Url.Content(optionlist.Where(o => o.OptionID == 1).FirstOrDefault().ImagePath);
+                                        <a href="@img" class="example-image-link" data-lightbox="example-1" data-title="">
+                                            <img src="@img" style="height:50px" />
+                                        </a>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div style="width:100%">
+                        <input type="radio" name="Answer" value="2" @(Model.Answer == 2 ? "checked" : "" ) /> <span option-id="2">X</span>
+                        <div class="system_content">
+                            &nbsp;&nbsp;&nbsp;&nbsp;圖檔：<input type="file" id="0Option2File" size="40" class="file" />
+                            <input type="button" onclick="ExistImgList('O2')" value="立體像對選取" />
+                            <p id="is0ExistOption2Img"></p>
+                            <input type="hidden" class="hidden1" id="0ExistOption2FileL" value="" />
+                            <input type="hidden" class="hidden2" id="0ExistOption2FileR" value="" />
+                            @if (Model.QuestionType == enQuestionType.是非題)
+                            {
+                                if (optionlist != null && optionlist.Count() > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(optionlist.Where(o => o.OptionID == 2).FirstOrDefault().ImagePath))
+                                    {
+                                        string img = Url.Content(optionlist.Where(o => o.OptionID == 2).FirstOrDefault().ImagePath);
+                                        <a href="@img" class="example-image-link" data-lightbox="example-2" data-title="">
+                                            <img src="@img" style="height:50px" />
+                                        </a>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div id="DivQuestionType_1" @(Model.QuestionType == enQuestionType.選擇題 ? "" : "style=display:none" )>
+                    @if (Model.QuestionType == enQuestionType.選擇題)
+                    {
+                        foreach (WLQuestionOption option in Model.OptionList)
+                        {
+                            <div style="padding-bottom:20px;">
+                                <input type="radio" name="Answer" value="@option.OptionID" @(Model.Answer == option.OptionID ? "checked" : "" ) />
+                                <input type="text" value="@option.OptionDesc" size="76" class="textbox" option-id="@option.OptionID" />
+                                <div class="system_content">
+                                    @{
+                                        string fid = "1Option" + option.OptionID + "File";
+                                        string jstag = "O" + option.OptionID;
+                                        string idL = "1ExistOption" + option.OptionID + "FileL";
+                                        string idR = "1ExistOption" + option.OptionID + "FileR";
+                                        string pid = "is1ExistOption" + option.OptionID + "Img";
+                                    }
+                                    &nbsp;&nbsp;&nbsp;&nbsp;圖檔：<input id="@fid" type="file" size="40" class="file" />
+                                    <input type="button" onclick="ExistImgList('@jstag')" value="立體像對選取" />
+                                    <input type="hidden" class="hidden1" id="@idL" value="" />
+                                    <input type="hidden" class="hidden2" id="@idR" value="" />
+                                    @if (!string.IsNullOrEmpty(option.ImagePath))
+                                    {
+                                        string img = Url.Content(option.ImagePath);
+                                        <a href="@img" class="example-image-link" data-lightbox="example-@option.OptionID" data-title="">
+                                            <img src="@img" style="height:50px" />
+                                        </a>
+                                    }
+                                    <p id="@pid"></p>
+
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 4; i++)
+                        {
+                            <div style="padding-bottom:5px;">
+                                <input type="radio" name="Answer" value="@i" />
+                                <input type="text" value="" size="89" class="textbox" option-id="@i" />
+                                <div class="system_content">
+                                    @{
+                                        string fid = "1Option" + i + "File";
+                                        string jstag = "O" + i;
+                                        string idL = "1ExistOption" + i + "FileL";
+                                        string idR = "1ExistOption" + i + "FileR";
+                                        string pid = "is1ExistOption" + i + "Img";
+                                    }
+                                    &nbsp;&nbsp;&nbsp;&nbsp;圖檔：<input type="file" id="@fid" size="40" class="file" />
+                                    <input type="button" onclick="ExistImgList('@jstag')" value="立體像對選取" />
+                                    <input type="hidden" class="hidden1" id="@idL" value="" />
+                                    <input type="hidden" class="hidden2" id="@idR" value="" />
+                                    <p id="@pid"></p>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">詳解</div>
+            <div class="system_content">
+                <textarea type="text" id="AnswerDesc" rows="3" style="width:99%">@Model.AnswerDesc</textarea>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">難易度</div>
+            <div class="system_content">
+                易
+                <input type="radio" name="Level" value="1" @(Model.Level == 0 || Model.Level == 1 ? "checked" : "" ) />1
+                &nbsp;&nbsp;
+                <input type="radio" name="Level" value="2" @(Model.Level == 2 ? "checked" : "" ) />2
+                &nbsp;&nbsp;
+                <input type="radio" name="Level" value="3" @(Model.Level == 3 ? "checked" : "" ) />3
+                &nbsp;&nbsp;
+                <input type="radio" name="Level" value="4" @(Model.Level == 4 ? "checked" : "" ) />4
+                &nbsp;&nbsp;
+                <input type="radio" name="Level" value="5" @(Model.Level == 5 ? "checked" : "" ) />5
+                難
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">狀態</div>
+            <div class="system_content">
+                <input type="radio" name="IsOn" value="1" @(Model.IsOn != enIsOn.停用 ? "checked" : "" ) />啟用
+                &nbsp;&nbsp;
+                <input type="radio" name="IsOn" value="0" @(Model.IsOn == enIsOn.停用 ? "checked" : "" ) />停用
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+        <div class="system_contentRIGHT_news_text_layout">
+            <div class="system_title">所屬單元</div>
+            <div class="system_content">
+                <select class="js-example-basic-multiple" style="width:100%" id="units" name="states[]" multiple="multiple">
+                    @foreach (Unit item in Model.Unit)
+                    {
+                        <option value="@item.ID">@item.Name</option>
+
+                    }
+
+                </select>
+            </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div style="text-align:center">
+        <input id="btnReview" type="button" class="btn_jqxbutton" value="預覽" />
+        <input id="btnSave" type="button" class="btn_jqxbutton" value="儲存" />
+        @if (Model.NO != 0)
+        {
+            <input id="btnDel" type="button" class="btn_jqxbutton" value="刪除" />
+        }
+        <input id="btnCancel" type="button" class="btn_jqxbutton" value="取消" onclick="window.history.go(-1);" />
+        @*<input id="btnCancel" type="button" class="btn_jqxbutton" value="取消" onclick="window.location.href ='@Url.Action(" QuestionList", "WLSystem" , new { TrainingType=ViewBag.TrainingType })'" />*@
+    </div>
+</div>
+
+<div id="jqxwin_solid">
+    <div>
+        滑鼠左鍵點擊像片可另開視窗檢視
+    </div>
+    <div style="background:#000;overflow:hidden;">
+        @{Html.RenderAction("SolidPhoto", "Search");}
+    </div>
+</div>
+<div id="jqxwin_QueryList" style="display:none">
+    <div>像對選取列表</div>
+    <div id="List"></div>
+
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+<script>
+    var trainingType = '';
+    $(function () {
+        $('.js-example-basic-multiple').select2();
+        if ('@Model.UID' != null || '@Model.UID' != '') {
+            var UID = '@Model.UID'.split(",");
+
+            
+            console.log(UID);
+            $('#units').val(UID);
+            $('#units').trigger('change'); 
+
+        }
+        if ('@(Model.CID)' == '3') {
+            solidInit();
+            $('#img_l')[0].src = '@Url.Content((Model.ImagePathLeft == null || Model.ImagePathLeft == "") ? "~/Content/Images/blank-img.jpg" : Model.ImagePathLeft)';
+            $('#img_r')[0].src = '@Url.Content((Model.ImagePathRight == null || Model.ImagePathRight == "") ? "~/Content/Images/blank-img.jpg" : Model.ImagePathRight)';
+        }
+        else
+            $('#btnReview').remove();
+
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_questionedit']");
+        activeOption.addClass("system_contentLEFT_option_active");
+
+        $('.btn_jqxbutton').jqxButton();
+        $("#QuestionType").jqxDropDownList();
+        $('[type=text]').jqxInput();
+
+        $('#jqxwin_solid').jqxWindow({
+            width: 700,
+            height: 700,
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            draggable: false
+        });
+
+        if ('@Model.NO' != '0') {
+            $('#QuestionType').prop('disabled', true);
+        }
+
+        $('#QuestionType').bind("change", function () {
+            if ($(this).val() == '0') {
+                $('#DivQuestionType_0').show();
+                $('#DivQuestionType_1').hide();
+            } else {
+                $('#DivQuestionType_1').show();
+                $('#DivQuestionType_0').hide();
+            }
+        });
+
+        $('#QuestionFile').on("change", function (e) {
+            var imgNum = e.originalEvent.srcElement.files.length;
+            if (imgNum == 2) {
+                var regex = /_001/;
+                var file1 = e.originalEvent.srcElement.files[0];
+                var file2 = e.originalEvent.srcElement.files[1];
+                var reader1 = new FileReader();
+                var reader2 = new FileReader();
+                if (regex.test(file2)) {
+                    reader1.onloadend = function () {
+                        $('#img_l')[0].src = reader2.result;
+                    }
+                    reader1.readAsDataURL(file2);
+
+                    reader2.onloadend = function () {
+                        $('#img_r')[0].src = reader1.result;
+                    }
+                    reader2.readAsDataURL(file1);
+                }
+                else {
+                    reader1.onloadend = function () {
+                        $('#img_l')[0].src = reader1.result;
+                    }
+                    reader1.readAsDataURL(file1);
+
+                    reader2.onloadend = function () {
+                        $('#img_r')[0].src = reader2.result;
+                    }
+                    reader2.readAsDataURL(file2);
+                }
+            }
+        });
+
+        $('.file').on('change', function () {
+            if ($(this)[0].files[0] != null) {
+                var ext = '.' + $(this)[0].files[0].name.split('.').pop().toLowerCase();
+                var exp = /.jpg|.gif$|.png$/;
+                if (exp.exec(ext) == null) {
+                    alert('檔案格式不正確!\n請上傳jpg、gif、png');
+                    $(this).replaceWith($(this).val('').clone(true));
+                    return false;
+                }
+                if ($(this)[0].files[0].size > 2097152) {
+                    alert('檔案大小上限為2MB');
+                    $(this).replaceWith($(this).val('').clone(true));
+                    return false;
+                }
+            }
+        });
+
+        $('#btnSave').on('click', function () {
+            var QuestionType = $('#QuestionType').val();
+            var Answer = '';
+            var IsOn = $('input[name=IsOn]:checked').val();
+            var Level = $('input[name=Level]:checked').val();
+            var QuestionImgs = $('#QuestionFile')[0].files;
+            var ExistQuestionImgsL = $("#ExistQuestionFileL").val();
+            var ExistQuestionImgsR = $("#ExistQuestionFileR").val();
+            var UID = $("#units").val();
+
+            if (QuestionType == '0') {
+                //是非題
+                $('#DivQuestionType_0 div input[type=radio]').each(function () {
+                    if ($(this).prop('checked')) Answer = $(this).val();
+                });
+            } else {
+                //選擇題
+                $('#DivQuestionType_1 div input[type=radio]').each(function () {
+                    if ($(this).prop('checked')) Answer = $(this).val();
+                });
+            }
+
+            if ($.trim($('#QuestionDesc').val()) == '') {
+                alert('請填寫題目');
+                $('#QuestionDesc').focus();
+                return false;
+            } else if (Answer == '') {
+                alert('請選擇答案');
+                return false;
+            } else if (QuestionImgs.length > 2) {
+                alert('題目圖檔最多兩張')
+                return false;
+            } else {
+
+                var formData = new FormData();
+                var QuestionOption = [];
+                if (QuestionType == '1') {
+                    //選擇題
+                    $('#DivQuestionType_1 div [option-id]').each(function () {
+                        QuestionOption[QuestionOption.length] = {
+                            QNO: '@Model.NO',
+                            OptionID: this.getAttribute('option-id'),
+                            OptionDesc: $(this).val()
+                        };
+                        formData.append('File' + this.getAttribute('option-id'), $(this).next().find('.file')[0].files[0]);
+                        formData.append('1ExistOption' + this.getAttribute('option-id') + 'FileL', $(this).next().find('.hidden1').val())
+                        formData.append('1ExistOption' + this.getAttribute('option-id') + 'FileR', $(this).next().find('.hidden2').val())
+                    });
+                } else {
+                    //是非題
+                    $('#DivQuestionType_0 div [option-id]').each(function () {
+                        QuestionOption[QuestionOption.length] = {
+                            QNO: '@Model.NO',
+                            OptionID: this.getAttribute('option-id'),
+                            OptionDesc: $(this).html()
+                        };
+                        formData.append('File' + this.getAttribute('option-id'), $(this).next().find('.file')[0].files[0]);
+                        formData.append('0ExistOption' + this.getAttribute('option-id') + 'FileL', $(this).next().find('.hidden1').val())
+                        formData.append('0ExistOption' + this.getAttribute('option-id') + 'FileR', $(this).next().find('.hidden2').val())
+                    });
+                    @*QuestionOption[QuestionOption.length] = {
+                        QNO: '@Model.NO',
+                        OptionID: '1',
+                        OptionDesc: 'O'
+                    };
+                    QuestionOption[QuestionOption.length] = {
+                        QNO: '@Model.NO',
+                        OptionID: '2',
+                        OptionDesc: 'X'
+                    };*@
+                }
+                var data = {
+                    NO: '@Model.NO',
+                    CID: '@ViewBag.CID',
+                    QuestionType: QuestionType,
+                    QuestionDesc: $.trim($('#QuestionDesc').val()),
+                    Answer: Answer,
+                    AnswerDesc: $.trim($('#AnswerDesc').val()),
+                    IsOn: IsOn,
+                    Level: Level,
+                    OptionList: QuestionOption,
+                };
+
+                formData.append('data', JSON.stringify(data));
+                formData.append('UID', UID);
+                formData.append('QuestionFile1', $('#QuestionFile')[0].files[0]);
+                formData.append('ExistQuestionFile1', ExistQuestionImgsL);
+                formData.append('ExistQuestionFile2', ExistQuestionImgsR);
+
+                if (QuestionImgs.length == 2)
+                    formData.append('QuestionFile2', $('#QuestionFile')[0].files[1]);
+                $.ajax({
+                    url: '@Url.Action("SaveQuestion", "WLSystem")',
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    async: false,
+                    //data: JSON.stringify({ wb: data }),
+                    data: formData,
+                    success: function (result) {
+                        if (result == 'OK' || !isNaN(parseInt(result))) {
+                            alert('儲存成功');
+                            window.location.href = '@Url.Action("QuestionList", "WLSystem", new { CID = ViewBag.CID })';
+                        } else
+                            alert(result);
+                    },
+                    error: function (e) {
+                        alert('發生錯誤')
+                    }
+                });
+            }
+        });
+
+        $('#btnDel').on('click', function () {
+            if (confirm('確定要刪除?')) {
+                var data = {
+                    NO: '@Model.NO',
+                    CID: '@ViewBag.CID'
+                };
+
+                $.ajax({
+                    url: '@Url.Action("DeleteQuestion", "WLSystem")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    data: JSON.stringify({ wb: data }),
+                    success: function (result) {
+                        if (result == 'OK' || !isNaN(parseInt(result))) {
+                            alert('刪除成功');
+                            window.location.href = '@Url.Action("QuestionList", "WLSystem", new { CID = ViewBag.CID })';
+                        } else
+                            alert(result);
+                    },
+                    error: function (e) {
+                        alert('錯誤出現，但錯誤不說。')
+                    }
+                });
+            }
+        });
+
+        $('#btnReview').on('click', function () {
+            $('#jqxwin_solid').jqxWindow('open');
+        });
+    });
+</script>
+<script>
+            $(function () {
+                $('#jqxwin_QueryList').jqxWindow({
+                    width: 900,
+                    height: 600,
+                    resizable: false,
+                    isModal: true,
+                    autoOpen: false,
+                    draggable: true,
+                    showCloseButton: true,
+
+                });
+            });
+             function ExistImgList(type)  {
+                   var $tb_IPCCSearch = "";
+                   @type = type;
+
+                    var species = {
+                        IPCCsubID: 0,
+                    };
+
+                    var $url = "@Url.Action("QueryListWithFuzzyForSystem")";
+                    var $data = {
+                        species: species,
+                        Nonfuzzy: false,
+                        fuzzyData: $tb_IPCCSearch
+                    };
+                    $.post($url, $data, function (data) {
+                        $("#List").html(data);
+                        $('#jqxwin_QueryList').jqxWindow('open');
+
+                    });
+
+
+            };
+    function ExistImgSelect(ID) {
+        var $url = "@Url.Action("GetStereoscopicImageList")";
+        var data = { ID: ID, };
+        $.post($url, data, function (data) {
+            $("#List").html(data);
+
+        });
+    }
+</script>
+<script>
+    function returnSteImg(type) {
+        var checked = $('input[name=sltfile]:checked').val(); $('[type=radio] checked').val();
+        var pathL = $("#StePairL_" + checked).attr("src");
+        var pathR = $("#StePairR_" + checked).attr("src");
+
+        type = @type;
+        var filenameL;
+        var filenameR;
+
+        if (pathL.indexOf("\\") > 0) {
+            filenameL = pathL.substring(pathL.lastIndexOf("\\") + 1, pathL.length);
+            filenameR = pathR.substring(pathR.lastIndexOf("\\") + 1, pathR.length);
+        }
+        else {
+            filenameL = pathL;
+            filenameR = pathR;
+        }
+        switch (type) {
+            case 'Q':
+                $("#ExistQuestionFileL").val(filenameL);
+                $("#ExistQuestionFileR").val(filenameR);
+                $('#QuestionFile').attr('disabled', true);
+                $("#isExistQuestionImg").empty();
+                $("#isExistQuestionImg").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+                break;
+            case 'O1':
+                $("#0ExistOption1FileL").val(filenameL);
+                $("#0ExistOption1FileR").val(filenameR);
+                $("#1ExistOption1FileL").val(filenameL);
+                $("#1ExistOption1FileR").val(filenameR);
+                $("#0Option1File").attr('disabled', true);
+                $("#1Option1File").attr('disabled', true);
+                $("#is0ExistOption1Img").empty();
+                $("#is0ExistOption1Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+                $("#is1ExistOption1Img").empty();
+                $("#is1ExistOption1Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+                break;
+            case 'O2':
+                $("#0ExistOption2FileL").val(filenameL);
+                $("#0ExistOption2FileR").val(filenameR);
+                $("#1ExistOption2FileL").val(filenameL);
+                $("#1ExistOption2FileR").val(filenameR);
+                $("#0Option2File").attr('disabled', true);
+                $("#1Option2File").attr('disabled', true);
+                $("#is0ExistOption2Img").empty();
+                $("#is0ExistOption2Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+                $("#is1ExistOption2Img").empty();
+                $("#is1ExistOption2Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+
+                break;
+            case 'O3':
+                $("#1ExistOption3FileL").val(filenameL);
+                $("#1ExistOption3FileR").val(filenameR);
+                $("#0Option3File").attr('disabled', true);
+                $("#1Option3File").attr('disabled', true);
+                $("#is1ExistOption3Img").empty();
+                $("#is1ExistOption3Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+
+                break;
+            case 'O4':
+                $("#1ExistOption4FileL").val(filenameL);
+                $("#1ExistOption4FileR").val(filenameR);
+                $("#0Option4File").attr('disabled', true);
+                $("#1Option4File").attr('disabled', true);
+                $("#is1ExistOption4Img").empty();
+                $("#is1ExistOption4Img").append('已選取立體像對，檔案名稱 : <br />' + filenameL + "<br />" + filenameR);
+
+                break;
+        }
+
+
+
+        $('#jqxwin_QueryList').jqxWindow('close');
+    }
+</script>

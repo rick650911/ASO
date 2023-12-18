@@ -1,0 +1,59 @@
+﻿@model List<ASO.Models.WLBulletinBoard>
+    @{
+        ViewBag.Title = "公布欄";
+        Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+    }
+    <div class="content_whiteBG_layout content_whiteBG">
+        <div class="contnet_title_layout content_title">系統公告</div>
+        <div class="board_content_ALLnews_layout">
+            <div class="board_content_news_title">
+                <div class="board_content_news_date">發布日期</div>
+                <div class="board_content_news_subject">主旨</div>
+                <div class="board_content_news_unit">發布單位</div>
+            </div>
+            <div class="clear"></div>
+            <div class="board_content_SeparateLine"></div>
+            @if ( Model != null ) {
+                foreach ( var b in Model.Where(s => s.File == null) ) {
+                    <a href="@Url.Action("BulletinContent", "Bulletin", new { ID = b.ID })">
+                        <div class="board_content_news_text">
+                            <div class="board_content_news_date">@b.AddTime.ToString("yyyy-MM-dd")</div>
+                            <div class="board_content_news_subject">@b.Title</div>
+                            <div class="board_content_news_unit">@b.Dept</div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="board_content_SeparateLine"></div>
+                    </a>
+                }
+            }
+        </div>
+        <div class="contnet_title_layout content_title">參考文件</div>
+        <div class="board_content_ALLnews_layout">
+            <div class="board_content_news_title">
+                <div class="board_content_news_date">發布日期</div>
+                <div class="board_content_news_subject">主旨</div>
+                <div class="board_content_news_unit">發布單位</div>
+            </div>
+            <div class="clear"></div>
+            <div class="board_content_SeparateLine"></div>
+            @if ( Model != null ) {
+                foreach ( var b in Model.Where(s => s.File != null) ) {
+                    <a href="@Url.Action("BulletinContent", "Bulletin", new { ID = b.ID })">
+                        <div class="board_content_news_text">
+                            <div class="board_content_news_date">@b.AddTime.ToString("yyyy-MM-dd")</div>
+                            <div class="board_content_news_subject">@b.Title</div>
+                            <div class="board_content_news_unit">@b.Dept</div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="board_content_SeparateLine"></div>
+                    </a>
+                }
+            }
+        </div>
+    </div>
+    <script>
+        $(function () {
+            initMenu = $(".menu_options_text[class*='Menu_board']");
+            $(".menu_options_text[class*='Menu_board']").addClass("menu_active");
+        });
+    </script>

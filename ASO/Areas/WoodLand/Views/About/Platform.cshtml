@@ -1,0 +1,204 @@
+﻿@using ASO.Models
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+    List<ASO.Models.WLBulletinBoard> _dataNews = ViewBag.intro;
+    int _C = _dataNews != null ? _dataNews.Count : 0;
+    int _pageSize = 10;
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+
+    @if (ViewBag.Item == "平台介紹")
+    {
+        <table>
+            <tr>
+                <td style="width:32%"><div class="contnet_title_layout content_title">最新消息</div></td>
+                <td style="width:68%">
+                    <div class="contnet_title_layout content_title">@ViewBag.Item</div>
+                    <a href="@Url.Content("~/WoodLand/OperatingInstructions?Item=0")" class="deep-blue-button" target="_blank">操作指引</a>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <div class="about_content_coulmn_layout">
+                        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_Height" style="padding-left:18px;">
+                            <input id="hidden_pageIndex" type="hidden" value="0"/>
+                            <table style="margin-top:15px;">
+                                <tr id="pageNewsToggle"></tr>
+                            </table>
+                            <div id="grid_News" style="padding:0;font-size:inherit;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="about_content_coulmn_layout" style="margin-left:30px;">
+                        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_Height">
+                            <div>
+                                @Html.Raw(ViewBag.Content)
+                                @*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    航空照片是由裝置在飛機上的相機對地面進行拍攝而成，由於其具快速取得地面大範圍資訊及可多時期取像紀錄土地歷史變遷之特性，目前已廣泛應用於自然、經濟、社會、法律等各層面。除了基本製圖測繪外，對於農林、水土資源、土地利用型態及地質礦產等方面的應用甚廣，如生態調查及森林火災、水質監測及土壤調查、土地利用變遷及都市發展、火山活動及岩質特性等提供多元加值應用。
+                                    <br><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    航空照片在拍攝時，飛機定向飛行，拍攝時間間隔較短，前後兩張航照會有部分重疊，重疊率可達60%以上，照片獲取後就像雙眼在不同位置看同一物體而有了視差角，因此航空照片能進行立體判釋。隨著航空技術發展，過去森林資源調查也由傳統仰賴大量人力成本的地面調查，演進到使用數值航照進行林型判釋及立木的樹高量測，除了提高森林經營多方面用途外，更能掌握林木變動。
+                                    <br><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    由於航照判釋能否發揮其功用，除影像需有良好品質外，也需要足夠專業知識及判釋技巧，為提升從業人員之判讀能力，農林航空測量所於101年至103年度進行常見樹種立體判釋影像分類特徵及判釋方法研究，於民國104年12月發行「航照樹語」一書，本書冊彙整其3年成果，共收錄83種臺灣地區常見樹種立體像片對，並介紹立體觀測原理，期能對學術研究及林業從業人員在進行立體觀測時能快速掌握各樹種的航照特徵。
+                                    <br><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    為了讓林務局及各林區管理處人員、相關教學研究及應用人員有更多元化的判釋知識學習方式，於105年建立「立體判釋知識教育推廣平台」，本平台除了提供使用者查詢與檢視樹種立體相片對資訊外，並提供樹種特徵影像分類判釋訓練功能，期盼對於從事資源調查人員、學術研究及環境教育等相關人員能更容易在航照上判釋出各樹種間的差異，以增進樹種判讀能力，對於森林資源調查和生態系經營將更有助益。*@
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        <!--影像判釋之依據 end-->
+        <div class="clear"></div>
+        <script>
+            $(function () {
+                var $data = {
+                    pageSize:@_pageSize,
+                };
+
+                $.ajax({
+                    url: "@Url.Action("ShowNews")",
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        $('#grid_News').html(data);
+                    }
+                });
+
+                if ("@_C" != "0") {
+                    $dataIndex = {
+                        _datacount: @_C,
+                        pageSize:@_pageSize,
+                    };
+                    $.ajax({
+                        url: "@Url.Action("NewsIndexChange")",
+                        type: "POST",
+                        data: $dataIndex,
+                        async: false,
+                        success: function (data) {
+                            $('#pageNewsToggle').html(data);
+                        }
+                    });
+                }
+            });
+        </script>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <td style="width:20%">
+                    <div class="contnet_title_layout content_title" style="min-width:72px;font-weight:initial">基本介紹</div>
+                    <div class="about_content_coulmn_layout" style="min-width:124px;">
+                        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_Height">
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.航照特性)">航照特性</a></p>
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.立體觀測原理)">立體觀測原理</a></p>
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.紅藍濾片3D技術)">紅藍濾片3D技術</a></p>
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.航照判釋)">航照判釋</a></p>
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.立體判釋特徵)">立體判釋特徵</a></p>
+                            <p class="list_Info"><a href="@Url.Content("~/About/Platform?Item=" + (int)enAboutItem.平台地物分類簡介)">平台地物分類簡介</a></p>
+                            @*<p class="list_Info">IPCC分類</p>*@
+                        </div>
+                    </div>
+                </td>
+                <td style="width:80%">
+                    <div style="width:100%">
+                        <div class="contnet_title_layout content_title">
+                            @ViewBag.Item
+                        </div>
+                        <a href="@Url.Content("~/WoodLand/OperatingInstructions?Item=1")" class="deep-blue-button" target="_blank">操作指引</a>
+                    </div>
+                    <div class="about_content_coulmn_layout" style="margin-right:50px">
+                        <div class="about_content_coulmnRight_layout about_content_coulmnRight about_Height">
+                            @*@{
+                    Html.RenderAction("SolidPhoto", "Search");
+                }*@
+                            <div>
+                                @Html.Raw(ViewBag.Content)
+                                @*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    航空照片是由裝置在飛機上的相機對地面進行拍攝而成，由於其具快速取得地面大範圍資訊及可多時期取像紀錄土地歷史變遷之特性，目前已廣泛應用於自然、經濟、社會、法律等各層面。除了基本製圖測繪外，對於農林、水土資源、土地利用型態及地質礦產等方面的應用甚廣，如生態調查及森林火災、水質監測及土壤調查、土地利用變遷及都市發展、火山活動及岩質特性等提供多元加值應用。
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    航空照片在拍攝時，飛機定向飛行，拍攝時間間隔較短，前後兩張航照會有部分重疊，重疊率可達60%以上，照片獲取後就像雙眼在不同位置看同一物體而有了視差角，因此航空照片能進行立體判釋。隨著航空技術發展，過去森林資源調查也由傳統仰賴大量人力成本的地面調查，演進到使用數值航照進行林型判釋及立木的樹高量測，除了提高森林經營多方面用途外，更能掌握林木變動。
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    由於航照判釋能否發揮其功用，除影像需有良好品質外，也需要足夠專業知識及判釋技巧，為提升從業人員之判讀能力，農林航空測量所於101年至103年度進行常見樹種立體判釋影像分類特徵及判釋方法研究，於民國104年12月發行「航照樹語」一書，本書冊彙整其3年成果，共收錄83種臺灣地區常見樹種立體像片對，並介紹立體觀測原理，期能對學術研究及林業從業人員在進行立體觀測時能快速掌握各樹種的航照特徵。
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    為了讓林務局及各林區管理處人員、相關教學研究及應用人員有更多元化的判釋知識學習方式，於105年建立「立體判釋知識教育推廣平台」，本平台除了提供使用者查詢與檢視樹種立體相片對資訊外，並提供樹種特徵影像分類判釋訓練功能，期盼對於從事資源調查人員、學術研究及環境教育等相關人員能更容易在航照上判釋出各樹種間的差異，以增進樹種判讀能力，對於森林資源調查和生態系經營將更有助益。*@
+                            </div>
+                        </div>
+                    </div>
+                    <!--影像判釋之依據 end-->
+                    <div class="clear"></div>
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_about']");
+        if ("@ViewBag.Item" == "平台介紹") {
+            $(".menu_options_text[class*='Menu_Main']").addClass("menu_active");
+
+            $('#LoginOperatingInstructions').jqxWindow("open");
+        } else {
+            $(".menu_options_text[class*='Menu_about']").addClass("menu_active");
+        }
+        
+        $('.about_Height').height($(document).height());
+        solidInit();
+
+        // 提醒瀏覽器。
+        var userName = "@SysTool.GetUserName()";
+        if (location.search == "" && userName === "") {
+            alert("Google Chrome(建議使用最新版)、Mozilla Firefox(建議使用最新版)、Microsoft Edge、Internet Explorer 10.0以上");
+        }
+    });
+
+
+</script>
+<style>
+    .about_Height {
+        /*height: 900px;*/
+        width: 100%;
+    }
+
+    .content_whiteBG_layout {
+        /*width: 800px !important;*/
+        width: 1230px !important;
+    }
+
+    .gzoomwrap > div {
+        padding-left: 0px !important;
+        padding-top: 0px !important;
+    }
+
+    .list_Info {
+        margin: 12px;
+    }
+
+        .list_Info:hover {
+            color: #48a3c5;
+        }
+
+    .NewDateCoor {
+        color: #57b9dc;
+    }
+
+    .NewContentColor {
+        color: #666666;
+    }
+
+    .NewpageDefault {
+    }
+</style>

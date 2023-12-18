@@ -1,0 +1,132 @@
+﻿@model List<ASO.Models.WLFeedback>
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="PhotoSearch1_contentRIGHT_info_title">
+            <div style="width:60px">樹種ID</div>
+            <div style="width:120px;padding-left:10px;">樹種中文名稱</div>
+            <div style="width:160px;padding-left:10px;">意見內容</div>
+            <div style="width:90px;padding-left:10px;">反映者帳號</div>
+            <div style="width:90px;padding-left:10px;">反映日期</div>
+            <div style="width:50px;padding-left:10px;">回復</div>
+            <div style="width:90px;padding-left:10px;">回復日期</div>
+        </div>
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        @foreach (var b in Model)
+        {
+            string ShowContent = string.Empty;
+            if (b.Content.Length >= 8)
+            {
+                ShowContent = string.Format("{0}...", b.Content.Substring(0, 8));
+            }
+            else
+            {
+                ShowContent = b.Content;
+            }
+        <div class="system_contentRIGHT_news_text_layout system_contentRIGHT_news_text" onclick="Reply(this,'@b.NO','@b.ID')">
+            <div style="width:60px;">@b.ID</div>
+            <div style="width:120px;padding-left:10px;">@b.ComName</div>
+            <div style="width:160px;padding-left:10px;">
+                @ShowContent
+            </div>
+            <div id="Content_@b.ID" style="width:160px;padding-left:10px;display:none">@Html.Raw(b.Content.Replace("\n", "<br/>").Replace(" ", "&nbsp;"))</div>
+            <div style="width:90px;padding-left:10px;">@b.AddAccount</div>
+            <div style="width:90px;padding-left:10px;">@b.AddTime</div>
+            <div style="width:50px;padding-left:10px;"><img src="@Url.Content("~/Content/Images/Mail.png")" /></div>
+            <div style="width:90px;padding-left:10px;" id="ReplyTime-@b.NO">@b.LastReplyTime</div>
+        </div>
+            <div class="clear"></div>
+            <div class="system_contentRIGHT_SeparateLine"></div>
+        }
+    </div>
+</div>
+<div id="win_Reply">
+    <div id="winheader">意見回饋回復</div>
+    <div style="padding:20px;">
+        <textarea type="text" id="ReplyContent" rows="10" style="width:99%;height:88%"></textarea>
+        <div style="text-align:center; padding:20px;">
+            <input id="btnReplykSave" type="button" class="btn_jqxbutton" value="送出" />
+            <input id="btnReplyClose" type="button" class="btn_jqxbutton" value="取消" />
+        </div>
+    </div>
+</div>
+<script>
+    var DivObj, FNO;
+    $(function () {
+        var activeOption = $(".system_contentLEFT_option_layout[class*='left_feedback']");
+        activeOption.addClass("system_contentLEFT_option_active");
+        $('.btn_jqxbutton').jqxButton();
+        $('#win_Reply').jqxWindow({
+            theme: 'energyblue',
+            showCollapseButton: false,
+            //height: 350,width: 600,
+            height: 600,
+            width: 1000,
+            isModal: true,
+            autoOpen: false
+        });
+        $('#btnReplyClose').click(function () {
+            $('#ReplyContent').val('');
+            $('#win_Reply').jqxWindow('close');
+        });
+
+        $('#btnReplykSave').click(function () {
+            if ($.trim($('#ReplyContent').val()) == '') {
+                alert('請填寫回內容');
+                return false;
+            } else {
+                var data = {
+                    FNO: FNO,
+                    ReplyContent: $('#ReplyContent').val()
+                };
+                $.ajax({
+                    url: '@Url.Action("SaveFeedbackReply", "WLSystem")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    data: JSON.stringify({ wb: data }),
+                    success: function (result) {
+                        if (result == 'OK') {
+                            alert('送出成功');
+                            $('#ReplyContent').val('');
+                            $('#win_Reply').jqxWindow('close');
+                            $(DivObj).find('#ReplyTime-' + FNO).html(ShowDate());
+                        } else
+                            alert(result);
+                    },
+                    error: function (e) {
+                        alert('錯誤')
+                    }
+                });
+            }
+        });
+    });
+    function Reply(Obj, NO, ID) {
+        DivObj = Obj;
+        FNO = NO;
+        $('#ReplyContent').val('');
+
+        var _contentData = $('#Content_' + ID).text();
+
+        // -- 可以觀看詳細的意見內容 -- 
+        var _content = "詳細意見內容 : \n";
+        _content += _contentData + "\n";
+        _content += "回饋回復 : \n";
+        _content += " \n";
+        _content += " (請在這裡輸入...)";
+        $('#ReplyContent').val(_content);
+
+        //var x1 = ($(window).width() - 600) / 2 + $(window).scrollLeft();
+        //var y1 = ($(window).height() - 300) / 2 + $(window).scrollTop();
+        var x1 = ($(window).width() - 800) / 2 + $(window).scrollLeft();
+        var y1 = ($(window).height() - 600) / 2 + $(window).scrollTop();
+        
+        $('#win_Reply').jqxWindow({
+            position: { x: x1, y: y1 }
+        });
+        $('#win_Reply').jqxWindow('open');
+    }
+</script>

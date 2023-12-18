@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "UseRecord";
+    Layout = "~/Areas/WoodLand/Views/Shared/_SystemLayout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG" style="width:760px">
+    <div class="system_contentRIGHT_title_layout system_contentRIGHT_title">案例參考管理</div>
+    <div class="system_contentRIGHT_ALLnews_layout">
+        <div class="clear"></div>
+        <div class="system_contentRIGHT_SeparateLine"></div>
+        <div id="grid_casereference"></div>
+    </div>
+</div>
+
+<script>
+    var CaseReferenceEditUrl = '@Url.Action("CaseReferenceEdit", "WLSystem")';
+    var crdata
+    var typelist
+    var appearancelist
+    debugger;
+    $(function () {
+        var url = '@Url.Action("GetCaseReference", "WLSystem")';
+        $.post(url, "", function (result) {
+            crdata = result[0];
+            typelist = result[1];
+            appearancelist = result[2];
+            var activeOption = $(".system_contentLEFT_option_layout[class*='left_casereference']");
+            activeOption.addClass("system_contentLEFT_option_active");
+
+            var source = {
+                localdata: crdata,
+                datatype: "JSON",
+                datafields: [
+                    { name: 'ID', type: 'int' },
+                    { name: 'TypeStr', type: 'string' },
+                    { name: 'AppearanceStr', type: 'string' },
+                    { name: 'CreatTime', type: 'date' },
+                    { name: 'ImageCount', type: 'int' },
+                    { name: 'Explain', type: 'string' },
+                ]
+            };
+            var dataAdapter = new $.jqx.dataAdapter(source);
+            var setting = {
+                source: dataAdapter,
+                height: 305,
+                columnsresize: true,
+                filterable: true,
+                sortable: true,
+                pageable: true,
+                localization: getLocalization(),
+                showfilterrow: true,
+                columns: [
+                    {
+                        text: '', width: 80, align: 'center', columntype: 'button',
+                        cellsrenderer: function () {
+                            return "編輯";
+                        },
+                        buttonclick: function (row) {
+                            var tmp = $('#grid_casereference').jqxGrid('getrowdata', row)
+                            var ID = tmp.ID;
+                            location.href = CaseReferenceEditUrl + "/" + ID;
+                        }
+                    },
+                    {
+                        text: '', width: 80, align: 'center', columntype: 'button',
+                        cellsrenderer: function () {
+                            return "刪除";
+                        },
+                        buttonclick: function (row) {
+                            var tmp = $('#grid_casereference').jqxGrid('getrowdata', row);
+                            var ID = tmp.ID;
+                            if (confirm('是否要刪除資料?')) {
+                                delCaseReference(ID, row)
+                            }
+                        }
+                    },
+                    { text: '編號', datafield: 'ID', align: 'center', cellsalign: 'center' },
+                    { text: '案由', datafield: 'TypeStr', align: 'center', cellsalign: 'center', filteritems: typelist, filtertype: 'list' },
+                    { text: '判釋態樣', datafield: 'AppearanceStr', align: 'center', cellsalign: 'center', filteritems: appearancelist, filtertype: 'list' },
+                    { text: '建立日期', datafield: 'CreatTime', align: 'center', cellsalign: 'center', cellsformat: 'yyyy/MM/dd', filtertype: 'range' },
+                    { text: '上傳影像數', datafield: 'ImageCount', width: 80, align: 'center', cellsalign: 'center' },
+                    { text: '判讀說明', datafield: 'Explain', align: 'center', cellsalign: 'center' },
+                ],
+                showstatusbar: true,
+                renderstatusbar: function (statusbar) {
+                    var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                    var addButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: -1px;'>新增</span></div>");
+                    container.append(addButton);
+                    statusbar.append(container);
+                    addButton.jqxButton({ width: 60, height: 15 });
+                    addButton.click(function (event) {
+                        location.href = CaseReferenceEditUrl + "/0";
+                    });
+                }
+            };
+            $("#grid_casereference").jqxGrid(GetJqxGvSetting(setting));
+        })
+    });
+
+    function delCaseReference(ID, row) {
+        var _state = false;
+            $data = {
+                ID:ID
+            };
+            $.ajax({
+                url: "@Url.Action("DelCaseReference", "WLSystem")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    if (data) {
+                        $('#grid_casereference').jqxGrid('deleterow', row);
+                        _state = true;
+                        alert('刪除成功');
+                    } else {
+                        alert('刪除失敗');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('錯誤' + xhr.status + thrownError);
+                }
+        });
+
+        return _state;
+     }
+</script>
+

@@ -1,0 +1,934 @@
+﻿<div class="SystemContent_layout_row" style="margin-top:0;">
+    <div class="SystemContent_layout_row_title" style="width:60px;">測驗名稱</div>
+    <input type="text" name="" style="width:500px;" id="txt_quiztitle"><br /><br />
+    <div class="SystemContent_layout_row_title" style="width:60px;">單元名稱</div>
+    <select id="SelectUnits" style="width:250px;height:28px">
+        <option value="0">請選擇</option>
+    </select>
+    @*<input class="BTN" style="width:80px;margin-right:15px;" type="button" id="btn_QuestionSearch" value="題目篩選" />*@
+</div>
+<div class="SystemContent_layout_row">
+    <div id="grid_quiz"></div>
+    @*<div id="grid_selectedquiz"></div>*@
+</div>
+<div class="SystemContent_layout_row">
+    <div class="content_whiteBG_layout content_whiteBG" style="width:100%;margin-top:0px;float:left;">
+        <div class="randomAreaCourseStepFour">
+            <div class="randomAreaCourseStepFour_firstSerc">
+                <div>題型 - 題數</div>
+                <div>難易度 - 題數</div>
+            </div>
+            <div class="DDDphoto_content_info_SeparateLine" style="float:left"></div>
+            <div class="randomAreaCourseStepFour_SecondSerc">
+                <div>
+                    <div>
+                        <p><span>總題數</span><input id="TextS" data-id="lock_total" type="text" style="width:80px;" /><i id="lock_total" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_total" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                        <input id="btnRandom" type="button" value="隨機出題" style="margin-top:75px;" />
+                        <input id="btnClearQ" type="button" value="清空" style="margin-top:75px;display:none;" />
+                    </div>
+                    <div style="padding-left:133px"><span>是非題</span><input id="Text1" data-id="lock_yesno" type="text" style="width:80px;" />題<i id="lock_yesno" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_yesno" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></div>
+                    <div style="padding-left:50px" class="randomAreaCourseStepFour_textItems">
+                        <p><span>難度1.</span><input id="tb1" data-id="lock_YLV1" type="text" style="width:120px;" /><i id="lock_YLV1" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_YLV1" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                        <p><span>難度2.</span><input id="tb2" data-id="lock_YLV2" type="text" style="width:120px;" /><i id="lock_YLV2" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_YLV2" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                        <p><span>難度3.</span><input id="tb3" data-id="lock_YLV3" type="text" style="width:120px;" /><i id="lock_YLV3" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_YLV3" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                        <p><span>難度4.</span><input id="tb4" data-id="lock_YLV4" type="text" style="width:120px;" /><i id="lock_YLV4" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_YLV4" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                        <p><span>難度5.</span><input id="tb5" data-id="lock_YLV5" type="text" style="width:120px;" /><i id="lock_YLV5" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_YLV5" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                    </div>
+                </div>
+            </div>
+            <div class="DDDphoto_content_info_SeparateLine" style="float:left;"></div>
+            <div class="randomAreaCourseStepFour_thirdSerc">
+                <div style="padding-left:300px;"> <span>選擇題</span><input id="tbC" data-id="lock_choose" type="text" style="width:80px;" />題<i id="lock_choose" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_choose" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></div>
+                <div style="padding-left:47px;">
+                    <p><span>難度1.</span><input id="tbC1" data-id="lock_CLV1" type="text" style="width:120px;" /><i id="lock_CLV1" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_CLV1" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                    <p><span>難度2.</span><input id="tbC2" data-id="lock_CLV2" type="text" style="width:120px;" /><i id="lock_CLV2" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_CLV2" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                    <p><span>難度3.</span><input id="tbC3" data-id="lock_CLV3" type="text" style="width:120px;" /><i id="lock_CLV3" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_CLV3" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                    <p><span>難度4.</span><input id="tbC4" data-id="lock_CLV4" type="text" style="width:120px;" /><i id="lock_CLV4" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_CLV4" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                    <p><span>難度5.</span><input id="tbC5" data-id="lock_CLV5" type="text" style="width:120px;" /><i id="lock_CLV5" class="fas fa-lock-open fa-lg" style="margin-left:5px;color:#9e9e9e;"></i><i id="unlock_CLV5" class="fas fa-lock fa-lg" style="margin-left:5px;color:#9e9e9e;display:none;"></i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="SystemContent_layout_row">
+    <div id="grid_tmpquiz"></div>
+</div>
+
+<div class="SystemContent_layout_row" style="width:400px;margin:0 auto;margin-top:40px;">
+    <div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="ChangeStep(3);">上一步</div>
+    <div class="BTN" style="width:140px;float:left;margin-right:15px;" onclick="EditCancel();">返回訓練教室編輯</div>
+    <div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="SaveQuiz();">新增小考</div>
+    @*<div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="EditSave();">儲存</div>*@
+</div>
+@*<div id="jqxwin_QueryList" style="display:none">
+    <div>題目列表</div>
+    <div id="List">
+        <div class="SystemContent_layout_row" style="margin-top:0;">
+            <div class="SystemContent_layout_row_title" style="width:60px;">單元名稱</div>
+            <select id="UnitsQuery" style="width:250px;height:28px">
+                <option value="0">請選擇</option>
+            </select>
+            <input class="BTN" style="width:80px;margin-right:15px;" type="button" id="btn_QuestionQuery" value="題目篩選" />
+        </div>
+        <div id="grid_quiz"></div>
+        <br />
+        <input class="BTN" style="width:80px;margin-right:15px;" type="button" id="btn_AddQuestion" value="加入題目" />
+
+    </div>
+
+</div>*@
+<script>
+  $(function() {
+    $("#btnRandom").jqxButton({
+        width: 80,
+        height: 30
+    });
+    $("#btnClearQ").jqxButton({
+        width: 80,
+        height: 30
+    });
+    $('#step_four').addClass('StepRow_OneStep_active');
+    $('[id^="lock_"]').css("cursor", "pointer");
+    $('[id^="unlock_"]').css("cursor", "pointer");
+    var units = allData[0].Unit;
+    for (i = 0; i < units.length; i++) {
+        $("#SelectUnits").append(new Option(units[i].Name, units[i].ID));
+        $("#UnitsQuery").append(new Option(units[i].Name, units[i].ID));
+    }
+    var tmpquizsource = {
+        localdata: tmpquizData,
+        datafields: [{
+                name: 'CID',
+                type: 'int'
+            },
+            {
+                name: 'QuizTitle',
+                type: 'string'
+            },
+            {
+                name: 'UID',
+                type: 'int'
+            }
+        ]
+    };
+    var tmpquizdataAdapter = new $.jqx.dataAdapter(tmpquizsource);
+    $('#grid_tmpquiz').jqxGrid({
+        width: '100%',
+        source: tmpquizdataAdapter,
+        columns: [{
+                text: '',
+                width: 80,
+                align: 'center',
+                columntype: 'button',
+                cellsrenderer: function() {
+                    return "刪除";
+                },
+                buttonclick: function(row) {
+                    var tmp = $('#grid_tmpquiz').jqxGrid('getrowdata', row);
+                    if (confirm('確定要刪除此測驗'))
+                        DelQuiz(tmp.CID, tmp.QuizTitle,tmp.UID, row);
+                }
+            },
+            {
+                text: '測驗名稱',
+                datafield: 'QuizTitle',
+                align: 'center'
+            }
+        ]
+    });
+
+    var quizsource = {
+        localdata: quizData,
+        datafields: [{
+                name: 'NO',
+                type: 'int'
+            },
+            {
+                name: 'QuestionDesc',
+                type: 'string'
+            }
+        ]
+    };
+    var quizdataAdapter = new $.jqx.dataAdapter(quizsource);
+    $('#grid_quiz').jqxGrid({
+        width: '100%',
+        source: quizdataAdapter,
+        selectionmode: 'checkbox',
+        columns: [{
+            text: '題目',
+            datafield: 'QuestionDesc',
+            align: 'center'
+        }]
+    });
+
+    //$('#grid_selectedquiz').jqxGrid({
+    //    width: '100%',
+    //    columns: [{
+    //            text: '',
+    //            width: 80,
+    //            align: 'center',
+    //            columntype: 'button',
+    //            cellsrenderer: function() {
+    //                return "刪除";
+    //            },
+    //            buttonclick: function(row) {
+    //                var tmp = $('#grid_selectedquiz').jqxGrid('getrowdata', row);
+    //                if (confirm('確定要取消此題目'))
+    //            $('#grid_selectedquiz').jqxGrid('deleterow', row);
+    //            }
+    //    },
+    //        {
+    //            text: '題目',
+    //            datafield: 'QuestionDesc',
+    //            align: 'center',
+    //        },
+    //    ]
+    //});
+
+    RandomSection();
+});
+
+function SaveQuiz() {
+    var quizTitle = $('#txt_quiztitle').val();
+    var QUID = $('#SelectUnits').val();
+    var rowindexes = $('#grid_quiz').jqxGrid('getselectedrowindexes');
+    //var length = $('#grid_selectedquiz').jqxGrid('getrows').length;
+    if (quizTitle === '')
+        alert('請先輸入測驗名稱');
+    //else if (rowindexes.length === 0)
+    //    alert('請選擇測驗題目');
+    else {
+        var quizList = [];
+        for (i = 0; i < rowindexes.length; i++) {
+            var tmpData = $('#grid_quiz').jqxGrid('getrowdata', rowindexes[i]);
+            //var tmpData = $('#grid_selectedquiz').jqxGrid('getrowdata', i);
+            quizList.push({
+                CID: courseData.ID,
+                QNO: tmpData.NO,
+                QuizTitle: quizTitle,
+                UID: QUID
+            });
+        }
+
+        $.ajax({
+            url: '@Url.Content("~/WLSystem/SaveQuizzes")',
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: {
+                data: JSON.stringify(quizList)
+            },
+            success: function(result) {
+                if (result) {
+                    $("#grid_tmpquiz").jqxGrid('addrow', null, {
+                        CID: quizList[0].CID,
+                        QuizTitle: quizTitle,
+                        UID:QUID,
+                    });
+                    alert('新增成功');
+                } else {
+                    alert('新增失敗');
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert('錯誤' + xhr.status + thrownError);
+            }
+        });
+    }
+}
+
+function DelQuiz(cid, title, UID, row) {
+    $.ajax({
+        url: '@Url.Content("~/WLSystem/DelQuizzes")',
+        type: 'POST',
+        async: false,
+        dataType: "json",
+        data: {
+            CID: cid,
+            Title: title,
+            UID: UID
+        },
+        success: function(result) {
+            if (result) {
+                alert('刪除成功。');
+                $('#grid_tmpquiz').jqxGrid('deleterow', row);
+            }
+            else
+                alert('刪除失敗。');
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('錯誤' + xhr.status + thrownError);
+        }
+    });
+}
+
+function RandomSection() {
+    $(document).on('click', '[id^="lock_"]', function() {
+        var _this = $(this);
+        var _attr = _this.attr("id");
+        var _target = $('[data-id="' + _attr + '"]');
+
+        if (_target.val() === "") {
+            alert("不可鎖定空白。");
+        } else {
+            if (_target[0].style.backgroundColor === "lightgrey") {
+                _target.css("background-color", "");
+                _target.removeAttr("disabled");
+            } else {
+                _target.css("background-color", "lightgrey");
+                _target.attr("disabled", "disabled");
+
+                _this.hide();
+                $('#un' + _this.attr('id')).show();
+            }
+        }
+
+    });
+
+    $(document).on('click', '[id^="unlock_"]', function() {
+        var _this = $(this);
+        var _attr = _this.attr("id").replace('un', '');
+        var _target = $('[data-id="' + _attr + '"]');
+
+        if (_target.val() === "") {
+            alert("不可鎖定空白。");
+        } else {
+            if (_target[0].style.backgroundColor === "lightgrey") {
+                _target.css("background-color", "");
+                _target.removeAttr("disabled");
+
+                _this.hide();
+                $('#' + _this.attr('id').replace('un', '')).show();
+            } else {
+                _target.css("background-color", "lightgrey");
+                _target.attr("disabled", "disabled");
+            }
+        }
+    });
+
+    $(document).on('mouseover', '[id^="lock_"]', function() {
+        var _this = $(this);
+        var _tipHtml = '<b>提示:</b><br />';
+        _tipHtml += '<b>點選此鎖可以鎖定左側數字</b>';
+        $('[id^="lock_"]').jqxTooltip({
+            content: _tipHtml,
+            position: 'mouse',
+            name: 'movieTooltip'
+        });
+    });
+
+    $('[data-id^="lock_"]').change(function() {
+
+        var _quizCount = quizData.length;
+        if (_quizCount > 0) {
+            var _level = {
+                YLV1: 0,
+                CLV1: 0,
+                YLV2: 0,
+                CLV2: 0,
+                YLV3: 0,
+                CLV3: 0,
+                YLV4: 0,
+                CLV4: 0,
+                YLV5: 0,
+                CLV5: 0
+            };
+            var _questionClass = {
+                YLV1: [],
+                CLV1: [],
+                YLV2: [],
+                CLV2: [],
+                YLV3: [],
+                CLV3: [],
+                YLV4: [],
+                CLV4: [],
+                YLV5: [],
+                CLV5: []
+            };
+
+            $.each(quizData, function(i, d) {
+                switch (d.QuestionType) {
+                    case 0: // 是非題
+                        switch (d.Level) {
+                            case 1:
+                                _level.YLV1++;
+                                _questionClass.YLV1.push(i);
+                                break;
+                            case 2:
+                                _level.YLV2++;
+                                _questionClass.YLV2.push(i);
+                                break;
+                            case 3:
+                                _level.YLV3++;
+                                _questionClass.YLV3.push(i);
+                                break;
+                            case 4:
+                                _level.YLV4++;
+                                _questionClass.YLV4.push(i);
+                                break;
+                            case 5:
+                                _level.YLV5++;
+                                _questionClass.YLV5.push(i);
+                                break;
+                        }
+                        break;
+                    case 1: // 選擇題
+                        switch (d.Level) {
+                            case 1:
+                                _level.CLV1++;
+                                _questionClass.CLV1.push(i);
+                                break;
+                            case 2:
+                                _level.CLV2++;
+                                _questionClass.CLV2.push(i);
+                                break;
+                            case 3:
+                                _level.CLV3++;
+                                _questionClass.CLV3.push(i);
+                                break;
+                            case 4:
+                                _level.CLV4++;
+                                _questionClass.CLV4.push(i);
+                                break;
+                            case 5:
+                                _level.CLV5++;
+                                _questionClass.CLV5.push(i);
+                                break;
+                        }
+                        break;
+                }
+            });
+
+            var _this = $(this);
+            var _num = parseInt(_this.val());
+            var _sum = 0;
+            switch (_this.attr('id')) {
+                case "TextS":
+                    var levelVal = Object.values(_level);
+                    $.each(levelVal, function(i, d) {
+                        _sum += d;
+                    });
+                    break;
+                case "Text1":
+                    _sum = _level.YLV1 + _level.YLV2 + _level.YLV3 + _level.YLV4 + _level.YLV5;
+                    break;
+                case "tbC":
+                    _sum = _level.CLV1 + _level.CLV2 + _level.CLV3 + _level.CLV4 + _level.CLV5;
+                    break;
+                case "tb1":
+                    _sum = _level.YLV1;
+                    break;
+                case "tb2":
+                    _sum = _level.YLV2;
+                    break;
+                case "tb3":
+                    _sum = _level.YLV3;
+                    break;
+                case "tb4":
+                    _sum = _level.YLV4;
+                    break;
+                case "tb5":
+                    _sum = _level.YLV5;
+                    break;
+                case "tbC1":
+                    _sum = _level.CLV1;
+                    break;
+                case "tbC2":
+                    _sum = _level.CLV2;
+                    break;
+                case "tbC3":
+                    _sum = _level.CLV3;
+                    break;
+                case "tbC4":
+                    _sum = _level.CLV4;
+                    break;
+                case "tbC5":
+                    _sum = _level.CLV5;
+                    break;
+            }
+
+            if (_num > _sum) {
+                _this.val(_sum);
+                alert("不可大於最大題數");
+            }
+        }
+    });
+
+    $("#btnRandom").click(function() {
+        var _quizCount = quizData.length;
+
+        if (_quizCount > 0) {
+            var _level = {
+                YLV1: 0,
+                CLV1: 0,
+                YLV2: 0,
+                CLV2: 0,
+                YLV3: 0,
+                CLV3: 0,
+                YLV4: 0,
+                CLV4: 0,
+                YLV5: 0,
+                CLV5: 0
+            };
+            var _questionClass = {
+                YLV1: [],
+                CLV1: [],
+                YLV2: [],
+                CLV2: [],
+                YLV3: [],
+                CLV3: [],
+                YLV4: [],
+                CLV4: [],
+                YLV5: [],
+                CLV5: []
+            };
+
+            $.each(quizData, function(i, d) {
+                switch (d.QuestionType) {
+                    case 0: // 是非題
+                        switch (d.Level) {
+                            case 1:
+                                _level.YLV1++;
+                                _questionClass.YLV1.push(i);
+                                break;
+                            case 2:
+                                _level.YLV2++;
+                                _questionClass.YLV2.push(i);
+                                break;
+                            case 3:
+                                _level.YLV3++;
+                                _questionClass.YLV3.push(i);
+                                break;
+                            case 4:
+                                _level.YLV4++;
+                                _questionClass.YLV4.push(i);
+                                break;
+                            case 5:
+                                _level.YLV5++;
+                                _questionClass.YLV5.push(i);
+                                break;
+                        }
+                        break;
+                    case 1: // 選擇題
+                        switch (d.Level) {
+                            case 1:
+                                _level.CLV1++;
+                                _questionClass.CLV1.push(i);
+                                break;
+                            case 2:
+                                _level.CLV2++;
+                                _questionClass.CLV2.push(i);
+                                break;
+                            case 3:
+                                _level.CLV3++;
+                                _questionClass.CLV3.push(i);
+                                break;
+                            case 4:
+                                _level.CLV4++;
+                                _questionClass.CLV4.push(i);
+                                break;
+                            case 5:
+                                _level.CLV5++;
+                                _questionClass.CLV5.push(i);
+                                break;
+                        }
+                        break;
+                }
+            });
+
+            $('#btnClearQ').show();
+
+            // 取得是非和選擇上限。
+            var _YLV = 0;
+            $('[data-id^="lock_YLV"]').each(function(i, d) {
+                var _this = $(this);
+                var _levelid = "YLV" + (i + 1).toString();
+
+                if (_this.attr('disabled') === 'disabled') {
+                    _YLV += parseInt(_this.val());
+                } else {
+                    _YLV += _level[_levelid];
+                }
+            });
+
+            var _CLV = 0;
+            $('[data-id^="lock_CLV"]').each(function(i, d) {
+                var _this = $(this);
+                var _levelid = "CLV" + (i + 1).toString();
+
+                if (_this.attr('disabled') === 'disabled') {
+                    _CLV += parseInt(_this.val());
+                } else {
+                    _CLV += _level[_levelid];
+                }
+            });
+
+            var _totalQ = $('#TextS');
+            var _disable_total = _totalQ.attr('disabled') === "disabled";
+            var _total = 0;
+            if (_disable_total) {
+                _total = parseInt(_totalQ.val());
+            } else {
+                var allCount = Object.values(_level);
+                $.each(allCount, function(i, d) {
+                    _total += d;
+                });
+
+                var _minRange = 0;
+
+                // 判斷 如果，是非鎖定值 > 是非難度總和則有錯誤:
+                if ($('#Text1').attr('disabled') === 'disabled') {
+
+                    if (parseInt($('#Text1').val()) > _YLV) {
+                        alert('被鎖定的是非或選擇的總和與指定總題數不符');
+                        return;
+                    }
+                    _minRange = parseInt($('#Text1').val());
+                    _total = _YLV;
+                }
+
+                // 判斷 如果，選擇鎖定值 > 選擇難度總和則有錯誤:
+
+                if ($('#tbC').attr('disabled') === 'disabled') {
+
+                    if (parseInt($('#tbC').val()) > _CLV) {
+                        alert('被鎖定的是非或選擇的總和與指定總題數不符');
+                        return;
+                    }
+
+                    _minRange = parseInt($('#tbC').val());
+                    _total = _CLV;
+                }
+
+                if ($('#lock_yesno').attr('disabled') === 'disabled' && $('#tbC').attr('disabled') === 'disabled') {
+                    _total = parseInt($('#lock_yesno').val()) + parseInt($('#tbC').val());
+                } else {
+                    _total = Rand(_minRange, _total);
+                }
+
+            }
+            _totalQ.val(_total);
+
+            var _Text1 = $('#Text1');
+            var _tbC = $('#tbC');
+            var _Text1Attr = _Text1.attr('disabled') === "disabled";
+            var _tbCAttr = _tbC.attr('disabled') === "disabled";
+
+            if (_Text1Attr && !_tbCAttr) {
+                var new_tbCVal = _total - parseInt(_Text1.val());
+                _tbC.val(new_tbCVal);
+            }
+
+            if (!_Text1Attr && _tbCAttr) {
+                var new_text1 = _total - parseInt(_tbC.val());
+                _Text1.val(new_text1);
+            }
+
+            if (!_Text1Attr && !_tbCAttr) {
+                var tmpSum1 = _level.YLV1 + _level.YLV2 + _level.YLV3 + _level.YLV4 + _level.YLV5;
+                var tmpSum2 = _level.CLV1 + _level.CLV2 + _level.CLV3 + _level.CLV4 + _level.CLV5;
+                var gen_S2 = randToSum([tmpSum1, tmpSum2], _total);
+                _Text1.val(gen_S2[0]);
+                _tbC.val(gen_S2[1]);
+            }
+
+            // 選擇題和是非題有可能會大於最大值。
+            var _y = parseInt(_Text1.val());
+            var _C = parseInt(_tbC.val());
+
+            // 判斷→ 是否該檔 :
+
+            var _checkY = _y;
+            var _dist_YLV = 0;
+            $('[data-id^="lock_YLV"]').each(function(i, d) {
+                var _this = $(this);
+                var _levelid = "YLV" + (i + 1).toString();
+
+                if (_this.attr('disabled') === 'disabled') {
+                    _checkY -= parseInt(_this.val());
+                } else {
+                    _dist_YLV += _level[_levelid];
+                }
+            });
+
+            var _checkC = _C;
+            var _dist_C = 0;
+            $('[data-id^="lock_CLV"]').each(function(i, d) {
+                var _this = $(this);
+                var _levelid = "CLV" + (i + 1).toString();
+
+                if (_this.attr('disabled') === 'disabled') {
+                    _checkC -= parseInt(_this.val());
+                } else {
+                    _dist_C += _level[_levelid];
+                }
+            });
+
+            if (_checkY > _dist_YLV) {
+                _y = _dist_YLV;
+            }
+
+            if (_checkC > _dist_C) {
+                _C = _dist_C;
+            }
+
+            // 物件 :
+            var tbAdd = [];
+            var tbCAdd = [];
+            // 數字 ;
+            var Maxtb = [];
+            var MaxtbC = [];
+            for (var i = 1; i <= 5; i++) {
+
+                // 是非 :
+                var tmptb = $('#tb' + i);
+                var disabled_tb = tmptb.attr('disabled') === "disabled";
+
+                if (disabled_tb) {
+                    _y = _y - parseInt(tmptb.val());
+                } else {
+                    tbAdd.push(tmptb);
+                    Maxtb.push(_level["YLV" + i.toString()]);
+                }
+
+                // 選擇 :
+                var tmptbC = $('#tbC' + i);
+                var disabled_tbC = tmptbC.attr('disabled') === "disabled";
+
+                if (disabled_tbC) {
+                    _C = _C - parseInt(tmptbC.val());
+                } else {
+                    tbCAdd.push(tmptbC);
+                    MaxtbC.push(_level["CLV" + i.toString()]);
+                }
+            }
+
+            var _resultY = randToSum(Maxtb, _y);
+            var _resultC = randToSum(MaxtbC, _C);
+
+            $.each(tbAdd, function(i, _tbId) {
+                _tbId.val(_resultY[i]);
+            });
+
+            $.each(tbCAdd, function(i, _tbCId) {
+                _tbCId.val(_resultC[i]);
+            });
+
+            // 最後評斷 :
+            var _lastY = 0;
+            $('[data-id^="lock_YLV"]').each(function(i, d) {
+                var _this = $(this);
+                _lastY += parseInt(_this.val());
+
+            });
+            var _lastC = 0;
+            $('[data-id^="lock_CLV"]').each(function(i, d) {
+                var _this = $(this);
+                _lastC += parseInt(_this.val());
+            });
+
+            if ($('#Text1').val() !== _lastY.toString() && $('#Text1').attr('disabled') !== 'disabled') {
+                $('#Text1').val(_lastY);
+            }
+
+            if ($('#tbC').val() !== _lastC.toString() && $('#tbC').attr('disabled') !== 'disabled') {
+                $('#tbC').val(_lastC);
+            }
+
+            if ($('#TextS').val() !== (_lastY + _lastC).toString() && $('#TextS').attr('disabled') !== 'disabled') {
+                $('#TextS').val((_lastY + _lastC));
+            }
+
+            var _Y1arr = getRandomNum(parseInt($('#tb1').val()), _questionClass.YLV1);
+            var _Y2arr = getRandomNum(parseInt($('#tb2').val()), _questionClass.YLV2);
+            var _Y3arr = getRandomNum(parseInt($('#tb3').val()), _questionClass.YLV3);
+            var _Y4arr = getRandomNum(parseInt($('#tb4').val()), _questionClass.YLV4);
+            var _Y5arr = getRandomNum(parseInt($('#tb5').val()), _questionClass.YLV5);
+            var _C1arr = getRandomNum(parseInt($('#tbC1').val()), _questionClass.CLV1);
+            var _C2arr = getRandomNum(parseInt($('#tbC2').val()), _questionClass.CLV2);
+            var _C3arr = getRandomNum(parseInt($('#tbC3').val()), _questionClass.CLV3);
+            var _C4arr = getRandomNum(parseInt($('#tbC4').val()), _questionClass.CLV4);
+            var _C5arr = getRandomNum(parseInt($('#tbC5').val()), _questionClass.CLV5);
+
+
+            $.each(quizData, function(i, d) {
+                $('#grid_quiz').jqxGrid('unselectrow', i);
+            });
+
+            $.each(_Y1arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_Y2arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_Y3arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_Y4arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_Y5arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_C1arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_C2arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_C3arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_C4arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+            $.each(_C5arr, function(i, d) {
+                $('#grid_quiz').jqxGrid('selectrow', d);
+            });
+        }
+    });
+    $("#btnClearQ").click(function() {
+        var _target = $('[data-id^="lock_"]');
+        $('#btnClearQ').hide();
+        _target.val("");
+        _target.css("background-color", "");
+        _target.removeAttr("disabled");
+        $('[id^="lock_"]').show();
+        $('[id^="unlock_"]').hide();
+        $.each(quizData, function(i, d) {
+            $('#grid_quiz').jqxGrid('unselectrow', i);
+        });
+    });
+}
+
+function Rand(min, max) {
+    return Math.round(Math.random() * (max - min) + min);
+}
+
+function getRandomNum(resultCount, inputArr) {
+    var result = [];
+    var count = inputArr.length;
+    for (var i = 0; i < resultCount; i++) {
+        var index = ~~(Math.random() * count) + i;
+        result[i] = inputArr[index];
+        inputArr[index] = inputArr[i];
+        count--;
+    }
+    return result;
+}
+
+function randToSum(maxArr, sum) {
+
+    // 需符合常態平均分布 : 最大值越大 + 1 機率越大，最大值越小 + 1機率越小。
+    var _check = 0;
+    var _distArea = [];
+    $.each(maxArr, function(i, d) {
+        _check += d;
+        _distArea.push(_check);
+    });
+
+    if (_check >= sum) {
+        var _len = maxArr.length;
+        var _result = [];
+        for (var i = 0; i < _len; i++) {
+            _result.push(0);
+        }
+        var _counter = 0;
+        while (sum > 0) {
+            var _mimus = 0;
+            var _current = _counter % _len;
+
+            if (maxArr[_current] !== 0) {
+                var tmp = Rand(0, _check);
+                if (_current > 0) {
+                    if (tmp > _distArea[_current - 1] && tmp <= _distArea[_current]) {
+                        _mimus = 1;
+                    }
+                } else {
+                    if (tmp > 0 && tmp <= _distArea[_current]) {
+                        _mimus = 1;
+                    }
+                }
+            }
+
+            if (maxArr[_current] > _result[_current]) {
+                _result[_current] += _mimus;
+                sum = sum - _mimus;
+            }
+            _counter++;
+        }
+        return _result;
+
+    } else {
+        console.log("有問題 : 陣列總和小於總數總和");
+        return "None";
+    }
+}
+</script>
+<script>
+// $(function() {
+//    $('#jqxwin_QueryList').jqxWindow({
+//        width: 800,
+//        height: 600,
+//        resizable: false,
+//        isModal: true,
+//        autoOpen: false,
+//        draggable: false,
+//        showCloseButton: true,
+
+//    });
+//});
+
+//$("#btn_QuestionSearch").click(function() {
+//    $('#jqxwin_QueryList').jqxWindow('open');
+//});
+//$('#btn_QuestionQuery').click(function() {
+    $('#SelectUnits').change(function () {
+    var $url = "@Url.Action("GetQuestionByUnit")";
+    var QUID = $('#SelectUnits').val();
+    var $data = {
+        CID: courseData.ID,
+        UID: QUID,
+    };
+    $.post($url, $data, function(data) {
+        console.log(data[0]);
+        var quizsource = {
+            localdata: data[0],
+            datafields: [{
+                    name: 'NO',
+                    type: 'int'
+                },
+                {
+                    name: 'QuestionDesc',
+                    type: 'string'
+                }
+            ]
+        };
+        var quizdataAdapter = new $.jqx.dataAdapter(quizsource);
+        $("#grid_quiz").jqxGrid({
+            source: quizdataAdapter
+        });
+    });
+
+});
+//$('#btn_AddQuestion').click(function() {
+//    var rowindexes = $('#grid_quiz').jqxGrid('getselectedrowindexes');
+//            var QuestionList = [];
+
+//    for (i = 0; i < rowindexes.length; i++) {
+//        var tmpData = $('#grid_quiz').jqxGrid('getrowdata', rowindexes[i]);
+//                QuestionList.push({
+//                CID: courseData.ID,
+//                QNO: tmpData.NO,
+//            });
+
+//        $("#grid_selectedquiz").jqxGrid('addrow', null, {
+//            QuestionDesc: tmpData.QuestionDesc,
+//            QNO:tmpData.NO,
+//        });
+//    }
+//    console.log(QuestionList);
+
+//});
+</script>

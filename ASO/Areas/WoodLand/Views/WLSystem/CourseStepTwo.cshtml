@@ -1,0 +1,147 @@
+﻿<div class="SystemContent_layout_row" style="margin-top:0;">
+    <div class="SystemContent_layout_row_title" style="width:60px;">授課大綱</div>
+    <textarea style="width:700px;height:150px;" id="course_outline"></textarea>
+</div>
+<div class="SystemContent_layout_row">
+    <div class="SystemContent_layout_row_title">習得能力</div>
+    <textarea style="width:700px;height:150px;" id="course_ability"></textarea>
+</div>
+<div class="SystemContent_layout_row">
+    <div class="SystemContent_layout_row_title">資料來源</div>
+    <textarea style="width:700px;height:150px;" id="course_source"></textarea>
+</div>
+<div class="SystemContent_layout_row">
+    <div class="SystemContent_layout_row_title">新增連結</div>
+    <div>
+        <input type="text" id="link_title" placeholder="超連結標題">
+        <input type="text" id="link_url" placeholder="超連結URL">
+        <button onclick="addLink()">新增連結</button>
+    </div>
+</div>
+<div class="SystemContent_layout_row">
+    <div class="SystemContent_layout_row_title">外部連結</div>
+    <div id="course_links_area"></div>
+</div>
+
+<div class="SystemContent_layout_row" style="width:490px;margin:0 auto;margin-top:40px;">
+    <div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="ChangeStep(1);">上一步</div>
+    <div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="ChangeStep(3);">下一步</div>
+    <div class="BTN" style="width:140px;float:left;margin-right:15px;" onclick="EditCancel();">返回訓練教室編輯</div>
+    <div class="BTN" style="width:80px;float:left;margin-right:15px;" onclick="EditSaveTmp();">跳出並儲存</div>
+
+</div>
+
+<script>
+    var addedLinks = [];
+
+    $(function () {
+        $('#step_two').addClass('StepRow_OneStep_active');
+        if (typeof courseData.Outline != "undefined") {
+            $('#course_outline').val(courseData.Outline);
+            $('#course_ability').val(courseData.Ability);
+            $('#course_source').val(courseData.Source);
+        }
+        if (courseData.Link) {
+            convertStringToLinks(courseData.Link);
+        }
+    });
+
+    function convertStringToLinks(linkString) {
+        var linkPairs = linkString.split(';');
+
+        $.each(linkPairs, function (index, linkPair) {
+            var linkParts = linkPair.split('：');
+            var linkTitle = linkParts[0];
+            var linkURL = linkParts[1];
+
+            // 創建一個新超連結元素
+            var newLink = $("<a>").attr({
+                "href": linkURL,
+                "target": "_blank"
+            }).text(linkTitle);
+
+            // 創建一個刪除按鈕
+            var deleteButton = $("<button>").text("刪除");
+            deleteButton.on("click", function () {
+                // 刪除超連結
+                var index = addedLinks.indexOf(newLink[0]);
+                if (index !== -1) {
+                    addedLinks.splice(index, 1);
+                    newLink.parent().remove();
+                }
+            });
+
+            // 將新超連結和刪除按鈕添加到區域
+            var linkContainer = $("<p class='Training_OneInfo_text'>").append(newLink, deleteButton);
+
+            $("#course_links_area").append(linkContainer);
+
+            // 將新超連結加入數組
+            addedLinks.push(newLink[0]);
+        });
+        console.log(convertLinksToString());
+    }
+
+    function convertLinksToString() {
+        var linksArea = $("#course_links_area");
+        var linkPairs = [];
+
+        linksArea.find("a").each(function () {
+            var linkName = $(this).text();
+            var linkURL = $(this).attr("href");
+            var linkPair = linkName + '：' + linkURL;
+            linkPairs.push(linkPair);
+        });
+
+        // 使用分號和冒號來組合超連結對
+        var linkString = linkPairs.join(';');
+
+        return linkString;
+    }
+
+    function addLink() {
+        var linkTitle = $("#link_title").val();
+        var linkURL = $("#link_url").val();
+
+        if (linkTitle && linkURL) {
+            // 創建一個新超連結元素
+            var newLink = $("<a>").attr({
+                "href": linkURL,
+                "target": "_blank"
+            }).text(linkTitle);
+
+            // 創建一個刪除按鈕
+            var deleteButton = $("<button>").text("刪除");
+            deleteButton.on("click", function () {
+                // 刪除超連結
+                var index = addedLinks.indexOf(newLink[0]);
+                if (index !== -1) {
+                    addedLinks.splice(index, 1);
+                    newLink.parent().remove();
+                }
+            });
+
+            // 將新超連結和刪除按鈕添加到區域
+            var linkContainer = $("<p class='Training_OneInfo_text'>").append(newLink, deleteButton);
+
+            $("#course_links_area").append(linkContainer);
+
+            // 將新超連結加入數組
+            addedLinks.push(newLink[0]);
+
+            // 清空輸入框
+            $("#link_title").val("");
+            $("#link_url").val("");
+        }
+        console.log(convertLinksToString());
+    }
+</script>
+
+<style>
+    #course_links_area {
+        display: flex;
+        flex-direction: column; /* 垂直排列 */
+        align-items: flex-start; /* 靠左對齊 */
+        height: 300px; /* 設置高度，可以根據需要調整 */
+    }
+</style>

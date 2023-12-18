@@ -1,0 +1,162 @@
+﻿@model Wei.SysAuth.SysUser
+@{
+    ViewBag.Title = "UserFunction";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+<div class="contnet_title_layout content_title">個人權限</div>
+<div>
+    <table cellpadding="2" cellspacing="1" border="0" style="margin-bottom:5px">
+        <tr>
+            <td style="padding-left:30px">員工姓名：</td>
+            <td><input type="text" id="UserFunction_Ddl_UserName" /></td>
+            <td style="padding-left:10px">員工編號：</td>
+            <td><input type="text" id="UserFunction_Ddl_UserNO" /></td>
+            <td style="padding-left:10px">部門：</td>
+            <td><div id="UserFunction_Ddl_Dept"></div></td>
+            <td style="padding-left:10px">
+                <input type="button" id="UserFunction_btn_Query" value="查詢" onclick="Query()" />
+                <input type="button" value="取消" id="UserFunction_btn_Cancel" />
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="clear"></div>
+<div id="grid_userfunc"></div>
+<style>
+    .content_whiteBG_layout {
+        padding-bottom: 0px;
+    }
+</style>
+<script>
+    //#region 宣告變數
+    var DeptList = @Html.Raw(Json.Encode(ViewData["DeptList"]));
+    var UserTitleList = @Html.Raw(Json.Encode(ViewData["UserTitleList"]));
+    var GetUserListUrl = '@Url.Action("GetUserList", "SysRoleFunc")';
+    var EditUserFunctionUrl = '@Url.Action("EditUserFunction", "SysRoleFunc")';
+    var UsetList = {};
+    var Dept =[];
+    var Title =[];
+    //#endregion
+
+    //#region 事件處理
+    function GetUserList() {
+        var source = {
+            localdata: UsetList,
+            datatype: "JSON",
+            datafields: [
+                { name: 'UserID', type: 'int' },
+                { name: 'DeptID', type: 'int' },
+                { name: 'DeptNO', type: 'string' },
+                { name: 'DeptNmae', type: 'string' },
+                { name: 'TitID', type: 'int' },
+                { name: 'UserNo', type: 'string' },
+                { name: 'Name', type: 'string' },
+                 { name: 'Gender', type: 'byte' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+              { text: '員工ID', datafield: 'UserID', cellsalign: 'right', align: 'center', width: '100px', hidden: true },
+              { text: '部門ID', datafield: 'DeptID', cellsalign: 'right', align: 'center', width: '100px', hidden: true },
+              {
+                  text: '', datafield: 'View', width: 100, align: 'center', columntype: 'button',
+                  cellsrenderer: function () {
+                      return "檢視";
+                  }, buttonclick: function (row) {
+                      var ID = $("#grid_userfunc").jqxGrid('getcellvalue', row, "UserID");
+                      location.href = EditUserFunctionUrl+ "/" + ID;
+                  }
+              },
+              { text: '員工編號', datafield: 'UserNo', align: 'center', width: '120px', cellsalign:'center' },
+              { text: '員工名稱', datafield: 'Name', align: 'center', width: '150px' },
+              {
+                  text: '部門編號', datafield: 'DeptNO', align: 'center', width: '120px',
+                  cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#grid_userfunc").jqxGrid('getrowdata', row).DeptID;
+                      return Dept.hasOwnProperty(DeptID) ? '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].DeptNo + '</div>': '';
+                  }
+              },
+              {
+                  text: '部門名稱', datafield: 'DeptNmae', align: 'center',
+                  cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#grid_userfunc").jqxGrid('getrowdata', row).DeptID;
+                      return Dept.hasOwnProperty(DeptID) ?  '<div style="text-align: left; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].Name + '</div>' : '';
+                  }
+              },
+              {
+                  text: '職稱', datafield: 'TiName', align: 'center',
+                  cellsrenderer: function (row, column, value) {
+                      var TitID = $("#grid_userfunc").jqxGrid('getrowdata', row).TitID;
+                      return Title.hasOwnProperty(TitID)? '<div style="text-align: left; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;">' + Title[TitID].Name + '</div>' : '';
+                  }
+              },
+              {
+                  text: '性別', datafield: 'Gender', align: 'center', width: '120px',
+                  cellsrenderer: function (row, column, value) {
+                      var gender = value == 1 ? '男' : '女';
+                      return '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; margin-right: 2px; margin-left: 4px; -ms-text-overflow: ellipsis;"><img src="../../Content/Images/使用者(' +gender + ')icon.png" width="20px"/></div>';
+                  }
+              }
+            ]
+        }
+        $("#grid_userfunc").jqxGrid(GetJqxGvSetting(setting));
+    }
+
+    function Query() {
+        var SysUser = {};
+        SysUser.UserNo = $("#UserFunction_Ddl_UserNO").val();
+        SysUser.Name = $("#UserFunction_Ddl_UserName").val();
+        SysUser.DeptID = $("#UserFunction_Ddl_Dept").val();
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetUserListUrl,
+            async: false,
+            data:{data: JSON.stringify(SysUser)},
+            success: function (data) {
+                UsetList = data;
+                GetUserList();
+            }
+        })
+    }
+    //#endregion
+
+    //#region 頁面初始
+    function dataInit() {
+        for (var i = 0; i < DeptList.length; i++) {
+            var D = {};
+            D.DeptNo = DeptList[i].DeptNo;
+            D.Name = DeptList[i].Name;
+            Dept[DeptList[i].DeptID] = D;
+        }
+        for (var i = 0; i < UserTitleList.length; i++) {
+            var T = {};
+            T.TitNo = UserTitleList[i].TitNo;
+            T.Name = UserTitleList[i].Name;
+            Title[UserTitleList[i].TitID] = T;
+        }
+        $("#UserFunction_Ddl_Dept").jqxDropDownList(GetJqxDdlSetting(DeptList, "DeptID", "Name"));
+        $("#UserFunction_Ddl_Dept").jqxDropDownList('insertAt', { label: "請選擇", value: "0" }, 0);
+    };
+
+    function objInit() {
+        $("#UserFunction_btn_Query, #UserFunction_btn_Cancel").jqxButton(JqxBtnSetting);
+        $("#UserFunction_Ddl_UserName, #UserFunction_Ddl_UserNO").jqxInput(JqxInputSetting);
+    };
+
+    //#endregion
+
+    $(function(){
+        initMenu = $(".menu_options_text[class*='Menu_admin']");
+        $(".menu_options_text[class*='Menu_admin']").addClass("menu_active");
+        objInit();
+        dataInit();
+        GetUserList();
+    })
+</script>

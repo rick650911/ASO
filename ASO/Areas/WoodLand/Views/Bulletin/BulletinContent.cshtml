@@ -1,0 +1,36 @@
+﻿@model ASO.Models.WLBulletinBoard
+@{
+    ViewBag.Title = "公布欄內容";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">文件公告及下載</div>
+    <div class="download_content_layout">
+        <div class="download_content_document_title_layout">
+            <div class="download_content_document_title">
+                <div class="download_content_document_title_subject">@Model.Title</div>
+                <div class="download_content_document_title_date">發布日期：【@Model.AddTime.ToString("yyyy-MM-dd")】</div>
+            </div>
+            @if (Model.File != null) {
+                <a href='@Url.Content(Model.File.First().FilePath)' target="_blank">
+                    <div class="download_content_document_downloadBTN_layout download_content_document_downloadBTN">
+                        下載
+                    </div>
+                </a>
+            }
+        </div>
+        <div class="clear"></div>
+        <div class="download_content_SeparateLine"></div>
+        <div class="download_content_text">
+            @Html.Raw(Model.Content)
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_board']");
+        $(".menu_options_text[class*='Menu_board']").addClass("menu_active");
+    });
+</script>

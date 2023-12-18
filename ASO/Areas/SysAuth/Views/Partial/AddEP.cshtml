@@ -1,0 +1,150 @@
+﻿@{
+    Layout = null;
+}
+
+<div id="AddEP_GV_Main"></div>
+@*<input id="AddEP_Btn_Define" style="margin-top:5px;" type="button" value="確定" />*@
+
+<script>
+    //#region 變數宣告
+    var GetUserListUrl = '@Url.Action("GetUserList", "SysAuthCom")';
+    //#endregion
+
+    //#region 事件處理
+    //#endregion
+
+    //#region 頁面初始
+    function AddEP_objInit() {
+        //$("#AddEP_Btn_Define").jqxButton(JqxBtnSetting);
+        //$("#AddEP_Btn_Define").on('click', function () {
+        //    var SelectRows = $('#AddEP_GV_Main').jqxGrid('getselectedrowindexes');
+        //    if (SelectRows.length > 0) {
+        //        for (var i = 0 ; i < SelectRows.length; i++) {
+        //            var SelectedRowData = $('#AddEP_GV_Main').jqxGrid('getrowdata', SelectRows[i]);
+        //            if (!GroupList.hasOwnProperty(SelectedRowData.ID)) {
+        //                var StaffArray = {};
+        //                StaffArray.ID = SelectedRowData.UserID;
+        //                StaffArray.Type = "1";//1表示員工
+        //                var Content = "【員工】 ﹝部門:" + (Dept.hasOwnProperty(SelectedRowData.DeptID) ? Dept[SelectedRowData.DeptID].Name : "") + "﹞ ﹝員工編號:" + SelectedRowData.UserNo + "﹞" + "﹝姓名:" + SelectedRowData.Name + "﹞﹝職稱:" + (Title.hasOwnProperty(SelectedRowData.TitID) ? Title[SelectedRowData.TitID].Name : "") + "﹞";
+        //                StaffArray.Content = Content;
+        //                GroupList[SelectedRowData.UserID] = StaffArray;
+        //            }
+        //        }
+        //    }
+        //    //var L = GroupList.length;
+        //    //var con = "";
+        //    //if (StaffArray.length > 0)
+        //    //{
+        //    //    for(var i =0;i<StaffArray.length;i++)
+        //    //    {
+        //    //        var n = L + i;
+        //    //        GroupList[n] = StaffArray[i];
+        //    //        con += StaffArray[i].Content + '<br>';
+        //    //    }
+        //    //}
+        //    AddGroup();//需要用到加入員工的頁面都要寫這個function
+        //    $('#PV_AddEP_Window').jqxWindow('close');
+        //})
+    }
+
+
+    function dataInit() {
+        var UsetList = {};
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: GetUserListUrl, async: false,
+            success: function (data) {
+                UsetList = data;
+                debugger;
+            }
+        });
+
+        var source = {
+            localdata: UsetList,
+            datatype: "JSON",
+            datafields:
+            [
+                { name: 'UserID', type: 'int' },
+                { name: 'DeptID', type: 'int' },
+                { name: 'DeptNO', type: 'string' },
+                { name: 'DeptNmae', type: 'string' },
+                { name: 'TitID', type: 'int' },
+                { name: 'UserNo', type: 'string' },
+                { name: 'Name', type: 'string' },
+            ]
+        };
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        $("#AddEP_GV_Main").jqxGrid({
+            source: dataAdapter,
+            autoheight: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            showstatusbar: true,
+            localization: getLocalization(),
+            selectionmode: 'checkbox',
+            columns: [
+              { text: '員工ID', datafield: 'UserID', cellsalign: 'right', align: 'center', width: '100px', hidden: true },
+              { text: '部門ID', datafield: 'DeptID', cellsalign: 'right', align: 'center', width: '100px', hidden: true },
+              {
+                  text: '部門編號', datafield: 'DeptNO', cellsalign: 'center', align: 'center', width: '100px', cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#AddEP_GV_Main").jqxGrid('getrowdata', row).DeptID;
+                      if (Dept.hasOwnProperty(DeptID)) {
+                          debugger;
+                          return '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].DeptNo + '</div>';
+                      }
+                      else {
+                          return "";
+                      }
+                  }
+              },
+              {
+                  text: '部門名稱', datafield: 'DeptNmae', align: 'center', width: '120px', cellsrenderer: function (row, column, value) {
+                      var DeptID = $("#AddEP_GV_Main").jqxGrid('getrowdata', row).DeptID;
+                      return Dept.hasOwnProperty(DeptID) ? '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; -ms-text-overflow: ellipsis;">' + Dept[DeptID].Name + '</div>' : '';
+                  }
+              },
+              {
+                  text: '職稱', datafield: 'TiName', align: 'center', width: '120px', cellsrenderer: function (row, column, value) {
+                      var TitID = $("#AddEP_GV_Main").jqxGrid('getrowdata', row).TitID;
+                      return Title.hasOwnProperty(TitID) ? '<div style="text-align: center; overflow: hidden; padding-bottom: 2px; margin-top: 4px; -ms-text-overflow: ellipsis;">' + Title[TitID].Name + '</div>' : '';
+                  }
+              },
+              { text: '員工編號', datafield: 'UserNo', align: 'center', cellsalign: 'center', width: '110px' },
+              { text: '員工名稱', datafield: 'Name', align: 'center', cellsalign: 'center', width: '120px' },
+            ],
+            renderstatusbar: function (statusbar) {
+                var container = $("<div style='overflow: hidden; position: absolute; margin: 5px; right:5px'></div>");
+                var confirmButton = $("<div style='float: left; margin-left: 5px;'><span style='margin-left: 4px; position: relative; top: 0px;'>確定</span></div>");
+                container.append(confirmButton);
+                statusbar.append(container);
+                confirmButton.jqxButton({ width: 60, height: 15 });
+                confirmButton.click(function (event) {
+                    var SelectRows = $('#AddEP_GV_Main').jqxGrid('getselectedrowindexes');
+                    if (SelectRows.length > 0) {
+                        for (var i = 0 ; i < SelectRows.length; i++) {
+                            var SelectedRowData = $('#AddEP_GV_Main').jqxGrid('getrowdata', SelectRows[i]);
+                            if (!GroupList.hasOwnProperty(SelectedRowData.ID)) {
+                                var StaffArray = {};
+                                StaffArray.ID = SelectedRowData.UserID;
+                                StaffArray.Type = "1";
+                                var Content = "﹝部門:" + (Dept.hasOwnProperty(SelectedRowData.DeptID) ? Dept[SelectedRowData.DeptID].Name : "") + "﹞ ﹝員工編號:" + SelectedRowData.UserNo + "﹞" + "﹝姓名:" + SelectedRowData.Name + "﹞﹝職稱:" + (Title.hasOwnProperty(SelectedRowData.TitID) ? Title[SelectedRowData.TitID].Name : "") + "﹞";
+                                StaffArray.Content = Content;
+                                GroupList[SelectedRowData.UserID] = StaffArray;
+                            }
+                        }
+                    }
+                    AddGroup();
+                    $('#PV_AddEP_Window').jqxWindow('close');
+                });
+            }
+        });
+        $("#AddEP_GV_Main").jqxGrid(JqxGvSetting600);
+    }
+    //#endregion
+    $(function () {
+        dataInit();
+    });
+</script>

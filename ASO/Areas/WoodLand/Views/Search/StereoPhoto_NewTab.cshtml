@@ -1,0 +1,192 @@
+﻿@model ASO.Areas.WoodLand.Models.Stereoscopic
+@{
+    Layout = null;
+    string url = Url.Action("LocationCoordMap", "WLMap") + "/?locx=" + Model.LocX1 + "&locy=" + Model.LocY1;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.TitleName</title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery-ui.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.mousewheel.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.gzoom.js' charset="utf-8"></script>
+    <script type="text/javascript" src="~/Scripts/fontawesome-all.min.js"></script>
+
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.gzoom.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.metro.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.energyblue.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.office.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+</head>
+<body onload="StereophotoclickBySize('@Model.StePairL', '@Model.StePairR','@Model.ImgW','@Model.ImgH','@Model.ID')">
+    <div id="jqxwin_solid" style="display:none;">
+        <div>
+
+        </div>
+        <div id="jqxwin_solid_content" style="background:#000;overflow-y:scroll;">
+            @{
+                if (Model != null)
+                {
+                    Html.RenderAction("SolidPhoto2");
+                }
+            }
+            @*<span id="test">i</span>*@
+        </div>
+    </div>
+    <iframe src="@url" style="width:43%;height:600px;position:absolute;right:30px;top:60px"></iframe>
+
+    <div id="jqxwin_info" style="display:none;z-index:9002">
+        <div>像對說明</div>
+        <div id="jqxwin_info_content">
+            <div id="info"></div>
+
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#jqxwin_solid').jqxWindow({
+                minWidth: '793.7px',
+                width: 793.7,
+                height: 2000,
+                resizable: false,
+                isModal: false,
+                autoOpen: false,
+                draggable: false,
+                showCloseButton: false,
+                position: { x: 30, y: 60 },
+            });
+
+
+
+        });
+    </script>
+    <script>
+        $(function () {
+            $('#jqxwin_info').jqxWindow({
+                width: 600,
+                height: 600,
+                resizable: false,
+                isModal: false,
+                autoOpen: false,
+                draggable: true,
+                showCloseButton: true,
+            });
+        });
+    </script>
+    <script>
+                var $btnPhotoPair = $("#btnAnaglyph");
+        if ($btnPhotoPair.length > 0) {
+            $btnPhotoPair.click(function () {
+                var $url = "@Url.Action("checkSolid_NewTab","Search")";
+
+                var _obj = "";
+                $data = {
+                    SID:@ViewBag.ID,
+                    SortID:@ViewBag.SortID,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        _obj = data
+                    }
+                });
+
+                if (_obj == "true") {
+
+                    $url = "@Url.Content("~/Search/SolidPhoto_NewTab")";
+                    $url += "?SID=@ViewBag.ID";
+                    $url += "&SortID=@ViewBag.SortID";
+                    window.open($url, "_self");
+
+                } else {
+                    alert("無完整相片對。")
+                }
+            });
+        }
+    </script>
+    <script>
+        $(function () {
+            var $url = "@Url.Action("StereoAnaglyph", "Search")";
+            var base64 = "";
+            $data = {
+                LeftImage: "@Model.StePairL",
+                RightImage: "@Model.StePairR",
+            }
+            $.ajax({
+                url: $url,
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    base64 = data
+                }
+            });
+            $('#img_Stereo')[0].src = "data:image/png;base64," + base64;
+            $('#img_Stereo2')[0].src = "data:image/png;base64," + base64;
+
+        });
+    </script>
+    <script>
+        $(function () {
+          var $url = "@Url.Action("BaseDataForStereo", "Search")";
+          var result = "";
+                $data = {
+                    ID:@ViewBag.ID,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        result = data
+                    }
+            });
+            $('#compare').html(result);
+
+        });
+    </script>
+    <script>
+        $(function () {
+            var $this = $(this);
+            var $SortId = $this.data("sortid");
+
+          var $url = "@Url.Action("StereoscopicImageinfo", "Search")";
+          var result = "";
+                $data = {
+                    ID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        result = data
+                    }
+            });
+            $('#info').html(result);
+
+        });
+    </script>
+    <script>
+        $('#callinfo').click(function () {
+            $('#jqxwin_info').jqxWindow('open');
+            $('#jqxwin_info').css('z-index', 9010);
+        });
+    </script>
+</body>
+</html>

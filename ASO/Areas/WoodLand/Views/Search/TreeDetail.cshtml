@@ -1,0 +1,660 @@
+﻿@model ASO.Models.Species
+@{
+    Layout = "~/Areas/WoodLand/Views/Shared/_SinglePage.cshtml";
+}
+<script src="~/Scripts/clipboard.min.js"></script>
+<div>
+    <div style="text-align:right;">
+        @if (ASO.Models.SysTool.GetUserName() != "")
+        {
+            <input id="btnFeedback" type="button" class="btn_jqxbutton" value="意見回饋" />
+        }
+        <input id="btnPrint" type="button" class="btn_jqxbutton" value="列印" onclick="print();" />
+        <input id="btnCopyid" type="button" class="btn_jqxbutton" data-clipboard-target="#treeID" value="複製樹種編號" />
+    </div>
+    <div style="font-weight:bold;font-size:20px">
+        @Model.ComName
+        <br />
+        <i>@Model.SciName</i>
+    </div>
+
+    @*袖珍立體像對*@
+    @if (Model.StereoscopicImages != null)
+    {
+        <div class="clear"></div>
+        <div>
+            @foreach (var item in Model.StereoscopicImages)
+            {
+                if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + item.StePair)))
+                {
+                    <img src="@Url.Content("~/Photos/" + item.StePair)" style="width:260px;padding-left:10px" />
+                }
+            }
+        </div>
+    }
+    <div class="clear"></div>
+    @*一、樹種資料*@
+    <div class="search_content_ALLinfo_layout">
+        <div class="search_content_info_title_layout search_content_info_title">一、地物種類資料</div>
+        <div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 地物種類編號</div>
+                <div id="treeID">@Model.ID</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 地物種類中文名稱</div>
+                <div>@Model.ComName</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 判釋難易程度</div>
+                <div>@Model.Level</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● IPCC分類類型</div>
+                <div>@Model.IPCC</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 資源調查分類</div>
+                <div>@Model.IPCCsub</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 科名</div>
+                <div>@Model.Family</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 學名</div>
+                <div><i>@Model.SciName</i></div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 基本型態、分布及特性說明</div>
+                <div>@Model.BasDes</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 物種介紹</div>
+                <div>@Model.SpeDes</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 分布海拔範圍(m)</div>
+                <div>@Model.AltRange</div>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            <div class="search_content_info_text">
+                <div>● 易混淆地物種類</div>
+                @*<div>@Model.IDCompare</div>*@
+                <span id="compareHref" data-idcomp="@Model.IDCompare"></span>
+            </div>
+            <div class="clear"></div>
+            <div class="search_content_info_SeparateLine"></div>
+            @if (Model.SpeciesFL != null)
+            {
+                <div class="search_content_info_text">
+                    <div>● 樹高</div>
+                    <div>@Model.SpeciesFL.THeight</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹型</div>
+                    <div>@Model.SpeciesFL.TShape</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠幅寬度</div>
+                    <div>@Model.SpeciesFL.CroWidth</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+            }
+
+        </div>
+    </div>
+
+    @if (Model.FeaturesFL != null)
+    {
+        <div class="clear"></div>
+        @*二、判釋特徵*@
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">二、判釋特徵</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠層結構-樹梢</div>
+                    <div>@Model.FeaturesFL.Crown6</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠層結構-深度</div>
+                    <div>@Model.FeaturesFL.Crown7</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠層結構-層次</div>
+                    <div>@Model.FeaturesFL.Crown8</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠層結構-通透</div>
+                    <div>@Model.FeaturesFL.Crown9</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 冠層結構-質地</div>
+                    <div>@Model.FeaturesFL.Crown10</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 色調</div>
+                    <div>@Model.FeaturesFL.ToneColor</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 組織</div>
+                    <div>@Model.FeaturesFL.Texture</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 陰影</div>
+                    <div>@Model.FeaturesFL.Shadow</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 位置與關聯物</div>
+                    <div>@Model.FeaturesFL.Association</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 排列與圖案</div>
+                    <div>@Model.FeaturesFL.Pattern</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹冠邊緣</div>
+                    <div>@Model.FeaturesFL.Crown2</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹冠表面</div>
+                    <div>@Model.FeaturesFL.Crown3</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹冠數量</div>
+                    <div>@Model.FeaturesFL.Crown4</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹冠尺寸</div>
+                    <div>@Model.FeaturesFL.Crown5</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>● 樹冠輪廓</div>
+                    <div>@Model.FeaturesFL.Crown1</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+            </div>
+        </div>
+    }
+
+    @if (Model.StereoscopicImages != null)
+    {
+        <div class="clear"></div>
+        @*三、立體像對資訊*@
+        <table style="width:100%">
+            <tr>
+                <td style="width:80%">
+                    <div class="search_content_ALLinfo_layout">
+                        <div class="search_content_info_title_layout search_content_info_title">三、立體像對資訊</div>
+                        @foreach (var item in Model.StereoscopicImages)
+                        {
+                            <div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 像片編號A</div>
+                                    <div id="PhotoA">@item.PhotoA</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 像片編號B</div>
+                                    <div id="PhotoB">@item.PhotoB</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 像片對所在地區</div>
+                                    <div id="Locate">@item.Locate</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 樹種立體像對.sup檔路徑</div>
+                                    <div id="SteSuo">@item.SteSuo</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(Y max)</div>
+                                    <div id="Ymax">@item.Ymax</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(X min)</div>
+                                    <div id="Xmin">@item.Xmin</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(Y min)</div>
+                                    <div id="Ymin">@item.Ymin</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(X max)</div>
+                                    <div id="Xmax">@item.Xmax</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 林分密度</div>
+                                    <div id="StDen">@(item.StereoscopicImageFL != null ? item.StereoscopicImageFL.StDen : 0)</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 樹冠覆蓋度</div>
+                                    <div id="CroDen">@(item.StereoscopicImageFL != null ? item.StereoscopicImageFL.CroDen : 0)</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 林齡</div>
+                                    <div id="StAge">@(item.StereoscopicImageFL != null ? item.StereoscopicImageFL.StAge : "")</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 樹種像對最低海拔(m)</div>
+                                    <div id="AltMin">@item.AltMin</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 樹種像對最高海拔(m)</div>
+                                    <div id="AltMax">@item.AltMax</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 樹種像對坡向</div>
+                                    <div id="Aspect">@item.Aspect</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 航線代號</div>
+                                    <div id="LineID">@item.LineID</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 飛行高度(m)</div>
+                                    <div id="FlyH">@item.FlyH</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 拍攝時間</div>
+                                    <div id="ShTime">@item.ShTime</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 拍攝角度</div>
+                                    <div id="ShDeg">@item.ShDeg</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 相機焦距(mm)</div>
+                                    <div>@item.CamFoc</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 相機型號</div>
+                                    <div id="CamMod">@item.CamMod</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 空間解析度(cm)</div>
+                                    <div id="FWHM">@item.FWHM</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(X)</div>
+                                    <div id="LocX1">@item.LocX1</div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                                <div class="search_content_info_text">
+                                    <div>● 坐標(Y)</div>
+                                    <div id="LocY1">@item.LocY1</div>
+                                </div>
+                                @*<div class="clear"></div>
+                                    <div class="search_content_info_SeparateLine"></div>
+                                    <div class="search_content_info_text">
+                                        <div>24.坐標二(X)</div>
+                                        <div>@item.LocX2</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="search_content_info_SeparateLine"></div>
+                                    <div class="search_content_info_text">
+                                        <div>25.坐標二(Y)</div>
+                                        <div>@item.LocY2</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="search_content_info_SeparateLine"></div>
+                                    <div class="search_content_info_text">
+                                        <div>26.坐標三(X)</div>
+                                        <div>@item.LocX3</div>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="search_content_info_SeparateLine"></div>
+                                    <div class="search_content_info_text">
+                                        <div>27.坐標三(Y)</div>
+                                        <div>@item.LocY3</div>
+                                    </div>*@
+                                <div class="clear"></div>
+                                <div class="search_content_info_SeparateLine"></div>
+                            </div>
+                        }
+                    </div>
+                </td>
+                <td valign="top">
+                    <div style="margin-top:80px;">
+                        <p>點擊切換相片對資訊</p>
+                        <table id="grid_stero"></table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    }
+
+    @*<div class="clear"></div>
+        //四、航照資訊
+        <div class="search_content_ALLinfo_layout">
+            <div class="search_content_info_title_layout search_content_info_title">四、航照資訊</div>
+            <div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>1.航線代號</div>
+                    <div>@Model.AerialImage.LineID</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>2.像片編號A</div>
+                    <div>@Model.AerialImage.PhotoA</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>3.像片編號B</div>
+                    <div>@Model.AerialImage.PhotoB</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>4.飛行高度(m)</div>
+                    <div>@Model.AerialImage.FlyH</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>5.拍攝時間</div>
+                    <div>@Model.AerialImage.ShTime</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>6.拍攝角度</div>
+                    <div>@Model.AerialImage.ShDeg</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>7.相機焦距(mm)</div>
+                    <div>@Model.AerialImage.CamFoc</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>8.相機型號</div>
+                    <div>@Model.AerialImage.CamMod</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+                <div class="search_content_info_text">
+                    <div>9.空間解析度(cm)</div>
+                    <div>@Model.AerialImage.FWHM</div>
+                </div>
+                <div class="clear"></div>
+                <div class="search_content_info_SeparateLine"></div>
+            </div>
+        </div>*@
+</div>
+<div id="win_feedback"></div>
+
+<script>
+    $(function () {
+        var clipboard = new Clipboard('#btnCopyid');
+        clipboard.on('success', function (e) {
+            console.log(e);
+        });
+
+        clipboard.on('error', function (e) {
+            console.log(e);
+        });
+
+        var _obj = null;
+        var $data = {
+            _SID: @ViewBag.ID,
+        };
+        $.ajax({
+            url: "@Url.Action("QueryAllStereoscopicImage")",
+            type: "POST",
+            data: $data,
+            async: false,
+            success: function (data) {
+                var $html = "";
+                var $data_html = "";
+                $.each(data, function (i, d) {
+                    i++;
+                    $html += '<tr><td><div id="SteroData_' + i + '" ';
+                    $html += ' class="SteroImage_Select" ';
+                    $html += ' data-ID="' + d.ID + '" ';
+                    $html += ' data-SortID="' + d.SortID + '" ';
+                    $html += ' data-PhotoA="' + d.PhotoA + '" ';
+                    $html += ' data-PhotoB="' + d.PhotoB + '" ';
+                    $html += ' data-Locate="' + d.Locate + '" ';
+                    $html += ' data-SteSuo="' + d.SteSuo + '" ';
+                    $html += ' data-Ymax="' + d.Ymax + '" ';
+                    $html += ' data-Xmin="' + d.Xmin + '" ';
+                    $html += ' data-Ymin="' + d.Ymin + '" ';
+                    $html += ' data-Xmax="' + d.Xmax + '" ';
+
+                    $html += ' data-AltMin="' + d.AltMin + '" ';
+                    $html += ' data-AltMax="' + d.AltMax + '" ';
+                    $html += ' data-Aspect="' + d.Aspect + '" ';
+                    $html += ' data-LineID="' + d.LineID + '" ';
+                    $html += ' data-FlyH="' + d.FlyH + '" ';
+                    $html += ' data-ShTime="' + d.ShTime + '" ';
+                    $html += ' data-ShDeg="' + d.ShDeg + '" ';
+                    $html += ' data-CamFoc="' + d.CamFoc + '" ';
+                    $html += ' data-CamMod="' + d.CamMod + '" ';
+                    $html += ' data-LocX1="' + d.LocX1 + '" ';
+                    $html += ' data-LocY1="' + d.LocY1 + '" ';
+
+                    if (d.IntroName != "" && d.IntroName != null) {
+                        $html += '>' + d.IntroName + '</div ></td ></tr > ';
+                    } else {
+                        $html += '>'+ d.ComName + i + '</div ></td ></tr > ';
+                    }
+                });
+                $("#grid_stero").html($html);
+            }
+        });
+
+        $("[id^='SteroData_']").click(function () {
+            var $this = $(this);
+            var PhotoA = $this.data('PhotoA'.toLowerCase());
+            var PhotoB = $this.data('PhotoB'.toLowerCase());
+            var Locate = $this.data('Locate'.toLowerCase());
+            var SteSuo = $this.data('SteSuo'.toLowerCase());
+            var Ymax = $this.data('Ymax'.toLowerCase());
+            var Xmin = $this.data('Xmin'.toLowerCase());
+            var Ymin = $this.data('Ymin'.toLowerCase());
+            var Xmax = $this.data('Xmax'.toLowerCase());
+            var AltMin = $this.data('AltMin'.toLowerCase());
+            var AltMax = $this.data('AltMax'.toLowerCase());
+            var Aspect = $this.data('Aspect'.toLowerCase());
+            var LineID = $this.data('LineID'.toLowerCase());
+            var FlyH = $this.data('FlyH'.toLowerCase());
+            var ShTime = $this.data('ShTime'.toLowerCase());
+
+            if (ShTime != null && ShTime != undefined) {
+                var ShTime = ShTime.replace(new RegExp('/', 'g'), "").replace("Date(", "").replace(")", "");
+                ShTime = new Date(parseInt(ShTime));
+                var _yyyy = ShTime.getFullYear().toString();
+                var _MM = (ShTime.getMonth() + 1).toString();
+                var _dd = ShTime.getDate().toString();
+                ShTime = _yyyy + "/" + _MM + "/" + _dd;
+            }
+            else {
+                ShTime = "";
+            }
+
+            var ShDeg = $this.data('ShDeg'.toLowerCase());
+            var CamFoc = $this.data('CamFoc'.toLowerCase());
+            var CamMod = $this.data('CamMod'.toLowerCase());
+            var FWHM = $this.data('FWHM'.toLowerCase());
+            var LocX1 = $this.data('LocX1'.toLowerCase());
+            var LocY1 = $this.data('LocY1'.toLowerCase());
+
+            $('#PhotoA').text(PhotoA);
+            $('#PhotoB').text(PhotoB);
+            $('#Locate').text(Locate);
+            $('#SteSuo').text(SteSuo);
+            $('#Ymax').text(Ymax);
+            $('#Xmin').text(Xmin);
+            $('#Ymin').text(Ymin);
+            $('#Xmax').text(Xmax);
+            $('#AltMin').text(AltMin);
+            $('#AltMax').text(AltMax);
+            $('#Aspect').text(Aspect);
+            $('#LineID').text(LineID);
+            $('#FlyH').text(FlyH);
+            $('#ShTime').text(ShTime);
+            $('#ShDeg').text(ShDeg);
+            $('#CamFoc').text(CamFoc);
+            $('#CamMod').text(CamMod);
+            $('#FWHM').text(FWHM);
+            $('#LocX1').text(LocX1);
+            $('#LocY1').text(LocY1);
+        });
+
+        $('#btnFeedback').click(function () {
+            //var x1 = ($(window).width() - 600) / 2 + $(window).scrollLeft();
+            //var y1 = ($(window).height() - 300) / 2 + $(window).scrollTop();
+            var x1 = ($(window).width() - 800) / 2 + $(window).scrollLeft();
+            var y1 = ($(window).height() - 600) / 2 + $(window).scrollTop();
+            $('#win_feedback').append('<div id="jqx_win"><div id="winheader"></div><div id="wincontent"></div></div>');
+            $('#wincontent').load('@Url.Action("Feedback", "WLSystem")' + '/?ID=@Model.ID');
+            $('#jqx_win').jqxWindow({
+                theme: 'energyblue',
+                position: { x: x1, y: y1 },
+                showCollapseButton: false,
+                closeButtonAction: 'close',
+                //width: 600,
+                //height: 300,
+                width: 1000,
+                height: 600,
+                isModal: true
+            });
+
+            console.log('@Url.Action("Feedback", "WLSystem")' + '/?ID=@Model.ID');
+            $("#jqx_win").jqxWindow({ title: "意見回饋" });
+            $('#jqx_win').jqxWindow('open');
+        });
+    });
+</script>
+<script>
+    $(function () {
+        // 易混淆地物。
+
+        var _IDComp = $('#compareHref');
+        if (_IDComp.length > 0) {
+
+            var _winOpen = "@Url.Content("~/Search/TreeDetail?ID=")";
+            var _obj = null;
+            $data = {
+                IDCluster: _IDComp.data("idcomp")
+            };
+            $.ajax({
+                url: "@Url.Action("getIDCompName","Search")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    var it = JSON.parse(data);
+                    var _html = "";
+                    $.each(it, function (i, d) {
+                        _html += '<a href="@Url.Content("~/Search/OpenData/")'+ d.ID +'" target="_blank">' + d.ComName+'</a>,';
+                    });
+                    $('#compareHref').html(_html);
+                }
+            });
+        }
+    });
+</script>

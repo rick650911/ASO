@@ -1,0 +1,379 @@
+﻿@{
+    ViewBag.Title = "PwdMgn";
+    Layout = "~/Areas/WoodLand/Views/Shared/_Layout.cshtml";
+}
+<div id="pwdform" class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">密碼修改</div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>原密碼</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="password" id="txt_oldpwd" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>新密碼</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="password" id="txt_newpwd" />
+            </div>
+        </div>
+    </div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>確認新密碼</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="password" id="txt_confirmpwd" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 5px;">
+            <input type="button" id="btn_sent" value="確認" onclick="ChangePwd()" style="margin-top:3px;" />
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div id="dataForm" class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">新增/修改基本資料</div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>帳號</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <span>@ViewBag.AccountID</span>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>編碼</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <span>@ViewBag.UserNo</span>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>名稱</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="text" id="txt_Name" value="@ViewBag.Name" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>註記說明</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <span>@ViewBag.Comment</span>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>電子信箱</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <span>@ViewBag.EMail</span>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnLeft_auth about_content_coulmnLeft ">
+            <div>備用信箱</div>
+        </div>
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight">
+            <div>
+                <input type="email" id="txt_BackupEmail" value="@ViewBag.BackupEmail" />
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="about_content_coulmn_layout">
+        <div class="about_content_coulmnRight_auth about_content_coulmnRight" style="text-align:center;width:960px;margin-left:0px;padding:5px 0 5px 5px;">
+            <input type="button" id="btn_Sent2" value="確認修改或新增" onclick="" style="margin-top:3px;" />
+            <a id="hiddenLogOut" href="~/SysAuth/Login/Logout"></a>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div id="CourseTimeForm" class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">個人上課時數</div>
+    <div class="about_content_coulmn_layout">
+        <div id="grid_CourseTime"></div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div id="CourseResultForm" class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">個人測驗結果</div>
+    <div class="about_content_coulmn_layout">
+        <div id="grid_CourseResult"></div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div id="win_Detail">
+    <div>
+        檢視列表
+    </div>
+    <div id="det_content"></div>
+</div>
+
+<script>
+    var ChangePwdUrl = '@Url.Action("ChangePwd", "WLSystem")';
+    var UpdatePersonInfoUrl = '@Url.Action("UpdatePersonInfo", "WLSystem")';
+    var CourseTime = {};
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_pwdmgn']");
+        $(".menu_options_text[class*='Menu_pwdmgn']").addClass("menu_active");
+
+        $("[type=Password]").jqxInput(JqxInputSetting);
+        $("[type=text]").jqxInput(JqxInputSetting);
+        $("[type=email]").jqxInput(JqxInputSetting);
+
+        $('#btn_sent').jqxButton({ width: '100', height: '25' });
+        $('#btn_Sent2').jqxButton({ width: '120', height: '25' });
+
+        $('#pwdform').jqxValidator({
+            rules: [
+                { input: '#txt_oldpwd', message: '請輸入原密碼', action: 'keyup, blur', rule: 'required' },
+                {
+                    input: '#txt_newpwd', message: '密碼強度不符合', action: 'keyup, blur',
+                    rule: function (input, commit) {
+                        return pwdconfirm(input.val());
+                    }
+                },
+                {
+                    input: '#txt_confirmpwd', message: '密碼不符合', action: 'keyup, blur',
+                    rule: function (input, commit) {
+                        return input.val() === $('#txt_newpwd').val();
+                    }
+                },
+            ]
+        });
+        $('#dataForm').jqxValidator({
+            rules: [
+                { input: '#txt_Name', message: '請輸入名稱', action: 'keyup, blur', rule: 'required' },
+                { input: '#txt_BackupEmail', message: '請輸入信箱', action: 'keyup, blur', rule: 'required' },
+                {
+                    input: "#txt_BackupEmail", message: "Email格式不正確", action: "keyup, blur", rule: function (input, commit) {
+                        return emailconfirm(input.val());
+                    }
+                },
+            ]
+        });
+
+        $('#btn_sent').on('click', function () { $('#pwdform').jqxValidator('validate') });
+        $('#btn_Sent2').on('click', function () { $('#dataForm').jqxValidator('validate') });
+
+        $('#pwdform').on('validationSuccess', function (event) { ChangePwd(); })
+                     .on('validationError', function (event) { alert('請確認密碼是否有誤') });
+
+        $("#dataForm").on('validationSuccess', function (event) { updatePersonData(); })
+            .on('validationError', function () { alert('確認資料是否有誤'); });
+
+        dataInit();
+        dataInitCourseResult();
+
+        var x1 = ($(window).width() - 1000) / 2 + $(window).scrollLeft();
+        var y1 = ($(window).height()) + 700 / 2 + $(window).scrollTop();
+        $('#win_Detail').jqxWindow({
+            width: 2000,
+            height: 2000,
+            maxWidth: 1030, // 要突破最大值要設這個
+            resizable: false,
+            isModal: true, // 讓背景變黑屏。
+            autoOpen: false,
+            draggable: false,
+            position: { x: x1, y: y1 }
+        });
+    });
+
+    function ChangePwd() {
+        var oldpwd = $('#txt_oldpwd').val();
+        var newpwd = $('#txt_newpwd').val();
+        $.ajax({
+            url: ChangePwdUrl,
+            type: 'POST',
+            async: false,
+            data: { oldpwd: oldpwd, newpwd: newpwd },
+            success: function (data) {
+                if (data === 'OK') {
+                    $('[type=Password]').jqxInput('val', '');
+                    alert('修改完成');
+                }
+                else
+                    alert(data);
+            },
+            error: function (e) {
+                alert('錯誤出現。');
+            }
+        });
+    }
+
+    function updatePersonData() {
+        var _txt_Name = $("#txt_Name").val();
+        var _txt_BackupEmail = $("#txt_BackupEmail").val();
+
+        var obj = null;
+        $.ajax({
+            url: UpdatePersonInfoUrl,
+            type: 'POST',
+            async: false,
+            data: { txt_Name: _txt_Name, txt_BackupEmail: _txt_BackupEmail },
+            success: function (data) {
+                if (data === 'OK') {
+                    obj = data;
+                }
+                else {
+                    alert(data);
+                }
+            },
+            error: function (e) {
+                alert('錯誤出現。');
+            }
+        });
+
+        if (obj === 'OK' ) {
+            alert('修改完成，系統將登出');
+            var $href = window.location.href.replace("WoodLand/WLSystem/PwdMgn", "SysAuth/Login/Logout");
+            window.location.href = $href;
+        }
+    }
+
+    // 上課時數 :
+    function dataInit() {
+
+        var _obj = null;
+        $data = {
+            AccountID:'@ViewBag.AccountID'
+        };
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            data: $data,
+            url: '@Url.Action("getCourseTime", "WLSystem")',
+            async: false,
+            success: function (data) {
+                CourseTime = data;
+            }
+        })
+        var source = {
+            localdata: CourseTime,
+            datatype: "Json",
+            datafields: [
+                { name: 'AccountID' },
+                { name: 'Title' },
+                { name: 'LearnTime' },
+                { name: 'min' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+                { text: '帳號', datafield: 'AccountID', width: 255, align: 'center', cellsalign: 'center' },
+                { text: '課程內容', datafield: 'Title', width: 255, align: 'center', cellsalign: 'center' },
+                { text: '上課日期', datafield: 'LearnTime', width: 255, align: 'center' },
+                { text: '上課時數(分鐘)', datafield: 'min', width: 255, align: 'center', cellsalign: 'center' },
+            ],
+        };
+        $("#grid_CourseTime").jqxGrid(GetJqxGvSetting(setting));
+    }
+    // 上課結果 : 
+
+    function dataInitCourseResult() {
+
+        $data = {
+            AccountID:'@ViewBag.AccountID'
+        };
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            data: $data,
+            url: '@Url.Action("getCourseResult", "WLSystem")',
+            async: false,
+            success: function (data) {
+                CourseTime = data;
+            }
+        });
+        var source = {
+            localdata: CourseTime,
+            datatype: "Json",
+            datafields: [
+                { name: 'NO' },
+                { name: 'AccountID' },
+                { name: 'Title' },
+                { name: 'SubmitTimeDetail' },
+                { name: 'grade' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            localization: getLocalization(),
+            columns: [
+                { text: '受測者帳號', datafield: 'AccountID', width: 230, align: 'center', cellsalign: 'center' },
+                { text: '課程內容', datafield: 'Title', width: 230, align: 'center', cellsalign: 'center' },
+                { text: '測驗日期', datafield: 'SubmitTimeDetail', width: 230, align: 'center' },
+                { text: '測驗結果', datafield: 'grade', width: 230, align: 'center', cellsalign: 'center' },
+                {
+                    text: '', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                        return "檢視";
+                    }, buttonclick: function (row) {
+                        var ID = $("#grid_CourseResult").jqxGrid('getcellvalue', row, "NO");
+                        dataDetWindowAction(ID);
+                    }
+                },
+            ],
+        };
+        $("#grid_CourseResult").jqxGrid(GetJqxGvSetting(setting));
+    }
+
+    function dataDetWindowAction($id) {
+        var $data = {
+            _id: $id
+        };
+        $.post('@Url.Action("getCourseExamDet", "WLSystem")', $data, function (data) {
+            $("#det_content").html(data);
+        });
+        $('#win_Detail').jqxWindow("open");
+    }
+
+</script>

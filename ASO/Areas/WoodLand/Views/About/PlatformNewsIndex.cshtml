@@ -1,0 +1,154 @@
+﻿@{ 
+    string _selectStyle = "background-color:#7ac7e4;border:solid 1px;border-color:#57b9dc;border-radius:5px;text-align:center;padding-left:5px;padding-right:5px;padding-top:0;padding-bottom:0;";
+    string _nonSelectStyle = "cursor:pointer;border:solid 1px;border-color:#57b9dc;border-radius:5px;text-align:center;padding-left:5px;padding-right:5px;padding-top:0;padding-bottom:0;";
+    int _C = ViewBag.datacount;
+    int _pageSize = ViewBag.pageSize;
+    int _indexC = _C % _pageSize == 0 ? _C / _pageSize : (_C / _pageSize) + 1;
+    int _state = ViewBag.state;
+    int _Init = _state * 10;
+}
+
+@if (_state > 0)
+{
+    <td>
+        <div id="NewsIndex_Less" style="@_nonSelectStyle">
+            ...
+        </div>
+    </td>
+}
+@for (int i = _Init; i < _indexC; i++)
+{
+    <td>
+        @if (i == _Init)
+        {
+            <div id="NewsIndex_@(i+1)" style="@_selectStyle">
+                @(i + 1)
+            </div>
+        }
+        else if (i == _Init + 10)
+        {
+            <div id="NewsIndex_More" style="@_nonSelectStyle">
+                ...
+            </div>
+            break;
+        }
+        else
+        {
+            <div id="NewsIndex_@(i+1)" style="@_nonSelectStyle">
+                @(i + 1)
+            </div>
+        }
+    </td>
+}
+    <script>
+        var _indexUrl = "@Url.Action("NewsIndexChange")";
+        var _dataUrl = "@Url.Action("ShowNews")";
+
+        $(function () {
+
+            $('[id^="NewsIndex_"]').click(function () {
+                var _this = $(this);
+                var _index = $.trim(_this.text());
+
+                if (_this.attr('style') != '@_selectStyle') {
+
+                    var _state = parseInt($('#hidden_pageIndex').val());
+                    if (_this.attr('id') == "NewsIndex_More") {
+                        _state++;
+
+                        var _sucess = false;
+                        $dataIndexNew = {
+                            _datacount: @_C,
+                            pageSize:@_pageSize,
+                            _state: _state
+                        };
+                        $.ajax({
+                            url: _indexUrl,
+                            type: "POST",
+                            data: $dataIndexNew,
+                            async: false,
+                            success: function (data) {
+                                $('#pageNewsToggle').html(data);
+                                $('#hidden_pageIndex').val(_state);
+                                _sucess = true;
+                            }
+                        });
+
+                        if (_sucess) {
+
+                            _susData = {
+                                pageSize:@_pageSize,
+                                page: (_state * 10 + 1),
+                            };
+                            $.ajax({
+                                url: _dataUrl,
+                                type: "POST",
+                                data: _susData,
+                                async: false,
+                                success: function (data) {
+                                    $('#grid_News').html(data);
+                                }
+                            });
+                        }
+
+                    } else if (_this.attr('id') == "NewsIndex_Less") {
+                        _state--;
+
+                        var _sucess = false;
+                        $dataIndexNew = {
+                            _datacount: @_C,
+                            pageSize:@_pageSize,
+                            _state: _state
+                        };
+                        $.ajax({
+                            url: _indexUrl,
+                            type: "POST",
+                            data: $dataIndexNew,
+                            async: false,
+                            success: function (data) {
+                                $('#pageNewsToggle').html(data);
+                                $('#hidden_pageIndex').val(_state);
+                                _sucess = true;
+                            }
+                        });
+
+                        if (_sucess) {
+                            _susData = {
+                                pageSize:@_pageSize,
+                                page: (_state * 10 + 1),
+                            };
+                            $.ajax({
+                                url: _dataUrl,
+                                type: "POST",
+                                data: _susData,
+                                async: false,
+                                success: function (data) {
+                                    $('#grid_News').html(data);
+                                }
+                            });
+                        }
+                    }
+                    else {
+
+                        $('[id^="NewsIndex_"]').attr('style', '@_nonSelectStyle');
+                        _this.attr('style', '@_selectStyle');
+
+                        var _obj = null;
+                        _data = {
+                            pageSize:@_pageSize,
+                            page: _index
+                        };
+                        $.ajax({
+                            url: _dataUrl,
+                            type: "POST",
+                            data: _data,
+                            async: false,
+                            success: function (data) {
+                                $('#grid_News').html(data);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>

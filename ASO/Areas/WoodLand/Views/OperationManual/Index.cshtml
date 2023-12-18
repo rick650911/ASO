@@ -1,0 +1,188 @@
+﻿@model List < ASO.Models.OperationManual>
+@{
+    ViewBag.Title = "操作手冊";
+}
+<style>
+    .DDDphoto_content_ipcc_text {
+        color: #666666;
+        font-size: 15px;
+        font-family: "Arial","微軟正黑體";
+        height: 30px;
+        cursor: pointer;
+    }
+
+        .DDDphoto_content_ipcc_text div:last-child:hover {
+            color: #48a3c5;
+        }
+
+    .DDDphoto_content_ipccsub_text {
+        color: #666666;
+        font-size: 15px;
+        font-family: "Arial","微軟正黑體";
+        cursor: pointer;
+    }
+
+        .DDDphoto_content_ipccsub_text div {
+            padding-left: 30px;
+        }
+
+            .DDDphoto_content_ipccsub_text div:last-child:hover {
+                color: #48a3c5;
+            }
+
+    input[type=text].jqx-input, input[type=password].jqx-input {
+        padding-left: 0px !important;
+    }
+
+    .PhotoSearch1_contentRIGHT_ALLinfo_layout {
+        margin-top: 0px;
+    }
+
+    .orderArrow {
+        cursor: pointer;
+    }
+
+    #accordion .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+        background-color: #57b9dc;
+    }
+
+    #accordion li {
+        cursor: pointer;
+    }
+
+        #accordion li:hover {
+            color: #57b9dc;
+        }
+
+    .allprogess {
+        cursor: progress;
+    }
+
+    #accordion div {
+        height: auto !important;
+    }
+
+    /* 水藍色按鈕樣式 */
+    .content_title .btn {
+        display: inline-block;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        color: #fff;
+        background-color: #00bcd4; /* 水藍色 */
+        border: 2px solid #00bcd4; /* 水藍色邊框 */
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+        /* 滑鼠懸停效果 */
+        .content_title .btn:hover {
+            background-color: #00796b; /* 深水藍色 */
+            border-color: #00796b; /* 深水藍色邊框 */
+        }
+
+    .contnet_title_layout {
+        width: 100%;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+        padding-right: 60px;
+    }
+</style>
+<div class="content_whiteBG_layout content_whiteBG">
+    <div class="contnet_title_layout content_title">
+        <div class="left">
+            操作手冊
+        </div>
+        <div class="right">
+            <button class="btn" onclick="OpenVideo()">操作影片</button>
+            <button class="btn" onclick="DownloadPDF()">下載操作手冊</button>
+        </div>
+    </div>
+    <div class="DDDphoto_contnet_ALLinfo_layout">
+        <div class="clear"></div>
+        <div class="DDDphoto_content_info_SeparateLine" style="margin-top:5px;"></div>
+        <table style="width:100%">
+            <tr>
+                <td style="width:200px; vertical-align:top">
+                    <div id="accordion">
+                        @if (Model != null)
+                        {
+                            for (int i = 0; i < Model.Count; i++)
+                            {
+                                ASO.Models.OperationManual tmp = Model[i];
+                                <h3 id="IPCC_@i" data-videoid="@tmp.VideoUrl" data-pdfpath="@tmp.PDFPath" class="ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons"
+                                    role="tab" aria-controls="ui-id-1" aria-selected="false" aria-expanded="false" tabindex="0" style="padding: 5px; cursor: pointer;">
+                                    <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>@tmp.Name
+                                </h3>
+                            }
+                        }
+                    </div>
+                </td>
+                <td style="vertical-align:top;padding: 10px;" id="divSubList"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    var solidinited = false;
+    var nowVideoid = "";
+    var nowPDFPath = "";
+    $(function () {
+        initMenu = $(".menu_options_text[class*='Menu_operationmanual']");
+        $(".menu_options_text[class*='Menu_operationmanual']").addClass("menu_active");
+
+        // 點擊IPCC_元素時觸發
+        $('[id^=IPCC_]').on('click', function () {
+            var videoId = $(this).data('videoid');
+            var pdfpath = $(this).data('pdfpath'); // 讀取data-videoid屬性的值
+
+            nowVideoid = videoId;
+            nowPDFPath = pdfpath;
+            // 生成YouTube嵌入式播放器的HTML代碼
+            var iframeCode = '<div style="aspect-ratio: 16/9;">' +
+                '<iframe style="width: 100%; height: 100%;" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe>' +
+                '</div>';
+
+            // 顯示YouTube影片
+            $('#divSubList').html(iframeCode);
+        });
+
+        $('#IPCC_0').click();
+    });
+
+    function OpenVideo() {
+        if (nowVideoid) {
+            var url = "https://www.youtube.com/embed/" + nowVideoid;
+            window.open(url, '_blank');
+        }
+    }
+
+    function DownloadPDF() {
+        if (nowPDFPath) {
+            // 相對路徑到你的 PDF 文件
+            var relativePath = nowPDFPath.replace("~/", "../");
+
+            // 創建一個 <a> 元素，設定其 href 屬性為相對路徑，並添加 download 屬性設定下載文件的名稱
+            var a = document.createElement('a');
+            a.href = relativePath;
+            a.download = '操作手冊.pdf';
+
+            // 將 <a> 元素添加到文檔中
+            document.body.appendChild(a);
+
+            // 模擬點擊 <a> 元素，觸發下載
+            a.click();
+
+            // 刪除創建的 <a> 元素
+            document.body.removeChild(a);
+        }
+    }
+</script>

@@ -1,0 +1,93 @@
+﻿@model List<Wei.SysAuth.SysRole>
+@{
+    ViewBag.Title = "SysRoleList";
+    Layout = "~/Areas/SysAuth/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content_title">角色群組維護</div><br />
+
+<div style="width: 98%; margin: 0 auto 20px auto; ">
+    <div style="text-align:right;" id="DV_Btn">
+        <input id="SysRoleList_btn_Add" type="button" value="新增" />
+    </div>
+    <div id="SysRoleList_GV_main">
+    </div>
+</div>
+
+<script>
+    //#region 變數宣告
+    var QueryUrl = '@Url.Action("", "Admin")';
+    var SysRoleListAddUrl = '@Url.Action("SysRoleListAdd", "Admin")';
+    var SysRoleListEditUrl = '@Url.Action("SysRoleListEdit", "Admin")';
+    var SysRoleList = @Html.Raw(Json.Encode(ViewData["SysRoleList"]));
+    //#endregion
+
+    function btnAdd_Click() {
+        location.href = SysRoleListAddUrl;
+    }
+
+    function iniObj() {
+        $("#SysRoleList_btn_Add").jqxButton(JqxBtnSetting);
+        $("#SysRoleList_btn_Add").on('click', btnAdd_Click);
+    }
+
+    //#region Grid
+    function iniData() {
+
+        var source = {
+            localdata: SysRoleList,
+            datatype: "Json",
+            datafields: [
+                 { name: 'RoleID', type: 'int' },
+                 { name: 'RoleNo', type: 'string' },
+                 { name: 'Name', type: 'string' },
+                 { name: 'RolePID', type: 'int' },
+                 { name: 'Comment', type: 'string' },
+                 { name: 'Status', type: 'int' },
+            ]
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+        var setting = {
+            source: dataAdapter,
+            columnsresize: true,
+            filterable: true,
+            sortable: true,
+            pageable: true,
+            columns: [
+              {
+                  text: '檢視', datafield: 'View', width: 80, align: 'center', columntype: 'button', cellsrenderer: function () {
+                      return "...";
+                  },buttonclick:function (row)
+                  {
+                      var ID = $("#SysRoleList_GV_main").jqxGrid('getcellvalue', row, "id");
+
+                      var Url = SysRoleListEditUrl + "?ID=" + ID;
+                      location.href = Url;
+                  }
+              },
+              { text: '群組代號', datafield: 'RoleID', width: 120, align: 'center',hidden:true },
+              { text: '群組代號', datafield: 'RoleNo', width: 120, align: 'center' },
+              { text: '群組名稱', datafield: 'Name', width: 200, align: 'center' },
+              { text: '群組說明', datafield: 'Comment', align: 'center' },
+              {
+                  text: '狀態', datafield: 'Status', width: 120, cellsalign: 'right', cellsrenderer: function (row, column, value) {
+                      if(value==1)
+                      {
+                          return "啟用";
+                      }
+                      return "停用";
+                  }
+              }
+            ]
+        };
+        $("#SysRoleList_GV_main").jqxGrid(GetJqxGvSetting(setting));
+        $("#DV_Btn").width($("#SysRoleList_GV_main").jqxGrid('width'));
+    }
+    //#endregion
+
+
+    $(document).ready(function () {
+        iniObj();
+        iniData();
+    })
+</script>

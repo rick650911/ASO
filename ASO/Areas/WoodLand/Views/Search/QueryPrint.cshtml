@@ -1,0 +1,118 @@
+﻿@model ASO.Areas.WoodLand.Models.Stereoscopic
+@{
+    //var Image = (Model.StereoscopicImages != null && Model.StereoscopicImages.Count != 0) ? Model.StereoscopicImages[0] : null;
+
+    DateTime tmp = Model.ShTime ?? new DateTime(1900, 1, 1);
+    string _date = tmp == new DateTime(1900, 1, 1) ? string.Empty : tmp.ToString("yyyy/MM/dd");
+
+    string tmpLocX = string.Empty;
+    string tmpLocY = string.Empty;
+
+    if (Model != null)
+    {
+        decimal tmp1 = Model.LocX1 ?? 0;
+        decimal tmp2 = Model.LocY1 ?? 0;
+        tmpLocX = Math.Truncate(double.Parse(tmp1.ToString())).ToString();
+        tmpLocY = Math.Truncate(double.Parse(tmp2.ToString())).ToString();
+    }
+}
+
+@if (Model != null)
+{
+    <style>
+        #gridPrint {
+            border-collapse: collapse;
+            border-width: 2px;
+            font-family: DFKai-sb;
+            width: 21cm;
+            font-size: 25px;
+            margin-top: 50px;
+        }
+
+        .gridPrint_td {
+            padding: 15px;
+            width: 50%;
+        }
+
+        .divImagepart {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        @@media print {
+            #PimageL {
+                width: 6.5cm;
+            }
+
+            #PimageR {
+                width: 6.5cm;
+            }
+        }
+    </style>
+    <br />
+    <table id="gridPrint" border="1" style="width:780px;">
+        <tr>
+            <td class="gridPrint_td">地物種類 : @Model.ComName</td>
+            <td class="gridPrint_td">地點 : @Model.Locate</td>
+        </tr>
+        <tr>
+            <td class="gridPrint_td">圖號 : @Model.PicNumber</td>
+            <td class="gridPrint_td">拍攝日期 :@_date </td>
+        </tr>
+        <tr>
+            <td class="gridPrint_td">
+                坐標(TWD97) :
+                <p>
+                    @tmpLocX , @tmpLocY , @Model.AltMin m
+                </p>
+            </td>
+            <td class="gridPrint_td">片號 : @Model.PhotoA , @Model.PhotoB</td>
+            @*<td class="gridPrint_td">片號 : @Model.FilmNumber</td>*@
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.StePairL)))
+                            {
+                                <div id="PimageL" class="divImagepart" style="margin-left:4cm;overflow:hidden;width:6.5cm;">
+                                    <img src="@Url.Content("~/Photos/" + Model.StePairL)" style="position:relative;top:0;left:0" />
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.StePairR)))
+                            {
+                                <div id="PimageR" class="divImagepart" style="overflow:hidden;width:6.5cm">
+                                    <img src="@Url.Content("~/Photos/" + Model.StePairR)" style="position:relative;top:0;left:0" />
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table style="float:left;text-align:left;">
+        <tr>
+            <td>
+                <span>
+                    *此像對為<span id="extraTag"></span>顯示
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>*為了提高列印精準度，列印設定邊界為無、縮放比例為100</span>
+            </td>
+        </tr>
+    </table>
+    if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/Photos/" + Model.StePair)))
+    {
+        <div style="margin-top:5px;text-align:center">
+            <img src="@Url.Content("~/Photos/" + Model.StePair)" style="width:5cm;" />
+        </div>
+    }
+}

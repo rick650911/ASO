@@ -1,0 +1,77 @@
+﻿@using ASO.Models
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+
+@using (Html.BeginScripts()) {
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            padding: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.18/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+    <script>
+        var dojoConfig = {
+            parseOnLoad: true,
+            packages: [{
+                "name": "extras",
+                "location": '@Url.Content("~/Scripts/WeiMap/WeiLayer")'
+            }]
+        };
+    </script>
+    <script src="https://js.arcgis.com/3.18/"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/mapobj.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/layerobj.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/ArcGisCtrl.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/ArcLayerCtrl.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/CustomMapEvent.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/CustomLayerEvent.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/JavaScriptObject.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/Tgos/AjaxAgent.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/Tgos/Framework.js")"></script>
+    <script src="@Url.Content("~/Scripts/WeiMap/Tgos/SGSArcGISServer.js")"></script>
+    <script>
+    var mapimgroot = '@Url.Content("~/Content/Images/")';
+    var Mappointimg = '@Url.Content("~/Content/Images/point.png")'
+        function whenAvailable(callback) {
+            var names = ["WeiMap", "WeiLayer", "MapCtrl", "LayerCtrl"];
+            var interval = 10;
+            window.setTimeout(function () {
+                var f = true;
+                for (i = 0; i < names.length; i++) {
+                    var s = false;
+                    try {
+                        eval(names[i]);
+                        s = true;
+                    }
+                    catch (e) {
+                    }
+                    f = f && s;
+                }
+                if (f) {
+                    $.getScript("@Url.Content("~/Scripts/WeiMap/Tgos/SGSArcGISServer.js")", function (data, textStatus, jqxhr) {
+                        callback(window[name]);
+                    });
+                } else {
+                    window.setTimeout(arguments.callee, interval);
+                }
+            }, interval);
+        }
+    </script>
+}
+<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline', gutters:false" style="width: 100%; height: 100%; margin: 0;position:relative">
+    <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id="LocateButton"></div>
+    </div>
+    <div id='divxy' style="position: absolute; z-index: 2; font-size: 9pt; font-family: Verdana; color: #000000; bottom: 5px; background-color: #ffffff; filter: alpha(opacity=80); -moz-opacity: 0.8; opacity: 0.8; right: 100px;">
+    </div>
+</div>

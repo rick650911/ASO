@@ -1,0 +1,459 @@
+﻿@model ASO.Areas.WoodLand.Models.Stereoscopic
+@{
+    Layout = null;
+    string url = Url.Action("LocationCoordMap", "WLMap") + "/?locx=" + Model.LocX1 + "&locy=" + Model.LocY1;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.TitleName</title>
+    <script type="text/javascript" src='~/Scripts/jquery-2.2.4.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jqx-all.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/Common.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery-ui.min.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.mousewheel.js' charset="utf-8"></script>
+    <script type="text/javascript" src='~/Scripts/jquery.gzoom.js' charset="utf-8"></script>
+    <script type="text/javascript" src="~/Scripts/fontawesome-all.min.js"></script>
+
+    <link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.gzoom.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.base.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.metro.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.dark.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.energyblue.css" rel="stylesheet" />
+    <link href="~/Content/Jqwidgets/jqx.office.css" rel="stylesheet" />
+    <link href="~/Content/reset.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .solid_content_table {
+            width: 100%;
+            height:100%
+        }
+
+        #imageTwoPic {
+            margin-left: 12%;
+        }
+        .jqx-tabs-content-element {
+        overflow-x:hidden;
+        }
+    </style>
+</head>
+<body onload="photoclickBySize3('@Model.StePairL', '@Model.StePairR','@Model.ImgW','@Model.ImgH','@Model.ID')">
+
+    <div id="jqxwin_solid" style="height:100%">
+        <div id="jqxwin_solid_content" style="background:#000;overflow:hidden;width:64%;height:100%;display:inline-block">
+            <ul>
+                <li>立體像對</li>
+                <li>紅藍立體</li>
+            </ul>
+            <div>
+                @{
+                    if (Model != null)
+                    {
+                        Html.RenderAction("SolidPhoto");
+                    }
+                }
+            </div>
+            <div>
+                @{
+                    if (Model != null)
+                    {
+                        Html.RenderAction("Stereophoto");
+                    }
+                }
+            </div>
+        </div>
+        <div id="infotabs" style="display:inline-block">
+            <ul>
+                <li>基本資訊</li>
+                <li>像對說明</li>
+                <li>現場狀況</li>
+                <li>地圖定位</li>
+            </ul>
+            <div>
+                @Html.Action("TreeBaseData", "Search", new { ID = Model.SID })
+            </div>
+            <div>
+                <div id="info"></div>
+            </div>
+            <div>
+                @if (System.IO.File.Exists(System.Web.HttpContext.Current.Server.MapPath(Model.StePair)))
+                {
+                    <img id="StePair_Stero" src="@Url.Content(Model.StePair)" style="width:300px;" />
+                }
+            </div>
+            <div style="overflow:hidden">
+                <iframe id="mapframe" src="@url" style="width:100%;height:100%;display:inline-block"></iframe>
+            </div>
+
+        </div>
+    </div>
+    <script>
+
+        $(document).on('mouseover', '#btn_exchange', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●此功能可以切換像對正立體或反立體</b><br/>';
+            _tipHtml += '<b>1.可以選取兩像對旋轉180度</b><br/>';
+            _tipHtml += '<b>2.可以選取左右互換</b>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_lock', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●可以鎖定像對，可以選擇鎖定左像對或右像對</b><br/>';
+            _tipHtml += '<b>1.鎖定左像對時，拖曳右像對「僅能水平移動」</b><br/>';
+            _tipHtml += '<b>2.鎖定右像對時，拖曳左像對「僅能水平移動」</b><br/>';
+            _tipHtml += '<b>3.點選第二次會回復原來開鎖狀態，兩者像對可以同步移動</b>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_zoomin', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●同時「放大」兩個像對</b><br/>';
+            _tipHtml += '<b>可以拖曳兩相對，像對同步移動</b><br/>';
+            _tipHtml += '<b>PS.像對在最小的狀態無法拖曳</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_zoomout', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●同時「縮小」兩個像對</b><br/>';
+            _tipHtml += '<b>可以拖曳兩相對，像對同步移動</b><br/>';
+            _tipHtml += '<b>PS.像對在最小的狀態無法拖曳</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_enlarge', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●「拉遠」像對框的相對距離(調整眼距)</b><br/>';
+            _tipHtml += '<b>調整距離有最大極限</b><br/>';
+            _tipHtml += '<b>調整不能使像對重合</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_shrink', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●「拉近」像對框的相對距離(調整眼距)</b><br/>';
+            _tipHtml += '<b>調整距離有最大極限</b><br/>';
+            _tipHtml += '<b>調整不能使像對重合</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_print', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●「列印」目前的像對</b><br/>';
+            _tipHtml += '<b>列印會依照當前設定做列印</b><br/>';
+            _tipHtml += '<b>注意列印頁面的提示設定確保列精準度</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+        $(document).on('mouseover', '#btn_save', function () {
+            var _this = $(this);
+            var _tipHtml = '<b>提示:</b><br />';
+            _tipHtml += '<b>●「儲存」目前的像對設定</b><br/>';
+            _tipHtml += '<b>儲存調整後的像對設定</b><br/>';
+            _tipHtml += '<b>使得下次使用者進來此頁面時，</b><br/>';
+            _tipHtml += '<b>回復上一次儲存設定</b><br/>';
+            _this.jqxTooltip({ content: _tipHtml, position: 'mouse', name: 'movieTooltip' });
+        });
+
+    </script>
+    <script>
+        $(function () {
+          @*var $url = "@Url.Action("BaseDataForStereo", "Search")";
+          var result = "";
+                $data = {
+                    ID:@ViewBag.ID,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        result = data
+                    }
+            });
+            $('#compare').html(result);*@
+        // 易混淆地物。
+
+        var _IDComp = $('#compareHref');
+        if (_IDComp.length > 0) {
+
+            var _winOpen = "@Url.Content("~/Search/TreeDetail?ID=")";
+            var _obj = null;
+            $data = {
+                IDCluster: _IDComp.data("idcomp")
+            };
+            $.ajax({
+                url: "@Url.Action("getIDCompName","Search")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    var it = JSON.parse(data);
+                    var _html = "";
+                    $.each(it, function (i, d) {
+                        _html += '<a href="@Url.Content("~/Search/SolidPhotoInfo?SID=")'+ d.ID +'" target="_blank">' + d.ComName+'</a>,';
+                    });
+                    $('#compareHref').html(_html);
+                }
+            });
+        }
+            var $url = "@Url.Action("QueryAllStereoscopicImage")";
+        var $data = {
+            _SID: @ViewBag.ID,
+        };
+        $.post($url, $data, function (data) {
+            var $html = "";
+            $.each(data, function (i, d) {
+                i++;
+                $html += '<tr><td><div id="SteroData_' + i + '" ';
+                $html += ' class="SteroImage_Select" ';
+                $html += ' data-StePairL="' + d.StePairL + '" ';
+                $html += ' data-StePairR="' + d.StePairR + '" ' ;
+                $html += ' data-StePair="' + d.StePair + '" ' ;
+                $html += ' data-ScePic="' + d.ScePic + '" ' ;
+                $html += ' data-locx1="' + d.LocX1 + '" ' ;
+                $html += ' data-locy1="' + d.LocY1 + '" ';
+                $html += ' data-shtime="' + d.ShTime + '" ' ;
+                $html += ' data-locate="' + d.Locate + '" ' ;
+                $html += ' data-altmin="' + d.AltMin + '" ' ;
+                $html += ' data-altmax="' + d.AltMax + '" ';
+                $html += ' data-ID="' + d.ID + '" ';
+                $html += ' data-SortID="' + d.SortID + '" ';
+
+                if (d.IntroName != "" && d.IntroName != null) {
+                    $html += '>' + d.IntroName +'</div ></td ></tr > ';
+                } else {
+                    $html += '>'+ d.ComName + i + '</div ></td ></tr > ';
+                }
+            });
+            $("#grid_stero").html($html);
+            $("#grid_stero2").html($html);
+
+        });
+            $(document).on("click", "[id^='SteroData_']", function () {
+            var $this = $(this);
+            var $SortId = $this.data("sortid");
+            $("#lb_image").text("正立體");
+
+            $data = {
+                    SID:@ViewBag.ID,
+                    SortID: $SortId,
+                }
+            $.ajax({
+                url: "@Url.Action("SolidPhotoData")",
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    StereophotoclickBySize(data.StePairL, data.StePairR, data.ImgW, data.ImgH, data.ID);
+                    photoclickBySize3(data.StePairL, data.StePairR, data.ImgW, data.ImgH, data.ID);
+                    $('#btnGoogleMap').attr('onclick', 'GoogleMap(' + data.LocX1 + ',' + data.LocY1 + ')');
+                    $('#btnGoogleMap2').attr('onclick','GoogleMap('+data.LocX1+','+data.LocY1+')');
+
+                    if (data.StePair != "") {
+                    $("#StePair_Stero").show();
+                    $("#StePair_Stero").attr("src", data.StePair);
+                    } else {
+                    $("#StePair_Stero").hide();
+                    }
+                    var iframe = $("#mapframe").eq(0);
+                    iframe[0].contentWindow.arc.clearTempGraphic();;
+                    iframe[0].contentWindow.arc.locationCoord(data.LocX1, data.LocY1, 5000);
+            @*var $url = "@Url.Action("StereoAnaglyph", "Search")";
+
+            var base64 = "";
+            $data = {
+                LeftImage: data.StePairL,
+                RightImage:  data.StePairR,
+            }
+            $.ajax({
+                url: $url,
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    base64 = data
+                }
+            });*@
+                    $('#img_Stereo')[0].src = "data:image/png;base64," + data.Stereoscopics;
+            var $url = "@Url.Action("StereoscopicImageinfo", "Search")";
+            var result = "";
+                $data = {
+                    ID:@ViewBag.ID,
+                    SortID:$SortId,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        result = data
+                    }
+            });
+            $('#info').html(result);
+                },
+        error: function(){
+                    alert("無完整相片對。")
+        }
+                });
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            StereophotoclickBySize('@Model.StePairL', '@Model.StePairR', '@Model.ImgW', '@Model.ImgH', '@Model.ID');
+
+            $("#stereoswitch").jqxPopover({
+            offset: { left: 0, top: 50 },
+            arrowOffsetValue: -40,
+            position: "right",
+            title: "請選擇",
+            showCloseButton: true,
+            selector: $("#btnstereoswitch"),
+            isModal: false
+            });
+            $("#stereoswitch2").jqxPopover({
+            offset: { left: 0, top: 50 },
+            arrowOffsetValue: -40,
+            position: "right",
+            title: "請選擇",
+            showCloseButton: true,
+            selector: $("#btnstereoswitch2"),
+            isModal: false
+            });
+            $('#btnGoogleMap').show();
+            $('#btnstereoswitch').show();
+            $('#btnGoogleMap2').show();
+            $('#btnstereoswitch2').show();
+            $('#infotabs').jqxTabs({ height: '100%', width: '35%', });
+            $('#jqxwin_solid_content').jqxTabs({ height: '100%', width: '64%', });
+            @*var $url = "@Url.Action("StereoAnaglyph", "Search")";
+            var base64 = "";
+            $data = {
+                LeftImage: "@Model.StePairL",
+                RightImage: "@Model.StePairR",
+            }
+            $.ajax({
+                url: $url,
+                type: "POST",
+                data: $data,
+                async: false,
+                success: function (data) {
+                    base64 = data
+                }
+            });*@
+            $('#img_Stereo')[0].src = "data:image/png;base64," + '@Model.Stereoscopics';
+            $('#btnGoogleMap').attr('onclick','GoogleMap(@Model.LocX1,@Model.LocY1)');
+            $('#btnGoogleMap2').attr('onclick','GoogleMap(@Model.LocX1,@Model.LocY1)');
+
+        });
+    </script>
+    <script>
+        $(function () {
+
+
+          var $url = "@Url.Action("StereoscopicImageinfo", "Search")";
+          var result = "";
+                $data = {
+                    ID:@ViewBag.ID,
+                    SortID:@ViewBag.SortID,
+                }
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: $data,
+                    async: false,
+                    success: function (data) {
+                        result = data
+                    }
+            });
+            $('#info').html(result);
+
+        });
+    </script>
+    <script>
+        function twd97_to_latlng($x, $y) {
+            var pow = Math.pow, M_PI = Math.PI;
+            var sin = Math.sin, cos = Math.cos, tan = Math.tan;
+            var $a = 6378137.0, $b = 6356752.314245;
+            var $lng0 = 121 * M_PI / 180, $k0 = 0.9999, $dx = 250000, $dy = 0;
+            var $e = pow((1 - pow($b, 2) / pow($a, 2)), 0.5);
+
+            $x -= $dx;
+            $y -= $dy;
+
+            var $M = $y / $k0;
+
+            var $mu = $M / ($a * (1.0 - pow($e, 2) / 4.0 - 3 * pow($e, 4) / 64.0 - 5 * pow($e, 6) / 256.0));
+            var $e1 = (1.0 - pow((1.0 - pow($e, 2)), 0.5)) / (1.0 + pow((1.0 - pow($e, 2)), 0.5));
+
+            var $J1 = (3 * $e1 / 2 - 27 * pow($e1, 3) / 32.0);
+            var $J2 = (21 * pow($e1, 2) / 16 - 55 * pow($e1, 4) / 32.0);
+            var $J3 = (151 * pow($e1, 3) / 96.0);
+            var $J4 = (1097 * pow($e1, 4) / 512.0);
+
+            var $fp = $mu + $J1 * sin(2 * $mu) + $J2 * sin(4 * $mu) + $J3 * sin(6 * $mu) + $J4 * sin(8 * $mu);
+
+            var $e2 = pow(($e * $a / $b), 2);
+            var $C1 = pow($e2 * cos($fp), 2);
+            var $T1 = pow(tan($fp), 2);
+            var $R1 = $a * (1 - pow($e, 2)) / pow((1 - pow($e, 2) * pow(sin($fp), 2)), (3.0 / 2.0));
+            var $N1 = $a / pow((1 - pow($e, 2) * pow(sin($fp), 2)), 0.5);
+
+            var $D = $x / ($N1 * $k0);
+
+            var $Q1 = $N1 * tan($fp) / $R1;
+            var $Q2 = (pow($D, 2) / 2.0);
+            var $Q3 = (5 + 3 * $T1 + 10 * $C1 - 4 * pow($C1, 2) - 9 * $e2) * pow($D, 4) / 24.0;
+            var $Q4 = (61 + 90 * $T1 + 298 * $C1 + 45 * pow($T1, 2) - 3 * pow($C1, 2) - 252 * $e2) * pow($D, 6) / 720.0;
+            var $lat = $fp - $Q1 * ($Q2 - $Q3 + $Q4);
+
+            var $Q5 = $D;
+            var $Q6 = (1 + 2 * $T1 + $C1) * pow($D, 3) / 6;
+            var $Q7 = (5 - 2 * $C1 + 28 * $T1 - 3 * pow($C1, 2) + 8 * $e2 + 24 * pow($T1, 2)) * pow($D, 5) / 120.0;
+            var $lng = $lng0 + ($Q5 - $Q6 + $Q7) / cos($fp);
+
+            $lat = ($lat * 180) / M_PI;
+            $lng = ($lng * 180) / M_PI;
+
+            return {
+                lat: $lat,
+                lng: $lng
+            };
+        }
+                function GoogleMap(locx, locy) {
+            var lat = twd97_to_latlng(locx,locy).lat;
+
+            var lon = twd97_to_latlng(locx, locy).lng;
+
+            var hint = "航照攝影時間與 Google 街景攝影時間可能有落差，所以僅供參考。";
+
+            //var url = "https://maps.google.com/maps?q=&layer=c&cbll=" + lat + "," + lon + "&cbp=12,270"; 
+            //var url = "https://www.google.com.tw/maps/@@" + lat+ "," + lon+ "," + "16z";
+            var url = "http://maps.google.com/maps?q=here@@" + lat + "," + lon;
+            alert(hint);
+            window.open(url);
+        }
+    </script>
+</body>
+</html>
